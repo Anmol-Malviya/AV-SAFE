@@ -359,7 +359,7 @@ export default function SystemPage() {
 
       {/* Main Content Pane */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        <Header isOnline={isOnline} />
+        <Header isOnline={isOnline} setActiveTab={setActiveTab} />
         
         <main className="flex-1 overflow-y-auto bg-bg-primary p-6">
           {activeTab === "overview" && (
@@ -455,3 +455,4 @@ export default function SystemPage() {
     </div>
   );
 }
+
