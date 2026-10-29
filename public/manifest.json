@@ -1,6 +1,6 @@
 {
-  "name": "Secure OS QR & Link Scanner",
-  "short_name": "Secure OS",
+  "name": "AV-SAFE QR & Link Scanner",
+  "short_name": "AV-SAFE",
   "description": "Scan QR codes and links on your mobile phone to check for phishing scams instantly, even offline.",
   "start_url": "/",
   "display": "standalone",

@@ -21,13 +21,13 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata = {
-  title: "Secure OS | QR & Phishing Link Scanner",
+  title: "AV-SAFE | QR & Phishing Link Scanner",
   description: "Mobile-first scanner to check links and QR codes for phishing attempts instantly, offline-ready.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Secure OS",
+    title: "AV-SAFE",
   },
   formatDetection: {
     telephone: false,

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "SecureOS Threat Shield",
+  "name": "AV-SAFE Threat Shield",
   "version": "1.0.0",
-  "description": "SecureOS real-time, privacy-focused offline phishing protection powered by machine learning and heuristic analysis.",
+  "description": "AV-SAFE real-time, privacy-focused offline phishing protection powered by machine learning and heuristic analysis.",
   "permissions": [
     "storage",
     "tabs",
@@ -20,7 +20,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "SecureOS Threat Shield",
+    "default_title": "AV-SAFE Threat Shield",
     "default_icon": {
       "16": "icon16.png",
       "48": "icon48.png",

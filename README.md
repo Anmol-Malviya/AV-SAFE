@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://bpl-hackathon.vercel.app/">
-    <img src="Screenshot%202026-09-14%20232237.png" alt="Secure OS | QR & Phishing Link Scanner" width="100%">
+    <img src="Screenshot%202026-09-14%20232237.png" alt="AV-SAFE | QR & Phishing Link Scanner" width="100%">
   </a>
   
   # 🛡️ Phish-Guard

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'secureos-cache-v2';
+const CACHE_NAME = 'av-safe-cache-v2';
 const ASSETS_TO_CACHE = [
   '/manifest.json',
   '/icons/icon-192.png',
