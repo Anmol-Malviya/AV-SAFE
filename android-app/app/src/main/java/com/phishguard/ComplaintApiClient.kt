@@ -13,9 +13,9 @@ import java.util.UUID
 
 object ComplaintApiClient {
 
-    // Configurable backend URL. In Android emulator, 10.0.2.2 maps to host 127.0.0.1:3000
-    // In production or physical test device, update this to your deployed domain.
-    var baseUrl: String = "http://10.0.2.2:3000"
+    // Configurable backend URL.
+    // 10.0.2.2 = emulator host loopback. 192.168.0.136 = LAN IP for USB-debugging on physical device.
+    var baseUrl: String = "http://192.168.0.136:3000"
 
     data class ComplaintRequest(
         val originalUrl: String,
