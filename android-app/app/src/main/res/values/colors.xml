@@ -3,30 +3,33 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- Backgrounds -->
-    <color name="bg_dark">#08070F</color>
-    <color name="bg_card">#111020</color>
-    <color name="bg_surface">#1A1830</color>
-    <color name="bg_input">#0E0D1C</color>
-    <color name="divider">#1E1D30</color>
+    <!-- iOS Light Canvas Backgrounds -->
+    <color name="bg_dark">#F6F8FC</color>       <!-- Main screen background with subtle cool tint -->
+    <color name="bg_card">#FFFFFF</color>       <!-- Pure white card surface -->
+    <color name="bg_surface">#FFFFFF</color>    <!-- iOS action surface -->
+    <color name="bg_input">#FFFFFF</color>      <!-- White input box -->
+    <color name="divider">#ECEFF5</color>       <!-- Ultra soft border -->
 
-    <!-- Brand -->
-    <color name="primary">#7C3AED</color>
-    <color name="primary_dim">#2E1A5E</color>
-    <color name="primary_dark">#5b21b6</color>
-    <color name="secondary">#06b6d4</color>
+    <!-- iOS Primary & Accents -->
+    <color name="primary">#007AFF</color>       <!-- Apple System Blue -->
+    <color name="primary_dim">#EBF3FF</color>   <!-- Soft blue accent background -->
+    <color name="primary_dark">#0062D6</color>
+    <color name="secondary">#0A84FF</color>
 
-    <!-- Semantic -->
-    <color name="safe">#10b981</color>
-    <color name="safe_dim">#0d3326</color>
-    <color name="warning">#f59e0b</color>
-    <color name="warning_dim">#3a2a00</color>
-    <color name="danger">#ef4444</color>
-    <color name="danger_dim">#3d1010</color>
+    <!-- Semantic Alerts & Badges -->
+    <color name="safe">#34C759</color>
+    <color name="safe_dim">#ECFDF5</color>
+    <color name="warning">#FF9500</color>
+    <color name="warning_dim">#FFFBEB</color>
+    <color name="danger">#FF3B30</color>        <!-- Apple System Red -->
+    <color name="danger_dim">#FFF1F0</color>    <!-- Soft red danger tint -->
+    <color name="danger_border">#FFD1CF</color>
+    <color name="sandbox_badge">#5856D6</color>
+    <color name="sandbox_dim">#EEF2FF</color>
 
-    <!-- Text -->
-    <color name="text_primary">#F0EEF8</color>
-    <color name="text_secondary">#8E8BA8</color>
-    <color name="text_muted">#3E3C58</color>
+    <!-- iOS Typography Colors -->
+    <color name="text_primary">#000000</color>  <!-- Bold deep black for titles -->
+    <color name="text_secondary">#6E6E73</color><!-- Muted secondary iOS label -->
+    <color name="text_muted">#8E8E93</color>    <!-- Tertiary iOS muted gray -->
     <color name="text_on_primary">#FFFFFF</color>
 </resources>

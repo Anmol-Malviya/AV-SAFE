@@ -12,6 +12,7 @@
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:background="@color/bg_card"
+        android:elevation="2dp"
         android:paddingStart="8dp"
         android:paddingEnd="12dp">
 
@@ -30,7 +31,7 @@
         <!-- URL bar -->
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="32dp"
+            android:layout_height="34dp"
             android:layout_weight="1"
             android:orientation="horizontal"
             android:gravity="center_vertical"
@@ -44,52 +45,83 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🔒 "
-                android:textSize="10sp"/>
+                android:textSize="11sp"/>
 
             <TextView
                 android:id="@+id/txtSandboxUrl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="https://example.com"
+                android:text="https://..."
                 android:textColor="@color/text_secondary"
-                android:textSize="11sp"
+                android:textSize="12sp"
                 android:singleLine="true"
-                android:ellipsize="end"/>
+                android:ellipsize="middle"/>
         </LinearLayout>
 
-        <!-- Sandbox label -->
+        <!-- Refresh button -->
+        <TextView
+            android:id="@+id/btnSandboxRefresh"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:text="↻"
+            android:textColor="@color/text_secondary"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"/>
+    </LinearLayout>
+
+    <!-- Sandbox Mode Banner -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/sandbox_dim"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SANDBOX"
-            android:textColor="@color/warning"
-            android:textSize="9sp"
+            android:text="🛡"
+            android:textSize="12sp"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="PROTECTED SANDBOX — Storage isolated &amp; off-domain links blocked"
+            android:textColor="@color/sandbox_badge"
+            android:textSize="10sp"
             android:textStyle="bold"
-            android:letterSpacing="0.08"
-            android:background="@drawable/badge_warning"
-            android:paddingStart="7dp"
-            android:paddingEnd="7dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"/>
+            android:letterSpacing="0.04"/>
     </LinearLayout>
 
-    <!-- Isolation notice -->
-    <TextView
+    <!-- Progress indicator -->
+    <ProgressBar
+        android:id="@+id/sandboxProgress"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Isolated — cookies, storage and popups are blocked"
-        android:background="@color/warning_dim"
-        android:textColor="@color/warning"
-        android:textSize="11sp"
-        android:gravity="center"
-        android:paddingTop="7dp"
-        android:paddingBottom="7dp"/>
+        android:layout_height="2dp"
+        android:indeterminate="true"
+        android:visibility="gone"/>
 
-    <!-- WebView -->
-    <WebView
-        android:id="@+id/sandboxWebView"
+    <!-- WebView container -->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:background="@color/white">
+
+        <WebView
+            android:id="@+id/sandboxWebView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </FrameLayout>
 
 </LinearLayout>
