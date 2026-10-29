@@ -5,84 +5,91 @@
     android:orientation="vertical"
     android:background="@color/bg_dark">
 
-    <!-- Chrome Address Bar Style -->
+    <!-- Toolbar -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="52dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:background="@color/bg_card"
-        android:padding="8dp">
+        android:paddingStart="8dp"
+        android:paddingEnd="12dp">
 
         <TextView
             android:id="@+id/btnSandboxClose"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
             android:text="✕"
-            android:textColor="@color/text_primary"
-            android:textSize="18sp"
+            android:textColor="@color/text_secondary"
+            android:textSize="16sp"
             android:gravity="center"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"/>
 
+        <!-- URL bar -->
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="32dp"
             android:layout_weight="1"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:background="@color/bg_dark"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:backgroundTint="@color/bg_dark">
+            android:background="@drawable/url_bar_bg"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="10dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🔒 "
-                android:textSize="12sp"/>
+                android:textSize="10sp"/>
 
             <TextView
                 android:id="@+id/txtSandboxUrl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="https://paypal.com"
+                android:text="https://example.com"
                 android:textColor="@color/text_secondary"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 android:singleLine="true"
                 android:ellipsize="end"/>
         </LinearLayout>
 
+        <!-- Sandbox label -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="RESTRICTED WEBVIEW"
-            android:textColor="@color/secondary"
-            android:textSize="10sp"
+            android:text="SANDBOX"
+            android:textColor="@color/warning"
+            android:textSize="9sp"
             android:textStyle="bold"
-            android:layout_marginEnd="8dp"
-            android:padding="4dp"
-            android:background="@color/danger_dim"/>
+            android:letterSpacing="0.08"
+            android:background="@drawable/badge_warning"
+            android:paddingStart="7dp"
+            android:paddingEnd="7dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"/>
     </LinearLayout>
 
+    <!-- Isolation notice -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="⚠️ RESTRICTED ISOLATION: JavaScript, DOM storage, and cookies are disabled on this device. Some dynamic web elements may not render."
-        android:background="#FF5722"
-        android:textColor="@color/white"
+        android:text="Isolated — cookies, storage and popups are blocked"
+        android:background="@color/warning_dim"
+        android:textColor="@color/warning"
         android:textSize="11sp"
         android:gravity="center"
-        android:padding="6dp"/>
+        android:paddingTop="7dp"
+        android:paddingBottom="7dp"/>
 
-    <!-- WebView component -->
+    <!-- WebView -->
     <WebView
         android:id="@+id/sandboxWebView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"/>
 
 </LinearLayout>

@@ -13,9 +13,9 @@ import java.util.UUID
 
 object ComplaintApiClient {
 
-    // Configurable backend URL.
-    // 10.0.2.2 = emulator host loopback. 192.168.0.136 = LAN IP for USB-debugging on physical device.
-    var baseUrl: String = "http://192.168.0.136:3000"
+    // Production backend — Vercel deployment.
+    // Switch to "http://10.0.2.2:3000" for emulator or "http://192.168.0.136:3000" for LAN USB debugging.
+    var baseUrl: String = "https://av-safe.vercel.app"
 
     data class ComplaintRequest(
         val originalUrl: String,

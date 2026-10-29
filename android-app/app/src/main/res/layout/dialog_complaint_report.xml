@@ -3,111 +3,123 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="20dp"
+    android:padding="24dp"
     android:background="@color/bg_card">
 
+    <!-- Title row -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="File Security Complaint Report"
+        android:text="Report Threat"
         android:textColor="@color/text_primary"
-        android:textSize="18sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:layout_marginBottom="4dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="This report will be sent to the SecOps admin dashboard for investigation and domain blocklisting."
+        android:text="Sent to SecOps for investigation and domain blocklisting."
         android:textColor="@color/text_secondary"
         android:textSize="12sp"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="20dp"/>
 
-    <!-- Readonly Info Preview -->
+    <!-- URL + verdict preview -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@color/bg_dark"
-        android:padding="12dp"
-        android:layout_marginBottom="12dp">
+        android:background="@drawable/report_info_bg"
+        android:padding="14dp"
+        android:layout_marginBottom="18dp">
 
         <TextView
             android:id="@+id/dialogComplaintTargetUrl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Target: https://..."
-            android:textColor="@color/white"
+            android:text="https://..."
+            android:textColor="@color/text_primary"
             android:textSize="12sp"
             android:singleLine="true"
-            android:ellipsize="end"
-            android:layout_marginBottom="4dp"/>
+            android:ellipsize="middle"
+            android:layout_marginBottom="6dp"/>
 
         <TextView
             android:id="@+id/dialogComplaintVerdict"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Detection: DANGEROUS (Score: 15/100)"
+            android:text="DANGEROUS · Score 15/100"
             android:textColor="@color/danger"
-            android:textSize="11sp"/>
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.04"/>
     </LinearLayout>
 
+    <!-- Category -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Threat Category:"
-        android:textColor="@color/text_primary"
-        android:textSize="12sp"
+        android:text="CATEGORY"
+        android:textColor="@color/text_muted"
+        android:textSize="10sp"
         android:textStyle="bold"
+        android:letterSpacing="0.1"
         android:layout_marginBottom="6dp"/>
 
     <Spinner
         android:id="@+id/spinnerCategory"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="@color/bg_dark"
-        android:layout_marginBottom="12dp"/>
+        android:layout_height="44dp"
+        android:background="@drawable/input_bg"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:layout_marginBottom="16dp"/>
 
+    <!-- Notes -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Additional Notes / Description (Optional):"
-        android:textColor="@color/text_primary"
-        android:textSize="12sp"
+        android:text="NOTES (OPTIONAL)"
+        android:textColor="@color/text_muted"
+        android:textSize="10sp"
         android:textStyle="bold"
+        android:letterSpacing="0.1"
         android:layout_marginBottom="6dp"/>
 
     <EditText
         android:id="@+id/editComplaintDescription"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="@color/bg_dark"
-        android:padding="10dp"
-        android:textColor="@color/white"
-        android:textSize="12sp"
+        android:layout_height="72dp"
+        android:background="@drawable/input_bg"
+        android:padding="12dp"
+        android:textColor="@color/text_primary"
+        android:textSize="13sp"
         android:gravity="top|start"
-        android:hint="e.g. Received via SMS claiming my account was suspended..."
+        android:hint="e.g. Received via SMS, claims account suspended..."
         android:textColorHint="@color/text_muted"
+        android:inputType="textMultiLine"
         android:layout_marginBottom="16dp"/>
 
-    <!-- Confirmation & Privacy Notice -->
+    <!-- Privacy note -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Notice: Only the destination URL, detection findings, selected category, and your notes will be submitted. No personal credentials or form contents are recorded."
+        android:text="Only the URL, detection findings, category, and your notes are submitted. No credentials, cookies, or form data."
         android:textColor="@color/text_muted"
         android:textSize="10sp"
-        android:layout_marginBottom="16dp"/>
+        android:lineSpacingExtra="2dp"
+        android:layout_marginBottom="20dp"/>
 
-    <!-- Submission Progress / Status -->
+    <!-- Progress -->
     <ProgressBar
         android:id="@+id/progressSubmitting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_gravity="center_horizontal"
         android:visibility="gone"
-        android:layout_marginBottom="12dp"/>
+        android:layout_marginBottom="10dp"/>
 
+    <!-- Actions -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -128,7 +140,7 @@
             android:id="@+id/btnConfirmSubmitComplaint"
             android:layout_width="wrap_content"
             android:layout_height="44dp"
-            android:text="Confirm &amp; Submit Report"
+            android:text="Submit Report"
             android:backgroundTint="@color/danger"
             android:textColor="@color/white"
             android:textStyle="bold"
@@ -136,4 +148,3 @@
     </LinearLayout>
 
 </LinearLayout>
-

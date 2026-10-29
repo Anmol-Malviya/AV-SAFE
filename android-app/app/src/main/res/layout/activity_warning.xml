@@ -10,66 +10,97 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp"
-        android:gravity="center_horizontal">
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="32dp">
 
-        <!-- Warning Shield Header -->
-        <FrameLayout
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/warning_glow">
+        <!-- Risk header block -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingTop="48dp"
+            android:paddingBottom="28dp">
 
+            <!-- Severity badge -->
             <TextView
                 android:id="@+id/txtWarningIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🚨"
-                android:textSize="52sp"
-                android:layout_gravity="center"/>
-        </FrameLayout>
+                android:text="⚠"
+                android:textSize="44sp"
+                android:textColor="@color/danger"
+                android:layout_marginBottom="16dp"/>
 
-        <TextView
-            android:id="@+id/txtWarningTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Phishing Threat Blocked"
-            android:textColor="@color/danger"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="6dp"/>
+            <TextView
+                android:id="@+id/txtWarningTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Threat Detected"
+                android:textColor="@color/text_primary"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginBottom="8dp"/>
 
-        <TextView
-            android:id="@+id/txtScoreVerdict"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Safety Score: 15 / 100 (DANGEROUS)"
-            android:textColor="@color/danger"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
+            <!-- Score badge row -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="16dp">
 
-        <TextView
-            android:id="@+id/txtUrlBlocked"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="http://secure-paypal-login-update.com"
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp"
-            android:gravity="center"
-            android:maxLines="2"
-            android:ellipsize="end"
+                <TextView
+                    android:id="@+id/txtScoreVerdict"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DANGEROUS · Score 15 / 100"
+                    android:textColor="@color/danger"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.05"
+                    android:background="@drawable/badge_danger"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"/>
+            </LinearLayout>
+
+            <!-- URL chip -->
+            <TextView
+                android:id="@+id/txtUrlBlocked"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="http://secure-paypal-login-update.com"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:maxLines="2"
+                android:ellipsize="middle"
+                android:background="@drawable/url_chip"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"/>
+        </LinearLayout>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider"
             android:layout_marginBottom="20dp"/>
 
-        <!-- Details Box -->
+        <!-- Detection reasons card -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="@color/bg_card"
-            app:cardCornerRadius="16dp"
+            app:cardBackgroundColor="@color/danger_dim"
+            app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
-            android:layout_marginBottom="20dp">
+            android:layout_marginBottom="24dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -80,24 +111,25 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Threat Details &amp; Evidence"
-                    android:textColor="@color/text_primary"
-                    android:textSize="15sp"
+                    android:text="WHY THIS IS BLOCKED"
+                    android:textColor="@color/danger"
+                    android:textSize="10sp"
                     android:textStyle="bold"
+                    android:letterSpacing="0.1"
                     android:layout_marginBottom="10dp"/>
 
                 <TextView
                     android:id="@+id/txtWarningReasons"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="• Brand Spoofing: Mimics Paypal official site.\n• Typosquatting: Close visual lookalike.\n• Insecure Connection: Uses HTTP."
+                    android:text="• Brand impersonation detected\n• Suspicious hostname pattern\n• No HTTPS encryption"
                     android:textColor="@color/text_primary"
                     android:textSize="13sp"
-                    android:lineSpacingExtra="4dp"/>
+                    android:lineSpacingExtra="5dp"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Primary Actions -->
+        <!-- Primary action: Go back -->
         <Button
             android:id="@+id/btnGoBack"
             android:layout_width="match_parent"
@@ -110,48 +142,50 @@
             android:layout_marginBottom="10dp"
             android:textAllCaps="false"/>
 
+        <!-- Secondary: sandbox -->
         <Button
             android:id="@+id/btnOpenSandbox"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="48dp"
             android:text="Open in Restricted Sandbox"
-            android:backgroundTint="@color/bg_card"
+            android:backgroundTint="@color/bg_surface"
             android:textColor="@color/secondary"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:layout_marginBottom="10dp"
-            android:textAllCaps="false"
-            style="?android:attr/borderlessButtonStyle"/>
+            android:layout_marginBottom="6dp"
+            android:textAllCaps="false"/>
 
+        <!-- Tertiary: report -->
         <Button
             android:id="@+id/btnReportComplaint"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:text="Generate Complaint Report"
-            android:backgroundTint="@color/bg_card"
-            android:textColor="@color/danger"
+            android:layout_height="48dp"
+            android:text="Report This Link"
+            android:backgroundTint="@color/bg_surface"
+            android:textColor="@color/text_secondary"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:layout_marginBottom="16dp"
-            android:textAllCaps="false"
-            style="?android:attr/borderlessButtonStyle"/>
+            android:layout_marginBottom="20dp"
+            android:textAllCaps="false"/>
 
+        <!-- Advanced (hidden by default) -->
         <TextView
             android:id="@+id/txtAdvancedToggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Advanced Options ▾"
+            android:text="Override warning ›"
             android:textColor="@color/text_muted"
             android:textSize="12sp"
             android:clickable="true"
             android:focusable="true"
+            android:layout_gravity="center_horizontal"
             android:layout_marginBottom="10dp"/>
 
         <Button
             android:id="@+id/btnIgnoreAndOpen"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="Ignore warning and open in Chrome (Unsafe)"
+            android:layout_height="44dp"
+            android:text="Open anyway (unsafe)"
             android:backgroundTint="@color/danger_dim"
             android:textColor="@color/danger"
             android:textSize="12sp"

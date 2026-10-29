@@ -2,16 +2,31 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    
-    <color name="bg_dark">#050310</color>
-    <color name="bg_card">#0c0920</color>
-    <color name="primary">#8b5cf6</color>
+
+    <!-- Backgrounds -->
+    <color name="bg_dark">#08070F</color>
+    <color name="bg_card">#111020</color>
+    <color name="bg_surface">#1A1830</color>
+    <color name="bg_input">#0E0D1C</color>
+    <color name="divider">#1E1D30</color>
+
+    <!-- Brand -->
+    <color name="primary">#7C3AED</color>
+    <color name="primary_dim">#2E1A5E</color>
     <color name="primary_dark">#5b21b6</color>
     <color name="secondary">#06b6d4</color>
-    
+
+    <!-- Semantic -->
+    <color name="safe">#10b981</color>
+    <color name="safe_dim">#0d3326</color>
+    <color name="warning">#f59e0b</color>
+    <color name="warning_dim">#3a2a00</color>
     <color name="danger">#ef4444</color>
-    <color name="danger_dim">#33ef4444</color>
-    <color name="text_primary">#f1f5f9</color>
-    <color name="text_secondary">#94a3b8</color>
-    <color name="text_muted">#475569</color>
+    <color name="danger_dim">#3d1010</color>
+
+    <!-- Text -->
+    <color name="text_primary">#F0EEF8</color>
+    <color name="text_secondary">#8E8BA8</color>
+    <color name="text_muted">#3E3C58</color>
+    <color name="text_on_primary">#FFFFFF</color>
 </resources>
