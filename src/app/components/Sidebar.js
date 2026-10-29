@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { Activity, Shield, ShieldCheck, Zap, WifiOff, User } from "lucide-react";
 
 export default function Sidebar({ activeTab, setActiveTab, threatStats, navItems, isOnline }) {
@@ -7,7 +8,12 @@ export default function Sidebar({ activeTab, setActiveTab, threatStats, navItems
     <aside className="hidden lg:flex flex-col w-64 bg-navy text-white h-full border-r border-slate-800 shrink-0">
       {/* Brand Header */}
       <div className="flex items-center gap-2.5 px-6 h-16 border-b border-slate-800/80">
-        <img src="/ic_app_logo.png" alt="AV-SAFE" className="h-9 w-9 rounded-lg flex-shrink-0" />
+        <motion.img 
+          whileHover={{ scale: 1.05 }}
+          src="/ic_app_logo.png" 
+          alt="AV-SAFE" 
+          className="h-9 w-9 rounded-lg flex-shrink-0" 
+        />
         <div className="flex flex-col">
           <span className="font-heading font-bold text-sm tracking-wide leading-none">AV-SAFE</span>
           <span className="text-[10px] text-primary font-semibold mt-0.5 uppercase tracking-wider">Threat Shield</span>
@@ -41,20 +47,22 @@ export default function Sidebar({ activeTab, setActiveTab, threatStats, navItems
         {navItems.map((item) => {
           const isActive = activeTab === item.id;
           return (
-            <button
+            <motion.button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`flex w-full items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all duration-150 ${
+              whileHover={{ x: 3 }}
+              whileTap={{ scale: 0.98 }}
+              className={`flex w-full items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-colors cursor-pointer ${
                 isActive
-                  ? "bg-primary text-white shadow-md shadow-primary/10"
+                  ? "bg-primary text-white shadow-md shadow-primary/20"
                   : "text-slate-400 hover:text-white hover:bg-slate-900/60"
               }`}
             >
-              <span className={`transition-colors duration-150 ${isActive ? "text-white" : "text-slate-400 group-hover:text-white"}`}>
+              <span className={`transition-colors ${isActive ? "text-white" : "text-slate-400 group-hover:text-white"}`}>
                 {item.icon}
               </span>
               {item.label}
-            </button>
+            </motion.button>
           );
         })}
       </nav>
@@ -73,7 +81,7 @@ export default function Sidebar({ activeTab, setActiveTab, threatStats, navItems
 
         <div className="flex items-center justify-between bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/60">
           <div className="flex items-center gap-2">
-            <span className={`relative flex h-2 w-2`}>
+            <span className="relative flex h-2 w-2">
               <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isOnline ? "bg-green-400" : "bg-amber-400"}`}></span>
               <span className={`relative inline-flex rounded-full h-2 w-2 ${isOnline ? "bg-green-500" : "bg-amber-500"}`}></span>
             </span>

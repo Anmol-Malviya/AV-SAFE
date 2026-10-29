@@ -1,5 +1,9 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Check, ArrowRight } from "lucide-react";
+import { buttonHover, buttonTap } from "@/lib/animations";
 
 export default function ThreatDashboard() {
   const benefits = [
@@ -30,7 +34,13 @@ export default function ThreatDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           
           {/* ============ LEFT COLUMN: CONTENT ============ */}
-          <div className="lg:col-span-6 flex flex-col justify-center text-left z-10">
+          <motion.div 
+            initial={{ opacity: 0, x: -24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="lg:col-span-6 flex flex-col justify-center text-left z-10"
+          >
             
             {/* Pill */}
             <div className="inline-flex items-center gap-1.5 self-start rounded-full bg-[#F0F6FE] border border-[#E5ECF5] px-3.5 py-1 text-[11px] font-bold tracking-wider uppercase text-[#1463FF] mb-5">
@@ -49,31 +59,55 @@ export default function ThreatDashboard() {
             </p>
 
             {/* 4 Green Check Benefits */}
-            <div className="mt-6 space-y-3">
+            <motion.div 
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.1, delayChildren: 0.1 }
+                }
+              }}
+              className="mt-6 space-y-3"
+            >
               {benefits.map((benefit, i) => (
-                <div key={i} className="flex items-center gap-2.5">
-                  <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#10B981] text-white">
+                <motion.div 
+                  key={i} 
+                  variants={{
+                    hidden: { opacity: 0, x: -12 },
+                    visible: { opacity: 1, x: 0, transition: { duration: 0.35 } }
+                  }}
+                  className="flex items-center gap-2.5"
+                >
+                  <motion.div 
+                    whileHover={{ scale: 1.15 }}
+                    className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#10B981] text-white shadow-xs"
+                  >
                     <Check className="h-3 w-3 stroke-[3]" />
-                  </div>
+                  </motion.div>
                   <span className="text-sm font-medium text-[#101D36]">
                     {benefit}
                   </span>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
 
             {/* Primary Dark CTA */}
             <div className="mt-8">
-              <Link
-                href="/system"
-                className="inline-flex items-center gap-2 rounded-full bg-[#0B1933] px-6 py-3.5 text-xs sm:text-sm font-semibold text-white shadow-md hover:bg-[#101D36] active:scale-[0.98] transition-all"
-              >
-                <span>Try AV-SAFE Now</span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
+              <motion.div whileHover={buttonHover} whileTap={buttonTap} className="inline-block">
+                <Link
+                  href="/system"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#0B1933] px-6 py-3.5 text-xs sm:text-sm font-semibold text-white shadow-md hover:bg-[#101D36] transition-colors"
+                >
+                  <span>Try AV-SAFE Now</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </motion.div>
             </div>
 
-          </div>
+          </motion.div>
 
           {/* Right column placeholder for alignment on desktop (the laptop photo is in the background) */}
           <div className="lg:col-span-6 hidden lg:block h-[380px] pointer-events-none" />

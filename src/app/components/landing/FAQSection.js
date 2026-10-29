@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "framer-motion";
 import FAQAccordion from "./FAQAccordion";
 
 export default function FAQSection() {
@@ -30,7 +33,13 @@ export default function FAQSection() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           
           {/* Left Column: Heading & Subtitle */}
-          <div className="lg:col-span-5 flex flex-col justify-start">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="lg:col-span-5 flex flex-col justify-start"
+          >
             <div className="inline-flex items-center gap-1.5 self-start rounded-full bg-[#F0F6FE] border border-[#E5ECF5] px-3.5 py-1 text-[11px] font-bold tracking-wider uppercase text-[#1463FF] mb-4">
               FAQ
             </div>
@@ -40,7 +49,7 @@ export default function FAQSection() {
             <p className="mt-3.5 text-sm sm:text-base text-[#64748B] leading-relaxed max-w-sm">
               Everything you need to know about AV-SAFE.
             </p>
-          </div>
+          </motion.div>
 
           {/* Right Column: 4 Accordion Questions */}
           <div className="lg:col-span-7">

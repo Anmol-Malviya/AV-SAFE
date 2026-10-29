@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Shield, 
   Link2, 
@@ -153,10 +154,12 @@ export default function UrlCheckerTab({
             </div>
 
             {/* Action Trigger Button */}
-            <button
+            <motion.button
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.98 }}
               onClick={handleSubmit}
               disabled={!urlInput.trim() || isScanningActive}
-              className="w-full inline-flex h-11 items-center justify-center rounded-xl bg-primary text-sm font-semibold text-white shadow-md shadow-primary/10 hover:bg-primary-hover active:scale-[0.99] transition-all disabled:opacity-50 disabled:pointer-events-none"
+              className="w-full inline-flex h-11 items-center justify-center rounded-xl bg-primary text-sm font-semibold text-white shadow-md shadow-primary/10 hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
             >
               {isScanningActive ? (
                 <span className="flex items-center gap-2">
@@ -166,7 +169,7 @@ export default function UrlCheckerTab({
               ) : (
                 "Run Diagnostic Scan"
               )}
-            </button>
+            </motion.button>
           </div>
         </div>
 
@@ -212,10 +215,17 @@ export default function UrlCheckerTab({
 
       {/* RIGHT PANEL: Results or loading skeletons */}
       <div className="lg:col-span-7">
-        
+        <AnimatePresence mode="wait">
         {/* SCANNING IN PROGRESS STATE */}
         {isScanningActive ? (
-          <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm text-center py-16 space-y-6">
+          <motion.div 
+            key="scanning"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ duration: 0.2 }}
+            className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm text-center py-16 space-y-6"
+          >
             
             {/* Spinning Radar Circle */}
             <div className="relative flex items-center justify-center mx-auto h-20 w-20 rounded-full bg-primary/5 border border-primary/10">
@@ -253,11 +263,18 @@ export default function UrlCheckerTab({
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
         ) : scanResult ? (
           
           /* RESULTS STATE */
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <motion.div 
+            key="result"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+            className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
+          >
             
             {/* Header safety bar */}
             <div className={`p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
@@ -270,7 +287,7 @@ export default function UrlCheckerTab({
                 <div className="relative flex items-center justify-center">
                   <svg className="w-16 h-16 transform -rotate-90">
                     <circle cx="32" cy="32" r="28" stroke="#F1F5F9" strokeWidth="4" fill="transparent" />
-                    <circle
+                    <motion.circle
                       cx="32"
                       cy="32"
                       r="28"
@@ -278,7 +295,9 @@ export default function UrlCheckerTab({
                       strokeWidth="4"
                       fill="transparent"
                       strokeDasharray={2 * Math.PI * 28}
-                      strokeDashoffset={2 * Math.PI * 28 * (1 - scanResult.score / 100)}
+                      initial={{ strokeDashoffset: 2 * Math.PI * 28 }}
+                      animate={{ strokeDashoffset: 2 * Math.PI * 28 * (1 - scanResult.score / 100) }}
+                      transition={{ duration: 0.8, ease: "easeOut" }}
                       strokeLinecap="round"
                     />
                   </svg>
@@ -497,11 +516,18 @@ export default function UrlCheckerTab({
               )}
 
             </div>
-          </div>
+          </motion.div>
         ) : (
           
           /* PLACEHOLDER / AWAITING CHECK */
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm text-center py-20 px-8 space-y-4">
+          <motion.div 
+            key="idle"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="bg-white rounded-2xl border border-slate-200 shadow-sm text-center py-20 px-8 space-y-4"
+          >
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-50 border border-slate-100 mx-auto text-text-muted">
               <Shield className="h-8 w-8 opacity-60" />
             </div>
@@ -511,8 +537,9 @@ export default function UrlCheckerTab({
                 Submit a URL on the left panel to scan structural characteristics, SSL records, and DNS profiles.
               </p>
             </div>
-          </div>
+          </motion.div>
         )}
+        </AnimatePresence>
       </div>
 
     </div>

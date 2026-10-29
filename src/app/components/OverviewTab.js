@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { motion } from "framer-motion";
 import { 
   ShieldAlert, 
   ShieldCheck, 
@@ -16,6 +17,7 @@ import {
   RefreshCw,
   ExternalLink
 } from "lucide-react";
+import { buttonHover, buttonTap } from "@/lib/animations";
 
 export default function OverviewTab({ threatStats, scanHistory, setActiveTab, setUrlInput, handleCheckUrl }) {
   // Calculate average safety score from history
@@ -43,7 +45,12 @@ export default function OverviewTab({ threatStats, scanHistory, setActiveTab, se
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <motion.div 
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+      >
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-navy">Security Operations Center</h1>
           <p className="text-sm text-text-secondary mt-1">Real-time threat analytics, heuristic scoring, and on-device sandbox diagnostics.</p>
@@ -52,7 +59,7 @@ export default function OverviewTab({ threatStats, scanHistory, setActiveTab, se
           <Clock className="h-3.5 w-3.5 text-text-muted" />
           Live Dashboard: Fully Synced
         </div>
-      </div>
+      </motion.div>
 
       {/* Grid: 4 Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -62,7 +69,14 @@ export default function OverviewTab({ threatStats, scanHistory, setActiveTab, se
           { label: "Active Threat Alert", value: activeThreatCount, icon: <ShieldAlert className="h-5 w-5 text-red-500" />, trend: "Awaiting mitigation" },
           { label: "Scan Engine Health", value: "Optimal", icon: <TrendingUp className="h-5 w-5 text-accent" />, trend: "180ms latency" }
         ].map((card, i) => (
-          <div key={i} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <motion.div 
+            key={i} 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: i * 0.08 }}
+            whileHover={{ y: -3, transition: { duration: 0.2 } }}
+            className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between"
+          >
             <div>
               <span className="text-[10px] uppercase font-bold tracking-wider text-text-muted">{card.label}</span>
               <span className="text-2xl font-extrabold text-navy mt-2 block">{card.value}</span>
@@ -71,7 +85,7 @@ export default function OverviewTab({ threatStats, scanHistory, setActiveTab, se
             <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
               {card.icon}
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
@@ -79,7 +93,12 @@ export default function OverviewTab({ threatStats, scanHistory, setActiveTab, se
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* Left Side: AI Threat score & Risk meter */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
+        <motion.div 
+          initial={{ opacity: 0, x: -15 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          className="lg:col-span-5 flex flex-col gap-6"
+        >
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between h-full">
             <div>
               <div className="flex items-center justify-between mb-4">
@@ -96,7 +115,7 @@ export default function OverviewTab({ threatStats, scanHistory, setActiveTab, se
                 {/* Circular Gauge Ring */}
                 <svg className="w-40 h-40 transform -rotate-90">
                   <circle cx="80" cy="80" r="70" stroke="#F1F5F9" strokeWidth="12" fill="transparent" />
-                  <circle
+                  <motion.circle
                     cx="80"
                     cy="80"
                     r="70"
@@ -104,9 +123,10 @@ export default function OverviewTab({ threatStats, scanHistory, setActiveTab, se
                     strokeWidth="12"
                     fill="transparent"
                     strokeDasharray={2 * Math.PI * 70}
-                    strokeDashoffset={2 * Math.PI * 70 * (1 - averageSafetyScore / 100)}
+                    initial={{ strokeDashoffset: 2 * Math.PI * 70 }}
+                    animate={{ strokeDashoffset: 2 * Math.PI * 70 * (1 - averageSafetyScore / 100) }}
+                    transition={{ duration: 1, ease: "easeOut" }}
                     strokeLinecap="round"
-                    className="transition-all duration-1000 ease-out"
                   />
                 </svg>
 
@@ -131,17 +151,22 @@ export default function OverviewTab({ threatStats, scanHistory, setActiveTab, se
               <span className="text-xs font-semibold text-text-secondary">Interactive sandboxed render test:</span>
               <button 
                 onClick={() => setActiveTab("url-scanner")}
-                className="text-xs font-bold text-primary hover:underline inline-flex items-center gap-0.5"
+                className="text-xs font-bold text-primary hover:underline inline-flex items-center gap-0.5 cursor-pointer"
               >
                 Launch Scanner
                 <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Right Side: Threat Timeline of Recent Scans */}
-        <div className="lg:col-span-7">
+        <motion.div 
+          initial={{ opacity: 0, x: 15 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, delay: 0.25 }}
+          className="lg:col-span-7"
+        >
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between h-full">
             <div>
               <div className="flex items-center justify-between mb-4">
@@ -168,9 +193,13 @@ export default function OverviewTab({ threatStats, scanHistory, setActiveTab, se
                     "bg-red-50 text-red-700 border-red-200";
 
                   return (
-                    <div 
-                      key={index} 
-                      className="p-3 rounded-xl border border-slate-100 hover:bg-slate-50 transition-all flex items-center justify-between gap-4 group"
+                    <motion.div 
+                      key={index}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.25, delay: index * 0.05 }}
+                      whileHover={{ x: 3 }}
+                      className="p-3 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors flex items-center justify-between gap-4 group cursor-default"
                     >
                       <div className="min-w-0 flex-1">
                         <span className="text-[10px] text-text-muted block">{log.date}</span>
@@ -184,13 +213,13 @@ export default function OverviewTab({ threatStats, scanHistory, setActiveTab, se
                         </span>
                         <button
                           onClick={() => handleRecentClick(log.url)}
-                          className="p-1 rounded hover:bg-slate-100 text-text-muted hover:text-navy transition-all"
+                          className="p-1 rounded hover:bg-slate-100 text-text-muted hover:text-navy transition-all cursor-pointer"
                           title="Inspect in URL Checker"
                         >
                           <ExternalLink className="h-3.5 w-3.5" />
                         </button>
                       </div>
-                    </div>
+                    </motion.div>
                   );
                 })
               )}
@@ -199,22 +228,26 @@ export default function OverviewTab({ threatStats, scanHistory, setActiveTab, se
             <div className="border-t border-slate-100 pt-4 mt-6 flex items-center justify-between">
               <span className="text-xs text-text-secondary">Caught a suspicious QR code or link?</span>
               <div className="flex gap-2">
-                <button
+                <motion.button
+                  whileHover={buttonHover}
+                  whileTap={buttonTap}
                   onClick={() => setActiveTab("qr-scanner")}
-                  className="px-3.5 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold hover:bg-slate-50 transition-all flex items-center gap-1"
+                  className="px-3.5 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold hover:bg-slate-50 transition-colors flex items-center gap-1 cursor-pointer"
                 >
                   <Compass className="h-3.5 w-3.5" /> Scan QR code
-                </button>
-                <button
+                </motion.button>
+                <motion.button
+                  whileHover={buttonHover}
+                  whileTap={buttonTap}
                   onClick={() => setActiveTab("url-scanner")}
-                  className="px-3.5 py-1.5 rounded-lg bg-navy text-white text-xs font-semibold hover:bg-navy-dark transition-all flex items-center gap-1"
+                  className="px-3.5 py-1.5 rounded-lg bg-navy text-white text-xs font-semibold hover:bg-navy-dark transition-colors flex items-center gap-1 cursor-pointer"
                 >
                   <Search className="h-3.5 w-3.5" /> Audit URL
-                </button>
+                </motion.button>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
       </div>
 
@@ -243,7 +276,14 @@ export default function OverviewTab({ threatStats, scanHistory, setActiveTab, se
             icon: <Compass className="h-5 w-5 text-accent" />
           }
         ].map((item, i) => (
-          <div key={i} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+          <motion.div 
+            key={i} 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.3 + i * 0.08 }}
+            whileHover={{ y: -3, transition: { duration: 0.2 } }}
+            className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between"
+          >
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <div className="p-2 bg-slate-50 rounded-lg border border-slate-100">{item.icon}</div>
@@ -255,12 +295,12 @@ export default function OverviewTab({ threatStats, scanHistory, setActiveTab, se
             </div>
             <button
               onClick={() => setActiveTab(item.tab)}
-              className="mt-4 text-xs font-bold text-primary hover:underline flex items-center gap-0.5 justify-start text-left"
+              className="mt-4 text-xs font-bold text-primary hover:underline flex items-center gap-0.5 justify-start text-left cursor-pointer"
             >
               {item.action}
               <ArrowRight className="h-3 w-3" />
             </button>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>

@@ -1,5 +1,8 @@
+"use client";
+
+import { motion } from "framer-motion";
 import WorkflowStep from "./WorkflowStep";
-import { Link2, Search, FileCheck, ArrowRight } from "lucide-react";
+import { Link2, Search, FileCheck } from "lucide-react";
 
 export default function HowItWorksSection() {
   const steps = [
@@ -31,7 +34,13 @@ export default function HowItWorksSection() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           
           {/* Left Column: Heading & Subtitle */}
-          <div className="lg:col-span-4 flex flex-col justify-start">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="lg:col-span-4 flex flex-col justify-start"
+          >
             <div className="inline-flex items-center gap-1.5 self-start rounded-full bg-[#F0F6FE] border border-[#E5ECF5] px-3 py-1 text-[11px] font-bold tracking-wider uppercase text-[#1463FF] mb-4">
               HOW IT WORKS
             </div>
@@ -42,14 +51,26 @@ export default function HowItWorksSection() {
             <p className="mt-3.5 text-sm sm:text-base text-[#64748B] leading-relaxed max-w-sm">
               A simple, powerful process to keep you safe online.
             </p>
-          </div>
+          </motion.div>
 
           {/* Right Column: 3 Steps */}
-          <div className="lg:col-span-8 flex flex-col sm:flex-row items-start justify-between gap-8 sm:gap-6 pt-2">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: { staggerChildren: 0.15 }
+              }
+            }}
+            className="lg:col-span-8 flex flex-col sm:flex-row items-start justify-between gap-8 sm:gap-6 pt-2"
+          >
             {steps.map((step, index) => (
               <WorkflowStep key={index} {...step} />
             ))}
-          </div>
+          </motion.div>
 
         </div>
 

@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "framer-motion";
 import TestimonialCard from "./TestimonialCard";
 
 export default function TestimonialsSection() {
@@ -33,21 +36,39 @@ export default function TestimonialsSection() {
       <div className="mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8">
         
         {/* Section Header Centered */}
-        <div className="text-center max-w-2xl mx-auto mb-14">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="text-center max-w-2xl mx-auto mb-14"
+        >
           <div className="inline-flex items-center gap-1.5 rounded-full bg-[#F0F6FE] border border-[#E5ECF5] px-3.5 py-1 text-[11px] font-bold tracking-wider uppercase text-[#1463FF] mb-4">
             TESTIMONIALS
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#101D36]">
             Trusted by Users Everywhere
           </h2>
-        </div>
+        </motion.div>
 
         {/* 3 Testimonials in Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: { staggerChildren: 0.15 }
+            }
+          }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8"
+        >
           {testimonials.map((t, i) => (
             <TestimonialCard key={i} {...t} />
           ))}
-        </div>
+        </motion.div>
 
       </div>
     </section>

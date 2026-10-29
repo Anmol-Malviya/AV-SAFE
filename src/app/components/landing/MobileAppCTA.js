@@ -1,11 +1,15 @@
+"use client";
+
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { QrCode, Mail, Clock } from "lucide-react";
+import { buttonHover, buttonTap } from "@/lib/animations";
 
 export default function MobileAppCTA() {
   return (
     <section id="download" className="relative min-h-[580px] overflow-hidden bg-white py-20 lg:py-28 border-t border-[#E5ECF5] flex items-center">
       
-      {/* ============ BACKGROUND IMAGE (APPBACKGROUND.PNG / CYBER WAVES & SHIELD) ============ */}
+      {/* ============ BACKGROUND IMAGE (CYBER WAVES & SHIELD) ============ */}
       <div 
         className="absolute inset-0 pointer-events-none bg-no-repeat bg-cover bg-left lg:bg-center opacity-85"
         style={{ backgroundImage: "url('/cyber-bg.png')" }}
@@ -18,7 +22,13 @@ export default function MobileAppCTA() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
           {/* ============ LEFT COLUMN: COPY & STORE BADGES ============ */}
-          <div className="lg:col-span-7 flex flex-col justify-center text-left z-10">
+          <motion.div 
+            initial={{ opacity: 0, x: -25 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="lg:col-span-7 flex flex-col justify-center text-left z-10"
+          >
             <div className="inline-flex items-center gap-1.5 self-start rounded-full bg-[#F0F6FE] border border-[#E5ECF5] px-3.5 py-1 text-[11px] font-bold tracking-wider uppercase text-[#1463FF] mb-4">
               MOBILE APP
             </div>
@@ -35,10 +45,12 @@ export default function MobileAppCTA() {
             {/* Store Buttons (Google Play & App Store) */}
             <div className="mt-8 flex flex-wrap items-center gap-4">
               {/* Google Play / Android APK Download */}
-              <a
+              <motion.a
                 href="/app-debug.apk"
                 download="AV-SAFE.apk"
-                className="flex items-center gap-3 rounded-xl bg-black hover:bg-slate-900 text-white px-4 py-2.5 transition-all shadow-md active:scale-95"
+                whileHover={buttonHover}
+                whileTap={buttonTap}
+                className="flex items-center gap-3 rounded-xl bg-black hover:bg-slate-900 text-white px-4 py-2.5 transition-colors shadow-md"
               >
                 {/* Google Play Triangle SVG */}
                 <svg className="h-6 w-6" viewBox="0 0 24 24">
@@ -51,12 +63,14 @@ export default function MobileAppCTA() {
                   <span className="block text-[9px] uppercase tracking-wider text-slate-300 font-medium">GET IT ON</span>
                   <span className="block text-xs font-bold leading-none text-white mt-0.5">Google Play</span>
                 </div>
-              </a>
+              </motion.a>
 
               {/* App Store Badge */}
-              <a
+              <motion.a
                 href="#download"
-                className="flex items-center gap-3 rounded-xl bg-black hover:bg-slate-900 text-white px-4 py-2.5 transition-all shadow-md active:scale-95"
+                whileHover={buttonHover}
+                whileTap={buttonTap}
+                className="flex items-center gap-3 rounded-xl bg-black hover:bg-slate-900 text-white px-4 py-2.5 transition-colors shadow-md"
               >
                 {/* Apple Logo SVG */}
                 <svg className="h-6 w-6 fill-current text-white" viewBox="0 0 24 24">
@@ -66,14 +80,24 @@ export default function MobileAppCTA() {
                   <span className="block text-[9px] uppercase tracking-wider text-slate-300 font-medium">Download on the</span>
                   <span className="block text-xs font-bold leading-none text-white mt-0.5">App Store</span>
                 </div>
-              </a>
+              </motion.a>
             </div>
 
-          </div>
+          </motion.div>
 
           {/* ============ RIGHT COLUMN: SMARTPHONE MOCKUP ============ */}
-          <div className="lg:col-span-5 flex justify-center lg:justify-end z-10">
-            <div className="relative">
+          <motion.div 
+            initial={{ opacity: 0, y: 35 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="lg:col-span-5 flex justify-center lg:justify-end z-10"
+          >
+            <motion.div 
+              animate={{ y: [-4, 4, -4] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              className="relative"
+            >
               
               {/* Smartphone Frame (Sleek Modern Phone) */}
               <div
@@ -101,35 +125,44 @@ export default function MobileAppCTA() {
                   {/* 3 Menu Cards */}
                   <div className="space-y-3">
                     {/* Card 1: Scan QR */}
-                    <div className="rounded-xl bg-white border border-[#E5ECF5] p-3 flex items-center gap-3 shadow-xs">
+                    <motion.div 
+                      whileHover={{ scale: 1.03 }}
+                      className="rounded-xl bg-white border border-[#E5ECF5] p-3 flex items-center gap-3 shadow-xs"
+                    >
                       <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F0F6FE] text-[#1463FF]">
                         <QrCode className="h-4 w-4" />
                       </div>
                       <span className="text-xs font-bold text-[#101D36]">Scan QR</span>
-                    </div>
+                    </motion.div>
 
                     {/* Card 2: Check Email */}
-                    <div className="rounded-xl bg-white border border-[#E5ECF5] p-3 flex items-center gap-3 shadow-xs">
+                    <motion.div 
+                      whileHover={{ scale: 1.03 }}
+                      className="rounded-xl bg-white border border-[#E5ECF5] p-3 flex items-center gap-3 shadow-xs"
+                    >
                       <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F0F6FE] text-[#1463FF]">
                         <Mail className="h-4 w-4" />
                       </div>
                       <span className="text-xs font-bold text-[#101D36]">Check Email</span>
-                    </div>
+                    </motion.div>
 
                     {/* Card 3: Recent Scans */}
-                    <div className="rounded-xl bg-white border border-[#E5ECF5] p-3 flex items-center gap-3 shadow-xs">
+                    <motion.div 
+                      whileHover={{ scale: 1.03 }}
+                      className="rounded-xl bg-white border border-[#E5ECF5] p-3 flex items-center gap-3 shadow-xs"
+                    >
                       <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F0F6FE] text-[#1463FF]">
                         <Clock className="h-4 w-4" />
                       </div>
                       <span className="text-xs font-bold text-[#101D36]">Recent Scans</span>
-                    </div>
+                    </motion.div>
                   </div>
 
                 </div>
               </div>
 
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
         </div>
       </div>

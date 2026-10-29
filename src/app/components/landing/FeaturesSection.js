@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "framer-motion";
 import FeatureCard from "./FeatureCard";
 import { Link2, Mail, Cpu } from "lucide-react";
 
@@ -33,7 +36,13 @@ export default function FeaturesSection() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           
           {/* Left Column: Heading & Description */}
-          <div className="lg:col-span-4 flex flex-col justify-start">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="lg:col-span-4 flex flex-col justify-start"
+          >
             <div className="inline-flex items-center gap-1.5 self-start rounded-full bg-[#F0F6FE] border border-[#E5ECF5] px-3 py-1 text-[11px] font-bold tracking-wider uppercase text-[#1463FF] mb-4">
               FEATURES
             </div>
@@ -44,14 +53,26 @@ export default function FeaturesSection() {
             <p className="mt-3.5 text-sm sm:text-base text-[#64748B] leading-relaxed max-w-sm">
               Advanced AI tools to detect, analyze and block threats before they reach you.
             </p>
-          </div>
+          </motion.div>
 
           {/* Right Column: 3 Feature Cards */}
-          <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: { staggerChildren: 0.14 }
+              }
+            }}
+            className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-5"
+          >
             {features.map((feature, i) => (
               <FeatureCard key={i} {...feature} />
             ))}
-          </div>
+          </motion.div>
 
         </div>
 
