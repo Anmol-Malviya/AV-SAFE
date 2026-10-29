@@ -348,3 +348,5 @@ Open a Pull Request on GitHub and provide a clear description of your changes.
 ## 📄 License
 
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for more details.
+#   A V - S A F E  
+ 
