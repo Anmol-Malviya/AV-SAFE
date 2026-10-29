@@ -20,16 +20,23 @@
 
         <!-- 1. Header / Shield Icon with soft glowing aura -->
         <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="104dp"
+            android:layout_height="104dp"
             android:layout_marginBottom="20dp">
+
+            <!-- Subtle circular soft glow backdrop -->
+            <View
+                android:layout_width="104dp"
+                android:layout_height="104dp"
+                android:background="@drawable/ios_circle_red_soft" />
 
             <ImageView
                 android:id="@+id/imgShieldWarning"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:contentDescription="Threat Blocked Shield"
-                android:src="@drawable/ios_shield_warning" />
+                android:layout_width="76dp"
+                android:layout_height="76dp"
+                android:layout_gravity="center"
+                android:contentDescription="Threat Blocked Warning"
+                android:src="@drawable/ic_warning_triangle_shield" />
         </FrameLayout>
 
         <!-- 2. Main Title -->

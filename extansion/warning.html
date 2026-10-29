@@ -28,33 +28,10 @@
       </div>
     </div>
 
-    <!-- 2. Threat Indicator: Clean red outlined shield with subtle glow & dots -->
+    <!-- 2. Threat Indicator: Warning triangle badge with soft glow -->
     <div class="shield-section">
       <div class="shield-aura"></div>
-      <svg class="shield-svg" viewBox="0 0 120 120" width="112" height="112">
-        <defs>
-          <radialGradient id="shieldGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#FF3B30" stop-opacity="0.18" />
-            <stop offset="60%" stop-color="#FF3B30" stop-opacity="0.06" />
-            <stop offset="100%" stop-color="#FF3B30" stop-opacity="0" />
-          </radialGradient>
-        </defs>
-        <circle cx="60" cy="60" r="54" fill="url(#shieldGlow)" />
-        <!-- Floating accent dots from reference image -->
-        <circle cx="34" cy="40" r="2.5" fill="#FF3B30" opacity="0.8" />
-        <circle cx="87" cy="34" r="2" fill="#FF453A" opacity="0.75" />
-        <circle cx="80" cy="82" r="2" fill="#FF6961" opacity="0.7" />
-        <!-- Outlined Shield -->
-        <path d="M60 25 C75 25 84 33 84 47 C84 72 65 87 60 92 C55 87 36 72 36 47 C36 33 45 25 60 25 Z"
-              fill="rgba(255, 59, 48, 0.05)"
-              stroke="#FF3B30"
-              stroke-width="3"
-              stroke-linecap="round"
-              stroke-linejoin="round" />
-        <!-- Warning mark -->
-        <path d="M60 44 v17" stroke="#FF3B30" stroke-width="3.2" stroke-linecap="round" />
-        <circle cx="60" cy="68" r="1.8" fill="#FF3B30" />
-      </svg>
+      <img src="ic_warning_triangle_shield.png" alt="Threat Blocked" class="warning-triangle-img" width="88" height="88" />
     </div>
 
     <!-- 3. Main Heading -->
