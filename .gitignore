@@ -49,3 +49,10 @@ next-env.d.ts
 /android-app/.idea/deploymentTargetSelector.xml
 /android-app/.idea/runConfigurations.xml
 
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
