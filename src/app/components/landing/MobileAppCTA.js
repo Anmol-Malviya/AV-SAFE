@@ -1,4 +1,5 @@
-import { Shield, QrCode, Mail, Clock } from "lucide-react";
+import Image from "next/image";
+import { QrCode, Mail, Clock } from "lucide-react";
 
 export default function MobileAppCTA() {
   return (
@@ -86,10 +87,14 @@ export default function MobileAppCTA() {
                 <div className="relative h-full w-full rounded-[2.1rem] bg-[#F8FAFC] overflow-hidden flex flex-col justify-start p-4 pt-8 text-[#101D36]">
                   
                   {/* Top Mobile Status Header */}
-                  <div className="flex items-center justify-center gap-1.5 mb-6">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#1463FF] text-white">
-                      <Shield className="h-4 w-4 fill-white" />
-                    </div>
+                  <div className="flex items-center justify-center gap-2 mb-6">
+                    <Image
+                      src="/logo.png"
+                      alt="AV-SAFE Logo"
+                      width={32}
+                      height={24}
+                      className="h-6 w-auto object-contain mix-blend-multiply"
+                    />
                     <span className="font-bold text-sm tracking-tight text-[#101D36]">AV-SAFE</span>
                   </div>
 

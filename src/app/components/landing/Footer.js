@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Shield } from "lucide-react";
+import Image from "next/image";
 
 export default function Footer() {
   const navLinks = [
@@ -18,9 +18,13 @@ export default function Footer() {
           {/* Left: Brand Logo & Tagline */}
           <div className="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left">
             <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#1463FF] text-white">
-                <Shield className="h-4 w-4 fill-white" />
-              </div>
+              <Image
+                src="/logo.png"
+                alt="AV-SAFE Logo"
+                width={38}
+                height={28}
+                className="h-7 w-auto object-contain mix-blend-multiply"
+              />
               <span className="text-base font-bold tracking-tight text-[#101D36]">
                 AV-SAFE
               </span>

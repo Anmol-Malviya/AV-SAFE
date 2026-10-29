@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Shield, ArrowRight, Menu, X } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, Menu, X } from "lucide-react";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -35,9 +36,16 @@ export default function Navbar() {
       <div className="mx-auto flex h-18 max-w-[1240px] items-center justify-between px-4 sm:px-6 lg:px-8">
         
         {/* Brand Logo & Wordmark */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1463FF] text-white shadow-sm shadow-blue-500/25">
-            <Shield className="h-5 w-5 fill-white text-white" />
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="relative h-9 w-auto flex items-center">
+            <Image
+              src="/logo.png"
+              alt="AV-SAFE Logo"
+              width={44}
+              height={32}
+              className="h-8 w-auto object-contain mix-blend-multiply transition-transform group-hover:scale-105"
+              priority
+            />
           </div>
           <span className="text-lg font-bold tracking-tight text-[#101D36]">
             AV-SAFE
