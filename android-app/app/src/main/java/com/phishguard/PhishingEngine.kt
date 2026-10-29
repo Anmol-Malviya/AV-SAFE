@@ -20,7 +20,7 @@ object PhishingEngine {
         val hostname: String,
         val path: String,
         val protocol: String,
-        val isValid: Int
+        val isValid: Boolean
     )
 
     private val TOP_BRANDS = listOf(
@@ -128,37 +128,77 @@ object PhishingEngine {
         return count
     }
 
-    fun verifyUrl(urlString: String): Result {
-        val rawUrl = urlString.trim()
-        if (rawUrl.isEmpty()) {
-            return Result(rawUrl, "", true, 100, "SAFE", listOf("Empty URL"))
+    fun verifyUrl(urlString: String?): Result {
+        if (urlString.isNullOrBlank()) {
+            return Result(
+                url = "",
+                domain = "",
+                isSafe = false,
+                score = 0,
+                rating = "DANGEROUS",
+                warnings = listOf("• Invalid Input: Target URL is empty or blank.")
+            )
         }
 
+        val rawUrl = urlString.trim()
+
+        // Scheme verification: Only HTTP and HTTPS are permitted for web navigation
         var isHttps = 0
-        val parsedResult = try {
-            var urlToParse = rawUrl
-            if (!urlToParse.startsWith("http://", ignoreCase = true) && 
-                !urlToParse.startsWith("https://", ignoreCase = true)) {
-                urlToParse = "https://$urlToParse"
+        val parsedResult: UrlInfo = try {
+            val hasExplicitScheme = rawUrl.startsWith("http://", ignoreCase = true) || 
+                                    rawUrl.startsWith("https://", ignoreCase = true)
+
+            // If non-http/https scheme is detected (e.g. javascript:, file:, data:, content:, intent:)
+            if (rawUrl.contains(":") && !hasExplicitScheme) {
+                val scheme = rawUrl.substringBefore(":").lowercase()
+                if (scheme in listOf("javascript", "file", "data", "blob", "intent", "content", "about")) {
+                    return Result(
+                        url = rawUrl,
+                        domain = "",
+                        isSafe = false,
+                        score = 0,
+                        rating = "DANGEROUS",
+                        warnings = listOf("• Unsupported / Malicious Protocol: '$scheme:' protocol is blocked.")
+                    )
+                }
             }
-            val parsedUrl = URI(urlToParse)
-            val h = parsedUrl.host?.lowercase() ?: ""
-            val p = parsedUrl.path ?: ""
-            val pr = parsedUrl.scheme?.lowercase() ?: ""
-            if (pr == "https") isHttps = 1
-            UrlInfo(h, p, pr, 1)
+
+            val urlToParse = if (hasExplicitScheme) rawUrl else "https://$rawUrl"
+            val uri = URI(urlToParse)
+            val scheme = uri.scheme?.lowercase() ?: ""
+            if (scheme != "http" && scheme != "https") {
+                return Result(
+                    url = rawUrl,
+                    domain = "",
+                    isSafe = false,
+                    score = 0,
+                    rating = "DANGEROUS",
+                    warnings = listOf("• Disallowed Protocol: Only HTTP and HTTPS links are supported.")
+                )
+            }
+
+            val h = uri.host?.lowercase() ?: ""
+            val p = uri.path ?: ""
+            if (scheme == "https") isHttps = 1
+            UrlInfo(h, p, scheme, h.isNotEmpty())
         } catch (e: Exception) {
-            val parts = rawUrl.split("/")
-            val h = parts.firstOrNull()?.lowercase() ?: ""
-            val p = if (parts.size > 1) rawUrl.substring(h.length) else ""
-            UrlInfo(h, p, "", 0)
+            UrlInfo("", "", "", false)
+        }
+
+        if (!parsedResult.isValid || parsedResult.hostname.isEmpty()) {
+            return Result(
+                url = rawUrl,
+                domain = "",
+                isSafe = false,
+                score = 0,
+                rating = "DANGEROUS",
+                warnings = listOf("• Malformed URL: Hostname could not be parsed.")
+            )
         }
 
         val hostname = parsedResult.hostname
-        val path = parsedResult.path
-        val isValid = parsedResult.isValid
 
-        // Whitelist quick check
+        // Whitelist check: Exact match or valid subdomains (e.g. mail.google.com, not fake-google.com)
         val isWhitelisted = TOP_BRANDS.any { brand ->
             hostname == brand || hostname.endsWith(".$brand")
         }
@@ -242,9 +282,7 @@ object PhishingEngine {
         var typosquatTarget: String? = null
         var brandAbuse = false
         if (!isIpAddress && hostname.isNotEmpty()) {
-            val hostParts = hostname.replace(Regex("^www\\."), "").split(".")
-
-            // Contains Brand Name?
+            // Contains Brand Name without being official subdomain
             for (brand in TOP_BRANDS) {
                 val brandRaw = brand.split(".").first()
                 if (hostname.contains(brandRaw) && !hostname.endsWith(".$brand") && hostname != brand) {
@@ -254,7 +292,7 @@ object PhishingEngine {
                 }
             }
 
-            // Closely resembles brand (Levenshtein check)?
+            // Closely resembles brand (Levenshtein check)
             if (!brandAbuse) {
                 var minDistance = 999
                 for (brand in TOP_BRANDS) {
@@ -272,86 +310,41 @@ object PhishingEngine {
         val isTyposquattingVal = if (typosquatTarget != null && !brandAbuse) 1.0 else 0.0
         val brandAbuseTriggeredVal = if (brandAbuse) 1.0 else 0.0
 
-        // ML normalization parameters (from phishing_model_weights.json)
+        // ML normalization parameters
         val means = mapOf(
-            "url_length" to 62.9131,
-            "domain_length" to 20.59727,
-            "is_ip" to 0.005215,
-            "tld_length" to 2.821825,
-            "subdomain_count" to 0.75099,
-            "is_https" to 0.45755,
-            "letters" to 46.433865,
-            "letter_ratio" to 0.768918,
-            "digits" to 7.675435,
-            "digit_ratio" to 0.073599,
-            "special" to 8.8038,
-            "special_ratio" to 0.157483,
-            "equals_count" to 0.32629,
-            "qmark_count" to 0.156645,
-            "amp_count" to 0.14923,
-            "hyphen_count" to 1.28197,
-            "dots_count" to 2.273705,
-            "slash_count" to 3.209805,
-            "shannon_entropy" to 2.702479,
-            "sensitive_words_count" to 0.22294,
-            "is_shortened" to 0.00077,
-            "is_suspicious_tld" to 0.05509,
-            "is_typosquatting" to 0.00252,
-            "brand_abuse_triggered" to 0.034175
+            "url_length" to 62.9131, "domain_length" to 20.59727, "is_ip" to 0.005215,
+            "tld_length" to 2.821825, "subdomain_count" to 0.75099, "is_https" to 0.45755,
+            "letters" to 46.433865, "letter_ratio" to 0.768918, "digits" to 7.675435,
+            "digit_ratio" to 0.073599, "special" to 8.8038, "special_ratio" to 0.157483,
+            "equals_count" to 0.32629, "qmark_count" to 0.156645, "amp_count" to 0.14923,
+            "hyphen_count" to 1.28197, "dots_count" to 2.273705, "slash_count" to 3.209805,
+            "shannon_entropy" to 2.702479, "sensitive_words_count" to 0.22294,
+            "is_shortened" to 0.00077, "is_suspicious_tld" to 0.05509,
+            "is_typosquatting" to 0.00252, "brand_abuse_triggered" to 0.034175
         )
 
         val stds = mapOf(
-            "url_length" to 82.389127,
-            "domain_length" to 11.884164,
-            "is_ip" to 0.072026,
-            "tld_length" to 0.620176,
-            "subdomain_count" to 0.991607,
-            "is_https" to 0.498195,
-            "letters" to 57.136987,
-            "letter_ratio" to 0.102872,
-            "digits" to 22.630328,
-            "digit_ratio" to 0.104009,
-            "special" to 10.510766,
-            "special_ratio" to 0.046895,
-            "equals_count" to 1.289575,
-            "qmark_count" to 0.416818,
-            "amp_count" to 0.846038,
-            "hyphen_count" to 2.661164,
-            "dots_count" to 3.492884,
-            "slash_count" to 2.997498,
-            "shannon_entropy" to 0.626925,
-            "sensitive_words_count" to 1.994356,
-            "is_shortened" to 0.027738,
-            "is_suspicious_tld" to 0.228156,
-            "is_typosquatting" to 0.050136,
-            "brand_abuse_triggered" to 0.181678
+            "url_length" to 82.389127, "domain_length" to 11.884164, "is_ip" to 0.072026,
+            "tld_length" to 0.620176, "subdomain_count" to 0.991607, "is_https" to 0.498195,
+            "letters" to 57.136987, "letter_ratio" to 0.102872, "digits" to 22.630328,
+            "digit_ratio" to 0.104009, "special" to 10.510766, "special_ratio" to 0.046895,
+            "equals_count" to 1.289575, "qmark_count" to 0.416818, "amp_count" to 0.846038,
+            "hyphen_count" to 2.661164, "dots_count" to 3.492884, "slash_count" to 2.997498,
+            "shannon_entropy" to 0.626925, "sensitive_words_count" to 1.994356,
+            "is_shortened" to 0.027738, "is_suspicious_tld" to 0.228156,
+            "is_typosquatting" to 0.050136, "brand_abuse_triggered" to 0.181678
         )
 
         val weights = mapOf(
-            "url_length" to 0.197894,
-            "domain_length" to 1.470395,
-            "is_ip" to 0.287978,
-            "tld_length" to 0.006417,
-            "subdomain_count" to -0.762411,
-            "is_https" to 0.791169,
-            "letters" to 0.444857,
-            "letter_ratio" to -0.215907,
-            "digits" to 0.025833,
-            "digit_ratio" to 0.102017,
-            "special" to -0.922685,
-            "special_ratio" to 0.247363,
-            "equals_count" to 0.332909,
-            "qmark_count" to -0.216133,
-            "amp_count" to -0.096964,
-            "hyphen_count" to -0.552863,
-            "dots_count" to 0.257791,
-            "slash_count" to 1.491433,
-            "shannon_entropy" to -0.323807,
-            "sensitive_words_count" to 0.129927,
-            "is_shortened" to 0.036899,
-            "is_suspicious_tld" to 0.627049,
-            "is_typosquatting" to 0.008297,
-            "brand_abuse_triggered" to 0.127117
+            "url_length" to 0.197894, "domain_length" to 1.470395, "is_ip" to 0.287978,
+            "tld_length" to 0.006417, "subdomain_count" to -0.762411, "is_https" to 0.791169,
+            "letters" to 0.444857, "letter_ratio" to -0.215907, "digits" to 0.025833,
+            "digit_ratio" to 0.102017, "special" to -0.922685, "special_ratio" to 0.247363,
+            "equals_count" to 0.332909, "qmark_count" to -0.216133, "amp_count" to -0.096964,
+            "hyphen_count" to -0.552863, "dots_count" to 0.257791, "slash_count" to 1.491433,
+            "shannon_entropy" to -0.323807, "sensitive_words_count" to 0.129927,
+            "is_shortened" to 0.036899, "is_suspicious_tld" to 0.627049,
+            "is_typosquatting" to 0.008297, "brand_abuse_triggered" to 0.127117
         )
         val bias = 0.164736
 
@@ -462,6 +455,7 @@ object PhishingEngine {
         }
 
         finalRiskScore = minOf(maxOf(finalRiskScore, 0), 100)
+        // Safety Score: 100 is completely safe, 0 is extreme danger
         val safetyScore = 100 - finalRiskScore
 
         val rating = when {

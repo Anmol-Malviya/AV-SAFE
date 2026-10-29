@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.barcode.common.Barcode
+import java.net.URI
 
 class MainActivity : AppCompatActivity() {
 
@@ -70,16 +71,58 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleIncomingUrl(url: String) {
-        val result = PhishingEngine.verifyUrl(url)
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        val data = intent?.data
+        if (intent?.action == Intent.ACTION_VIEW && data != null) {
+            handleIncomingUrl(data.toString())
+        }
+    }
+
+    private fun handleIncomingUrl(rawUrl: String) {
+        val trimmed = rawUrl.trim()
+        if (trimmed.isEmpty()) {
+            Toast.makeText(this, "Empty link provided.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Scheme verification: reject non-http/https links before execution
+        val scheme = try {
+            val hasExplicitScheme = trimmed.startsWith("http://", ignoreCase = true) || 
+                                    trimmed.startsWith("https://", ignoreCase = true)
+            if (hasExplicitScheme) {
+                URI(trimmed).scheme?.lowercase() ?: ""
+            } else {
+                if (trimmed.contains(":")) trimmed.substringBefore(":").lowercase() else "https"
+            }
+        } catch (e: Exception) {
+            ""
+        }
+
+        if (scheme !in listOf("http", "https")) {
+            Toast.makeText(this, "Blocked unsupported URI scheme: $scheme", Toast.LENGTH_LONG).show()
+            val warningIntent = Intent(this, WarningActivity::class.java).apply {
+                putExtra("URL", trimmed)
+                putExtra("RATING", "DANGEROUS")
+                putExtra("SCORE", 0)
+                putStringArrayListExtra("WARNINGS", arrayListOf("• Unsupported or Malicious URI Protocol: '$scheme:' protocol is blocked by security policy."))
+            }
+            startActivity(warningIntent)
+            finish()
+            return
+        }
+
+        // Run Phishing Detection Engine
+        val result = PhishingEngine.verifyUrl(trimmed)
 
         if (result.isSafe) {
-            // Link is safe! Open in Chrome browser
-            openInChrome(url)
+            // Link is safe! Open in Chrome browser without intent looping
+            openInChrome(result.url)
         } else {
-            // Link is suspicious or dangerous! Route to Warning Screen
+            // Link is suspicious, dangerous, or unverified! Route to Warning Screen
             val warningIntent = Intent(this, WarningActivity::class.java).apply {
-                putExtra("URL", url)
+                putExtra("URL", result.url)
                 putExtra("RATING", result.rating)
                 putExtra("SCORE", result.score)
                 putStringArrayListExtra("WARNINGS", ArrayList(result.warnings))
@@ -90,20 +133,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openInChrome(url: String) {
+        val uri = Uri.parse(url)
         try {
-            val chromeIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
-                // Force open in Chrome package
+            val chromeIntent = Intent(Intent.ACTION_VIEW, uri).apply {
+                // Explicitly target Chrome package to prevent looping back into PhishGuard
                 setPackage("com.android.chrome")
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             startActivity(chromeIntent)
         } catch (e: Exception) {
-            // Chrome not installed, fall back to generic browser selection
+            // Chrome not installed, fall back to browser chooser excluding ourselves
             try {
-                val genericIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                val genericIntent = Intent(Intent.ACTION_VIEW, uri).apply {
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
-                // Exclude ourselves from the choice to prevent infinite loops
                 val chooser = Intent.createChooser(genericIntent, "Open Safe Link in Browser")
                 startActivity(chooser)
             } catch (ex: Exception) {

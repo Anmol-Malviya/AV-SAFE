@@ -10,7 +10,8 @@ import {
   QrCode,
   History,
   GraduationCap,
-  Settings
+  Settings,
+  ShieldAlert
 } from "lucide-react";
 
 // Import modular components
@@ -25,6 +26,7 @@ import QrScannerTab from "../components/QrScannerTab";
 import HistoryTab from "../components/HistoryTab";
 import SecurityGuideTab from "../components/SecurityGuideTab";
 import SettingsTab from "../components/SettingsTab";
+import ComplaintsTab from "../components/ComplaintsTab";
 import SafeSandboxModal from "../components/SafeSandboxModal";
 
 export default function SystemPage() {
@@ -56,6 +58,7 @@ export default function SystemPage() {
       { id: "email-scanner", icon: <Mail size={18} />, label: "Email Scanner" },
       { id: "analytics", icon: <BarChart3 size={18} />, label: "Analytics" },
       { id: "qr-scanner", icon: <QrCode size={18} />, label: "Scan QR" },
+      { id: "complaints", icon: <ShieldAlert size={18} />, label: "Threat Reports" },
       { id: "history", icon: <History size={18} />, label: "History" },
       { id: "guide", icon: <GraduationCap size={18} />, label: "Security Guide" },
       { id: "settings", icon: <Settings size={18} />, label: "Settings" }
@@ -404,6 +407,10 @@ export default function SystemPage() {
 
           {activeTab === "qr-scanner" && (
             <QrScannerTab handleQrScanSuccess={handleQrScanSuccess} />
+          )}
+
+          {activeTab === "complaints" && (
+            <ComplaintsTab isOnline={isOnline} />
           )}
 
           {activeTab === "history" && (

@@ -59,7 +59,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SANDBOXED"
+            android:text="RESTRICTED WEBVIEW"
             android:textColor="@color/secondary"
             android:textSize="10sp"
             android:textStyle="bold"
@@ -71,7 +71,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="⚠️ WARNING: Scripts, cookies, and local storage are disabled to prevent credential harvesting or execution."
+        android:text="⚠️ RESTRICTED ISOLATION: JavaScript, DOM storage, and cookies are disabled on this device. Some dynamic web elements may not render."
         android:background="#FF5722"
         android:textColor="@color/white"
         android:textSize="11sp"
