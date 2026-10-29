@@ -6,7 +6,6 @@ import HowItWorksSection from "./components/landing/HowItWorksSection";
 import ThreatDashboard from "./components/landing/ThreatDashboard";
 import Statistics from "./components/landing/Statistics";
 import TestimonialsSection from "./components/landing/TestimonialsSection";
-import PricingSection from "./components/landing/PricingSection";
 import FAQSection from "./components/landing/FAQSection";
 import MobileAppCTA from "./components/landing/MobileAppCTA";
 import Footer from "./components/landing/Footer";
@@ -38,9 +37,6 @@ export default function Home() {
 
         {/* Customer Testimonials */}
         <TestimonialsSection />
-
-        {/* Pricing Plans */}
-        <PricingSection />
 
         {/* FAQ Section */}
         <FAQSection />
