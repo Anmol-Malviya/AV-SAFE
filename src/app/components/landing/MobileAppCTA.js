@@ -46,7 +46,7 @@ export default function MobileAppCTA() {
             <div className="mt-8 flex flex-wrap items-center gap-4">
               {/* Google Play / Android APK Download */}
               <motion.a
-                href="/app-debug.apk"
+                href="/AV-SAFE.apk"
                 download="AV-SAFE.apk"
                 whileHover={buttonHover}
                 whileTap={buttonTap}
