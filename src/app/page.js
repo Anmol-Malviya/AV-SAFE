@@ -1,6 +1,5 @@
 import Navbar from "./components/landing/Navbar";
 import Hero from "./components/landing/Hero";
-import TrustedLogos from "./components/landing/TrustedLogos";
 import FeaturesSection from "./components/landing/FeaturesSection";
 import HowItWorksSection from "./components/landing/HowItWorksSection";
 import ThreatDashboard from "./components/landing/ThreatDashboard";
@@ -19,9 +18,6 @@ export default function Home() {
       <main>
         {/* Hero Section */}
         <Hero />
-
-        {/* Trusted By Organizations */}
-        <TrustedLogos />
 
         {/* Feature Cards Grid */}
         <FeaturesSection />
