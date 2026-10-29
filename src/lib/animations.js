@@ -98,3 +98,4 @@ export const tabTransition = {
     transition: { duration: 0.18, ease: "easeIn" },
   },
 };
+

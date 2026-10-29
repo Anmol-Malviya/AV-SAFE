@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Mail, 
   CheckCircle2, 
@@ -194,10 +195,12 @@ ${emailScanResult.warnings.map((w, i) => `${i+1}. [${w.severity.toUpperCase()}] 
                   <Trash2 className="h-4 w-4 text-text-muted" /> Clear
                 </button>
               )}
-              <button
+              <motion.button
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={handleCheckEmailHeaders}
                 disabled={!emailHeadersInput.trim() || emailScanLoading}
-                className="flex-1 inline-flex h-11 items-center justify-center rounded-xl bg-primary text-sm font-semibold text-white shadow-md shadow-primary/10 hover:bg-primary-hover active:scale-[0.99] transition-all disabled:opacity-50 disabled:pointer-events-none"
+                className="flex-1 inline-flex h-11 items-center justify-center rounded-xl bg-primary text-sm font-semibold text-white shadow-md shadow-primary/10 hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
               >
                 {emailScanLoading ? (
                   <span className="flex items-center gap-2">
@@ -207,7 +210,7 @@ ${emailScanResult.warnings.map((w, i) => `${i+1}. [${w.severity.toUpperCase()}] 
                 ) : (
                   "Execute Header Audit"
                 )}
-              </button>
+              </motion.button>
             </div>
           </div>
         </div>
@@ -215,9 +218,16 @@ ${emailScanResult.warnings.map((w, i) => `${i+1}. [${w.severity.toUpperCase()}] 
 
       {/* RIGHT PANEL: Results or loading skeletons */}
       <div className="lg:col-span-7">
-        
+        <AnimatePresence mode="wait">
         {emailScanLoading ? (
-          <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm text-center py-16 space-y-6">
+          <motion.div 
+            key="email-loading"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ duration: 0.2 }}
+            className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm text-center py-16 space-y-6"
+          >
             <div className="relative flex items-center justify-center mx-auto h-20 w-20 rounded-full bg-primary/5 border border-primary/10">
               <FileSearch className="h-8 w-8 text-primary animate-pulse" />
               <div className="absolute inset-0 rounded-full border border-primary/20 animate-pulse-ring"></div>
@@ -231,11 +241,18 @@ ${emailScanResult.warnings.map((w, i) => `${i+1}. [${w.severity.toUpperCase()}] 
             <div className="w-full max-w-xs mx-auto h-1.5 bg-slate-100 rounded-full overflow-hidden relative">
               <div className="absolute h-full w-1/3 bg-primary rounded-full animate-scanning-bar"></div>
             </div>
-          </div>
+          </motion.div>
         ) : emailScanResult ? (
           
           /* RESULTS DETAILS */
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <motion.div 
+            key="email-result"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+            className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
+          >
             
             {/* Verdict header bar */}
             <div className={`p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
@@ -460,11 +477,18 @@ ${emailScanResult.warnings.map((w, i) => `${i+1}. [${w.severity.toUpperCase()}] 
               )}
 
             </div>
-          </div>
+          </motion.div>
         ) : (
           
           /* PLACEHOLDER STATE */
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm text-center py-20 px-8 space-y-4">
+          <motion.div 
+            key="email-placeholder"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="bg-white rounded-2xl border border-slate-200 shadow-sm text-center py-20 px-8 space-y-4"
+          >
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-50 border border-slate-100 mx-auto text-text-muted">
               <Mail className="h-8 w-8 opacity-60" />
             </div>
@@ -474,8 +498,9 @@ ${emailScanResult.warnings.map((w, i) => `${i+1}. [${w.severity.toUpperCase()}] 
                 Paste raw email headers or drag and drop a `.eml` diagnostic payload on the left panel to execute a security audit.
               </p>
             </div>
-          </div>
+          </motion.div>
         )}
+        </AnimatePresence>
       </div>
 
     </div>
