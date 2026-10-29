@@ -79,7 +79,10 @@ export async function GET(request) {
     });
   } catch (err) {
     console.error('Admin API GET complaints error:', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ 
+      error: err?.message || 'Internal server error',
+      details: process.env.NODE_ENV !== 'production' ? String(err?.stack || err) : undefined
+    }, { status: 500 });
   }
 }
 
