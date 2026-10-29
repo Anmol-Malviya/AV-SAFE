@@ -204,7 +204,7 @@ export default function UrlCheckerTab({
             Get offline local ML evaluation, sandbox renderings, and browser integrations on Android endpoints.
           </p>
           <a
-            href="/app-debug.apk"
+            href="/AV-SAFE.apk"
             download="AV-SAFE_v1.0.apk"
             className="mt-4 w-full inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-white/10 hover:bg-white/15 border border-white/15 text-xs font-semibold text-white transition-colors"
           >
