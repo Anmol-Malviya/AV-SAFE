@@ -141,7 +141,18 @@ flowchart TD
 
 <br />
 
-### 3. Multi-Device Unified Protection (Mobile & Desktop)
+### 3. Android Native Mobile Client: System-Wide Link Protection
+> **On-device real-time gatekeeper for mobile messaging & browsing:**
+> Configured as the device's default browser handler to intercept incoming HTTP/HTTPS links across SMS, WhatsApp, Telegram, Gmail, and social apps before any web content loads. Also includes on-device QR code phishing verification and one-touch default app settings configuration.
+
+<div align="center">
+  <img src="public/android-app-link-protection.jpg" alt="AV-SAFE Android App Link Protection Screen" width="360" style="border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.14); border: 1px solid #e2e8f0; margin-bottom: 8px;" />
+  <p align="center"><em>Android Native Client — Link Protection Enabled status, Quick QR Code Scanner, and System Default Browser Interception settings.</em></p>
+</div>
+
+<br />
+
+### 4. Multi-Device Unified Protection (Mobile & Desktop)
 <div align="center">
   <img src="public/av-safe-hero-banner.jpg" alt="AV-SAFE Unified Protection Ecosystem" width="100%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); margin-bottom: 8px;" />
   <p align="center"><em>Synchronized Security Across Desktop SOC & Android Mobile Link Protection Client</em></p>
