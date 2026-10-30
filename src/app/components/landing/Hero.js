@@ -43,7 +43,7 @@ export default function Hero() {
   return (
     <section 
       id="hero" 
-      className="relative overflow-hidden pt-8 pb-16 lg:pt-14 lg:pb-24 bg-cover bg-no-repeat bg-center"
+      className="relative overflow-hidden pt-24 pb-16 lg:pt-32 lg:pb-20 bg-cover bg-no-repeat bg-center"
       style={{
         backgroundImage: "url('/hero-base-bg.png')"
       }}
@@ -78,20 +78,6 @@ export default function Hero() {
             className="lg:col-span-6 xl:col-span-5 flex flex-col justify-center text-left z-10"
           >
             
-            {/* Small pill: AI-Powered Security */}
-            <motion.div 
-              variants={fadeInUp}
-              custom={0}
-              className="inline-flex items-center gap-2 self-start rounded-full bg-white/80 backdrop-blur-md border border-[#D5E3F7] px-4 py-1.5 text-xs font-semibold text-[#0B1933] mb-6 shadow-xs"
-            >
-              <motion.span 
-                animate={{ scale: [1, 1.35, 1], opacity: [1, 0.7, 1] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                className="h-2 w-2 rounded-full bg-[#1463FF] shadow-[0_0_8px_#1463FF]"
-              />
-              <span className="tracking-wide">AI Threat Detection &amp; Zero-Trust Protection</span>
-            </motion.div>
-
             {/* Main Heading */}
             <motion.h1 
               variants={fadeInUp}
@@ -299,7 +285,7 @@ export default function Hero() {
 
           </motion.div>
 
-          {/* ============ RIGHT COLUMN: HIGH-RES 3D MOCKUP WITH INTERACTIVE FLOATING BADGES ============ */}
+          {/* ============ RIGHT COLUMN: CLEAN 3D DEVICE SHOWCASE (WITHOUT FLOATING BADGES) ============ */}
           <motion.div 
             initial={{ opacity: 0, y: 25, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -309,13 +295,23 @@ export default function Hero() {
             {/* Soft Ambient Radial Behind Devices */}
             <div className="absolute -inset-4 bg-gradient-to-tr from-[#1463FF]/15 via-[#38BDF8]/10 to-transparent rounded-full blur-2xl pointer-events-none" />
 
-            {/* Container for the devices image with floating badges */}
-            <div className="relative w-full max-w-[700px] xl:max-w-[760px] group">
-              
-              {/* Device Showcase Image */}
-              <div className="relative aspect-[1.32/1] w-full drop-shadow-[0_20px_35px_rgba(15,23,42,0.14)] transition-transform duration-500 hover:scale-[1.01]">
+            {/* Container for the devices image with smooth infinite floating animation */}
+            <motion.div 
+              animate={{ 
+                y: [-10, 10, -10],
+                rotate: [-0.3, 0.3, -0.3]
+              }}
+              transition={{ 
+                duration: 5, 
+                repeat: Infinity, 
+                ease: "easeInOut" 
+              }}
+              className="relative w-full max-w-[540px] xl:max-w-[580px]"
+            >
+              {/* Clean Device Showcase Image */}
+              <div className="relative aspect-[1.32/1] w-full drop-shadow-[0_24px_45px_rgba(15,23,42,0.16)] transition-transform duration-500 hover:scale-[1.01]">
                 <Image
-                  src="/hero-devices-hq.png"
+                  src="/hero-devices-clean.png"
                   alt="AV-SAFE SOC Dashboard on Laptop with Mobile Link Protection Companion App"
                   fill
                   priority
@@ -323,56 +319,7 @@ export default function Hero() {
                   className="object-contain object-center pointer-events-none select-none"
                 />
               </div>
-
-              {/* FLOATING BADGE 1: SOC Shield Status (Top Left over Laptop) */}
-              <motion.div 
-                animate={{ y: [-4, 5, -4] }}
-                transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut" }}
-                whileHover={{ scale: 1.05 }}
-                className="absolute top-[3%] left-[1%] sm:left-[4%] z-20 flex items-center gap-2.5 rounded-2xl bg-white/95 backdrop-blur-md px-3.5 py-2 sm:px-4 sm:py-2.5 border border-[#E2E8F0] shadow-xl shadow-slate-900/10 pointer-events-auto cursor-default"
-              >
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-50 text-[#10B981]">
-                  <CheckCircle2 className="h-4 w-4 stroke-[2.5]" />
-                </div>
-                <div className="text-left">
-                  <div className="text-[11px] sm:text-xs font-bold text-[#0B1933] leading-none">Live Shield Active</div>
-                  <div className="text-[9px] sm:text-[10px] text-emerald-600 font-semibold mt-0.5">0 Active Breaches</div>
-                </div>
-              </motion.div>
-
-              {/* FLOATING BADGE 2: Mobile Instant Link Interceptor (Top Right over Phone) */}
-              <motion.div 
-                animate={{ y: [4, -5, 4] }}
-                transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
-                whileHover={{ scale: 1.05 }}
-                className="absolute -top-[1%] right-[2%] sm:right-[5%] z-20 flex items-center gap-2.5 rounded-2xl bg-white/95 backdrop-blur-md px-3.5 py-2 sm:px-4 sm:py-2.5 border border-[#E2E8F0] shadow-xl shadow-slate-900/10 pointer-events-auto cursor-default"
-              >
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-50 text-[#1463FF]">
-                  <Smartphone className="h-3.5 w-3.5 stroke-[2.2]" />
-                </div>
-                <div className="text-left">
-                  <div className="text-[11px] sm:text-xs font-bold text-[#0B1933] leading-none">Mobile App Synced</div>
-                  <div className="text-[9px] sm:text-[10px] text-[#1463FF] font-medium mt-0.5">AV-SAFE APK Ready</div>
-                </div>
-              </motion.div>
-
-              {/* FLOATING BADGE 3: AI Threat Risk (Bottom Left of Laptop) */}
-              <motion.div 
-                animate={{ y: [-5, 4, -5] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
-                whileHover={{ scale: 1.05 }}
-                className="absolute bottom-[6%] left-[2%] sm:left-[8%] z-20 flex items-center gap-2.5 rounded-2xl bg-white/95 backdrop-blur-md px-3.5 py-2 sm:px-4 sm:py-2.5 border border-[#E2E8F0] shadow-xl shadow-slate-900/10 pointer-events-auto cursor-default"
-              >
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-sky-50 text-[#0284C7]">
-                  <Activity className="h-3.5 w-3.5 stroke-[2.5]" />
-                </div>
-                <div className="text-left">
-                  <div className="text-[11px] sm:text-xs font-bold text-[#0B1933] leading-none">AI Threat Engine</div>
-                  <div className="text-[9px] sm:text-[10px] text-slate-500 font-medium mt-0.5">180ms Latency · Optimal</div>
-                </div>
-              </motion.div>
-
-            </div>
+            </motion.div>
           </motion.div>
 
         </div>

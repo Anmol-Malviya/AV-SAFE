@@ -31,10 +31,10 @@ export default function Navbar() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className={`sticky top-0 z-50 w-full transition-all duration-200 ${
+      className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
         isScrolled
           ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-[#E5ECF5]"
-          : "bg-white/90 backdrop-blur-md border-b border-[#E5ECF5]/80"
+          : "bg-transparent border-b border-transparent"
       }`}
     >
       <div className="mx-auto flex h-18 max-w-[1240px] items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -44,14 +44,14 @@ export default function Navbar() {
           <motion.div 
             whileHover={{ scale: 1.05, rotate: [0, -2, 2, 0] }}
             transition={{ duration: 0.3 }}
-            className="relative h-9 w-auto flex items-center"
+            className="relative h-9 w-auto flex items-center rounded-xl overflow-hidden"
           >
             <Image
               src="/logo.png"
               alt="AV-SAFE Logo"
               width={44}
               height={32}
-              className="h-8 w-auto object-contain mix-blend-multiply"
+              className="h-8 w-auto object-contain rounded-xl mix-blend-multiply"
               priority
             />
           </motion.div>
