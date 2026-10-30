@@ -129,13 +129,19 @@ export async function GET() {
     const orderedDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     const trendMap = {};
     orderedDays.forEach((d) => {
-      trendMap[d] = { day: d, Scans: 0, Threats: 0 };
+      trendMap[d] = { day: d, Scans: 0, Threats: 0, Mobile: 0, Web: 0 };
     });
 
     items.forEach((item) => {
       const dName = getDayName(item.createdAt);
       if (trendMap[dName]) {
         trendMap[dName].Scans += 1;
+        const isMobile = item.source === 'ANDROID_BROWSER' || (item.source && String(item.source).toLowerCase().includes('android'));
+        if (isMobile) {
+          trendMap[dName].Mobile += 1;
+        } else {
+          trendMap[dName].Web += 1;
+        }
         if (item.rating === 'DANGEROUS' || item.rating === 'SUSPICIOUS') {
           trendMap[dName].Threats += 1;
         }
