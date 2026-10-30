@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { analyzeURL, analyzeEmailHeaders } from "../../lib/phishingEngine";
 import { 
@@ -30,30 +30,12 @@ import SettingsTab from "../components/SettingsTab";
 import ComplaintsTab from "../components/ComplaintsTab";
 import SafeSandboxModal from "../components/SafeSandboxModal";
 
-const DEFAULT_INITIAL_HISTORY = [
-  { url: "https://example.com", rating: "SAFE", score: 98, date: "Today", timeAgo: "2 min ago" },
-  { url: "http://secure-login-update.com", rating: "SUSPICIOUS", score: 48, date: "Today", timeAgo: "12 min ago" },
-  { url: "https://github.com", rating: "SAFE", score: 100, date: "Today", timeAgo: "28 min ago" },
-  { url: "http://paypal-account-verifiy.net", rating: "DANGEROUS", score: 12, date: "Today", timeAgo: "1 hour ago" },
-  { url: "https://google.com", rating: "SAFE", score: 100, date: "Yesterday", timeAgo: "1 day ago" },
-  { url: "https://portal-login-auth.com", rating: "DANGEROUS", score: 15, date: "Yesterday", timeAgo: "1 day ago" },
-  { url: "https://microsoft.com", rating: "SAFE", score: 100, date: "Yesterday", timeAgo: "1 day ago" },
-  { url: "https://account-verify-update.net", rating: "SUSPICIOUS", score: 55, date: "2 days ago", timeAgo: "2 days ago" },
-  { url: "https://aws.amazon.com", rating: "SAFE", score: 100, date: "2 days ago", timeAgo: "2 days ago" },
-  { url: "https://apple-security-check.info", rating: "DANGEROUS", score: 10, date: "3 days ago", timeAgo: "3 days ago" },
-  { url: "https://wikipedia.org", rating: "SAFE", score: 100, date: "3 days ago", timeAgo: "3 days ago" },
-  { url: "https://chase-security-verify.com", rating: "DANGEROUS", score: 8, date: "3 days ago", timeAgo: "3 days ago" },
-  { url: "https://cloudflare.com", rating: "SAFE", score: 100, date: "4 days ago", timeAgo: "4 days ago" },
-  { url: "https://netflix-account-reset.org", rating: "SUSPICIOUS", score: 52, date: "4 days ago", timeAgo: "4 days ago" },
-  { url: "https://stackoverflow.com", rating: "SAFE", score: 100, date: "5 days ago", timeAgo: "5 days ago" }
-];
-
 export default function SystemPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [urlInput, setUrlInput] = useState("");
   const [isOnline, setIsOnline] = useState(true);
   const [scanResult, setScanResult] = useState(null);
-  const [scanHistory, setScanHistory] = useState(DEFAULT_INITIAL_HISTORY);
+  const [scanHistory, setScanHistory] = useState([]);
   const [historyFilter, setHistoryFilter] = useState("ALL");
 
   // Deep Scan states
@@ -85,75 +67,74 @@ export default function SystemPage() {
     []
   );
 
-  // Compute threat stats from history
+  // Compute threat stats from pure live history
   const threatStats = useMemo(() => {
     const safe = scanHistory.filter((h) => h.rating === "SAFE").length;
     const suspicious = scanHistory.filter((h) => h.rating === "SUSPICIOUS").length;
-    const dangerous = scanHistory.filter((h) => h.rating === "DANGEROUS").length;
+    const dangerous = scanHistory.filter((h) => h.rating === "DANGEROUS" || h.rating === "MALICIOUS").length;
     return { safe, suspicious, dangerous };
   }, [scanHistory]);
 
-  // Check online/offline status & load history on mount
+  // Pure live data fetcher with real-time polling
+  const fetchLiveHistory = useCallback(async () => {
+    try {
+      if (typeof window !== "undefined" && navigator.onLine) {
+        const res = await fetch("/api/history", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data)) {
+            setScanHistory(data);
+            localStorage.setItem("phishguard_live_history", JSON.stringify(data));
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Failed to load live history from database:", e);
+    }
+
+    // Offline local storage fallback
+    const saved = localStorage.getItem("phishguard_live_history");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setScanHistory(parsed);
+        }
+      } catch {
+        // ignore fallback errors
+      }
+    }
+  }, []);
+
+  // Check online/offline status & trigger real-time polling every 4 seconds
   useEffect(() => {
     if (typeof window !== "undefined") {
       setTimeout(() => setIsOnline(navigator.onLine), 0);
-      const handleOnline = () => setIsOnline(true);
+      const handleOnline = () => {
+        setIsOnline(true);
+        fetchLiveHistory();
+      };
       const handleOffline = () => setIsOnline(false);
 
       window.addEventListener("online", handleOnline);
       window.addEventListener("offline", handleOffline);
 
-      const loadHistory = async () => {
-        try {
-          if (navigator.onLine) {
-            const res = await fetch("/api/history");
-            if (res.ok) {
-              const data = await res.json();
-              if (Array.isArray(data) && data.length > 0) {
-                const existingUrls = new Set(data.map((d) => (d.url || "").toLowerCase()));
-                const preserved = DEFAULT_INITIAL_HISTORY.filter(
-                  (d) => !existingUrls.has(d.url.toLowerCase())
-                );
-                const merged = [...data, ...preserved];
-                setScanHistory(merged);
-                localStorage.setItem("phishguard_history", JSON.stringify(merged));
-                return;
-              }
-            }
-          }
-        } catch (e) {
-          console.error("Failed to load history from database:", e);
-        }
+      // Initial load
+      fetchLiveHistory();
 
-        const savedHistory = localStorage.getItem("phishguard_history");
-        if (savedHistory) {
-          try {
-            const parsed = JSON.parse(savedHistory);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              const existingUrls = new Set(parsed.map((d) => (d.url || "").toLowerCase()));
-              const preserved = DEFAULT_INITIAL_HISTORY.filter(
-                (d) => !existingUrls.has(d.url.toLowerCase())
-              );
-              setScanHistory([...parsed, ...preserved]);
-              return;
-            }
-          } catch {
-            // fallback
-          }
-        }
-
-        setScanHistory(DEFAULT_INITIAL_HISTORY);
-        localStorage.setItem("phishguard_history", JSON.stringify(DEFAULT_INITIAL_HISTORY));
-      };
-
-      loadHistory();
+      // Live realtime sync: poll every 4 seconds for fresh scans from Mobile App
+      const liveInterval = setInterval(() => {
+        fetchLiveHistory();
+      }, 4000);
 
       return () => {
         window.removeEventListener("online", handleOnline);
         window.removeEventListener("offline", handleOffline);
+        clearInterval(liveInterval);
       };
     }
-  }, []);
+  }, [fetchLiveHistory]);
 
   // Web Audio Success Beep
   const playSuccessBeep = () => {
@@ -163,26 +144,40 @@ export default function SystemPage() {
       const gain = ctx.createGain();
       osc.connect(gain);
       gain.connect(ctx.destination);
-      osc.frequency.setValueAtTime(880, ctx.currentTime);
-      gain.gain.setValueAtTime(0, ctx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.3);
-    } catch (e) {
-      console.warn("AudioContext block:", e);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(800, ctx.currentTime);
+      gain.gain.setValueAtTime(0.1, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.15);
+    } catch {
+      // AudioContext unavailable
     }
   };
 
-  // Run Link Analysis
+  const getRatingColorClass = (rating) => {
+    switch (rating) {
+      case "SAFE":
+        return "text-green-800 bg-green-100 border-green-200";
+      case "SUSPICIOUS":
+        return "text-amber-800 bg-amber-100 border-amber-200";
+      case "DANGEROUS":
+      case "MALICIOUS":
+        return "text-red-800 bg-red-100 border-red-200";
+      default:
+        return "text-slate-800 bg-slate-100 border-slate-200";
+    }
+  };
+
   const handleCheckUrl = async (urlToCheck) => {
     const targetUrl = urlToCheck || urlInput;
     if (!targetUrl.trim()) return;
 
-    setDeepScanLoading(isDeepScan);
-    let finalResult = analyzeURL(targetUrl);
+    const baseResult = analyzeURL(targetUrl);
+    let finalResult = { ...baseResult };
 
     if (isDeepScan && isOnline) {
+      setDeepScanLoading(true);
       try {
         const response = await fetch("/api/analyze", {
           method: "POST",
@@ -301,6 +296,7 @@ export default function SystemPage() {
       url: finalResult.url,
       rating: finalResult.rating,
       score: finalResult.score,
+      source: "Web Dashboard",
       date: new Date().toLocaleDateString(),
     };
 
@@ -309,16 +305,17 @@ export default function SystemPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newHistoryItem),
-      }).catch((e) => console.error("Failed to save to database:", e));
+      })
+        .then(() => fetchLiveHistory())
+        .catch((e) => console.error("Failed to save to database:", e));
     }
 
     setScanHistory((prevHistory) => {
-      const base = (prevHistory && prevHistory.length > 0) ? prevHistory : DEFAULT_INITIAL_HISTORY;
-      const filtered = base.filter(
+      const filtered = (prevHistory || []).filter(
         (item) => (item.url || "").toLowerCase() !== finalResult.url.toLowerCase()
       );
       const updated = [newHistoryItem, ...filtered].slice(0, 50);
-      localStorage.setItem("phishguard_history", JSON.stringify(updated));
+      localStorage.setItem("phishguard_live_history", JSON.stringify(updated));
       return updated;
     });
   };
@@ -350,44 +347,52 @@ export default function SystemPage() {
     setEmailScanResult(null);
   };
 
-  const handleClearHistory = () => {
-    setScanHistory([]);
-    localStorage.removeItem("phishguard_history");
-    if (isOnline) {
-      fetch("/api/history", { method: "DELETE" })
-        .catch((e) => console.error("Failed to clear database history:", e));
+  const handleClearHistory = async () => {
+    if (confirm("Are you sure you want to purge all centralized live diagnostic history?")) {
+      setScanHistory([]);
+      localStorage.removeItem("phishguard_live_history");
+      if (isOnline) {
+        try {
+          await fetch("/api/history", { method: "DELETE" });
+        } catch (e) {
+          console.error("Failed to purge logs from database:", e);
+        }
+      }
     }
   };
 
-  const getRatingColorClass = (rating) => {
-    if (rating === "SAFE") return "safe";
-    if (rating === "SUSPICIOUS") return "suspicious";
-    return "dangerous";
-  };
-
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-bg-secondary font-sans text-text-primary">
-      {/* Sidebar Navigation */}
+    <div className="flex h-screen bg-[#F8FAFC] text-[#101D36] font-sans antialiased overflow-hidden selection:bg-[#1463FF]/15 selection:text-[#1463FF]">
+      
+      {/* Desktop/Tablet Sidebar */}
       <Sidebar 
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
-        threatStats={threatStats} 
         navItems={navItems} 
-        isOnline={isOnline} 
+        threatStats={threatStats} 
       />
 
-      {/* Main Content Pane */}
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <Header isOnline={isOnline} setActiveTab={setActiveTab} />
+      {/* Main Container */}
+      <div className="flex flex-col flex-1 h-screen overflow-hidden">
         
-        <main className="flex-1 overflow-y-auto bg-[#F8FAFD] p-6">
+        {/* Top Header Bar */}
+        <Header 
+          threatStats={threatStats} 
+          isOnline={isOnline} 
+          setActiveTab={setActiveTab} 
+          scanHistory={scanHistory} 
+        />
+
+        {/* Dynamic Content Pane with Smooth Fade Transitions */}
+        <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 md:pb-8">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.18, ease: "easeOut" }}
+              className="h-full"
             >
           {activeTab === "overview" && (
             <OverviewTab
@@ -484,4 +489,3 @@ export default function SystemPage() {
     </div>
   );
 }
-
