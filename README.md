@@ -17,9 +17,9 @@
         </div>
       </td>
       <td align="right" valign="middle">
-        <a href="http://localhost:3000/system" style="text-decoration: none; font-size: 12px; font-weight: 600; color: #FFFFFF; background: #1463FF; padding: 8px 14px; border-radius: 8px; margin-right: 6px;">⚡ Dashboard</a>
-        <a href="http://localhost:3000" style="text-decoration: none; font-size: 12px; font-weight: 600; color: #334155; background: #F1F5F9; border: 1px solid #CBD5E1; padding: 7px 12px; border-radius: 8px; margin-right: 6px;">🌐 Scanner</a>
-        <a href="#android-link-shield" style="text-decoration: none; font-size: 12px; font-weight: 600; color: #334155; background: #F1F5F9; border: 1px solid #CBD5E1; padding: 7px 12px; border-radius: 8px;">📱 Android</a>
+        <a href="http://localhost:3000/system" style="text-decoration: none; font-size: 12px; font-weight: 600; color: #FFFFFF; background: #1463FF; padding: 8px 14px; border-radius: 8px; margin-right: 6px;">Dashboard</a>
+        <a href="http://localhost:3000" style="text-decoration: none; font-size: 12px; font-weight: 600; color: #334155; background: #F1F5F9; border: 1px solid #CBD5E1; padding: 7px 12px; border-radius: 8px; margin-right: 6px;">Scanner</a>
+        <a href="#android-link-shield" style="text-decoration: none; font-size: 12px; font-weight: 600; color: #334155; background: #F1F5F9; border: 1px solid #CBD5E1; padding: 7px 12px; border-radius: 8px;">Android</a>
       </td>
     </tr>
   </table>
@@ -51,7 +51,7 @@
       <td width="25%" valign="top" style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 14px; padding: 14px 18px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); text-align: left;">
         <span style="font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase;">Detection Speed</span>
         <div style="font-size: 24px; font-weight: 800; color: #0F172A; margin: 2px 0;">&lt; 10ms</div>
-        <div style="font-size: 11px; color: #16A34A; font-weight: 600;">⚡ Zero-Latency Edge</div>
+        <div style="font-size: 11px; color: #16A34A; font-weight: 600;">Zero-Latency Edge</div>
       </td>
       <td width="25%" valign="top" style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 14px; padding: 14px 18px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); text-align: left;">
         <span style="font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase;">ML Features</span>
@@ -81,7 +81,7 @@
 
   <div align="center" style="margin-bottom: 16px;">
     <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: #0F172A;">
-      🏛️ End-to-End System Architecture (Live Animated Flow)
+      End-to-End System Architecture (Live Animated Flow)
     </h2>
   </div>
 
@@ -105,7 +105,7 @@
 
   <div align="center" style="margin-bottom: 16px;">
     <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: #0F172A;">
-      🧠 Animated 6-Stage Detection Pipeline
+      Animated 6-Stage Detection Pipeline
     </h2>
   </div>
 
@@ -115,7 +115,7 @@
 
   <div align="center" style="margin-bottom: 16px;" id="android-link-shield">
     <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: #0F172A;">
-      📱 Animated Android Intent Gatekeeper &amp; Siren Flow
+      Animated Android Intent Gatekeeper &amp; Siren Flow
     </h2>
   </div>
 
@@ -125,7 +125,7 @@
 
   <div align="center" style="margin-bottom: 16px;">
     <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: #0F172A;">
-      ⚖️ Dynamic Threat Scoring Matrix
+      Dynamic Threat Scoring Matrix
     </h2>
   </div>
 
@@ -143,7 +143,7 @@
 
   <div align="center" style="margin-bottom: 16px;">
     <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: #0F172A;">
-      📊 Real-Time SOC SecOps Operations Dashboard
+      Real-Time SOC SecOps Operations Dashboard
     </h2>
   </div>
 
@@ -165,7 +165,7 @@
 
   <div align="center" style="margin-bottom: 16px;">
     <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: #0F172A;">
-      ⚡ Real-Time Edge Interception Interfaces
+      Real-Time Edge Interception Interfaces
     </h2>
   </div>
 
@@ -206,7 +206,7 @@
 
   <div align="center" style="margin-bottom: 16px;">
     <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: #0F172A;">
-      ⚙️ Quickstart
+      Quickstart
     </h2>
   </div>
 
@@ -227,31 +227,31 @@
 
   <div align="center" style="margin-bottom: 24px;">
     <span style="font-size: 11px; font-weight: 800; color: #1463FF; background: #EFF6FF; border: 1px solid #DBEAFE; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase;">
-      🏆 FOUNDERS &amp; ARCHITECTS
+      FOUNDERS &amp; ARCHITECTS
     </span>
   </div>
 
   <table width="100%" border="0" cellspacing="14" cellpadding="0">
     <tr>
       <!-- Founder 1: Anmol Malviya -->
-      <td width="33.3%" valign="top" style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
-        <img src="public/team_founder_anmol.jpg" alt="Anmol Malviya" width="130" height="130" style="border-radius: 50%; border: 3px solid #1463FF; box-shadow: 0 4px 14px rgba(20,99,255,0.22); margin-bottom: 12px; object-fit: cover;" />
+      <td width="33%" align="center" valign="top" style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 16px; padding: 20px; text-align: center;">
+        <img src="public/team_founder_anmol.jpg" alt="Anmol Malviya" width="140" height="140" style="border-radius: 50%; border: 3px solid #1463FF; display: block; margin: 0 auto 12px auto; object-fit: cover;" />
         <div style="font-size: 17px; font-weight: 800; color: #0F172A;">Anmol Malviya</div>
-        <div style="font-size: 12px; font-weight: 700; color: #1463FF; margin-top: 2px;">Co-Founder &amp; AI / Threat Intel Lead</div>
+        <div style="font-size: 12px; font-weight: 700; color: #1463FF; margin-top: 3px;">Co-Founder &amp; AI / Threat Intel Lead</div>
       </td>
 
       <!-- Founder 2: Tanay Agrawal -->
-      <td width="33.3%" valign="top" style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
-        <img src="public/team_founder_tanay.jpg" alt="Tanay Agrawal" width="130" height="130" style="border-radius: 50%; border: 3px solid #6366F1; box-shadow: 0 4px 14px rgba(99,102,241,0.22); margin-bottom: 12px; object-fit: cover;" />
+      <td width="33%" align="center" valign="top" style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 16px; padding: 20px; text-align: center;">
+        <img src="public/team_founder_tanay.jpg" alt="Tanay Agrawal" width="140" height="140" style="border-radius: 50%; border: 3px solid #6366F1; display: block; margin: 0 auto 12px auto; object-fit: cover;" />
         <div style="font-size: 17px; font-weight: 800; color: #0F172A;">Tanay Agrawal</div>
-        <div style="font-size: 12px; font-weight: 700; color: #6366F1; margin-top: 2px;">Co-Founder &amp; Full-Stack Systems Lead</div>
+        <div style="font-size: 12px; font-weight: 700; color: #6366F1; margin-top: 3px;">Co-Founder &amp; Full-Stack Systems Lead</div>
       </td>
 
       <!-- Founder 3: Hritik Jaishwal -->
-      <td width="33.3%" valign="top" style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
-        <img src="public/team_founder_hritik.jpg" alt="Hritik Jaishwal" width="130" height="130" style="border-radius: 50%; border: 3px solid #10B981; box-shadow: 0 4px 14px rgba(16,185,129,0.22); margin-bottom: 12px; object-fit: cover;" />
+      <td width="33%" align="center" valign="top" style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 16px; padding: 20px; text-align: center;">
+        <img src="public/team_founder_hritik.jpg" alt="Hritik Jaishwal" width="140" height="140" style="border-radius: 50%; border: 3px solid #10B981; display: block; margin: 0 auto 12px auto; object-fit: cover;" />
         <div style="font-size: 17px; font-weight: 800; color: #0F172A;">Hritik Jaishwal</div>
-        <div style="font-size: 12px; font-weight: 700; color: #10B981; margin-top: 2px;">Co-Founder &amp; Security / Mobile Lead</div>
+        <div style="font-size: 12px; font-weight: 700; color: #10B981; margin-top: 3px;">Co-Founder &amp; Security / Mobile Lead</div>
       </td>
     </tr>
   </table>
@@ -264,6 +264,6 @@
 
 <div align="center" style="padding: 20px; color: #64748B; font-size: 12px;">
   <p style="margin: 0; font-weight: 600; color: #0F172A;">
-    © AV-SAFE Security Ecosystem. MIT Licensed.
+    AV-SAFE Security Ecosystem. MIT Licensed.
   </p>
 </div>
