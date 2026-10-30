@@ -13,7 +13,8 @@ import {
   ChevronRight,
   ArrowRight,
   Smartphone,
-  Monitor
+  Monitor,
+  Globe
 } from "lucide-react";
 import { 
   AreaChart, 
@@ -464,7 +465,9 @@ export default function OverviewTab({
                 ) : (
                   <div className="space-y-2">
                     {displayLogs.map((item, idx) => {
-                      const isAndroid = (item.source || "").toLowerCase().includes("android") || (item.source || "").toLowerCase().includes("app");
+                      const src = (item.source || "").toLowerCase();
+                      const isAndroid = src.includes("android") || src.includes("app");
+                      const isExtension = src.includes("extension");
 
                       return (
                         <div
@@ -480,9 +483,17 @@ export default function OverviewTab({
                             <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold tracking-wide border shrink-0 ${
                               isAndroid 
                                 ? "bg-purple-50 text-purple-700 border-purple-200" 
+                                : isExtension
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                                 : "bg-blue-50 text-blue-700 border-blue-200"
                             }`}>
-                              {isAndroid ? <Smartphone className="h-2.5 w-2.5" /> : <Monitor className="h-2.5 w-2.5" />}
+                              {isAndroid ? (
+                                <Smartphone className="h-2.5 w-2.5" />
+                              ) : isExtension ? (
+                                <Globe className="h-2.5 w-2.5 text-emerald-600" />
+                              ) : (
+                                <Monitor className="h-2.5 w-2.5" />
+                              )}
                               {item.source}
                             </span>
                           </div>

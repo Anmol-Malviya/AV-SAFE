@@ -1,6 +1,28 @@
 import { analyzeURL } from './phishingEngine.js';
 
 let threatBlacklistSet = new Set();
+const DASHBOARD_API_ENDPOINT = 'http://localhost:3000/api/history';
+
+// Broadcast real-time scan event to Central SOC Dashboard
+async function syncScanWithDashboard(url, rating, score) {
+  try {
+    await fetch(DASHBOARD_API_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        url: url,
+        rating: rating,
+        score: score,
+        source: 'Browser Extension'
+      })
+    });
+  } catch (err) {
+    // Non-blocking if dashboard/local server is temporarily inactive
+    console.debug('Dashboard sync ping skipped:', err.message);
+  }
+}
 
 // Load cached active threat rules into memory Set on startup for 0ms lookups
 function loadBlacklistCache() {
@@ -138,6 +160,9 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
 
     // Run local prediction checks with memory blacklist Set
     const analysis = analyzeURL(url, threatBlacklistSet);
+
+    // Sync scan record in real-time to Dashboard
+    syncScanWithDashboard(url, analysis.rating, analysis.score);
 
     const isDangerous = analysis.rating === 'DANGEROUS';
     const isSuspicious = analysis.rating === 'SUSPICIOUS';

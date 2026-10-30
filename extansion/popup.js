@@ -42,6 +42,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const analysis = analyzeURL(url);
     renderAnalysis(analysis, circumference);
 
+    // Sync active popup verification to Dashboard
+    try {
+      fetch('http://localhost:3000/api/history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: url,
+          rating: analysis.rating,
+          score: analysis.score,
+          source: 'Browser Extension'
+        })
+      }).catch(() => {});
+    } catch (e) {}
+
     // Configure the sandbox preview button
     const sandboxBtn = document.getElementById('btn-open-sandbox');
     sandboxBtn.classList.remove('hidden');
