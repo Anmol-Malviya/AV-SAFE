@@ -32,7 +32,7 @@
     
     <div style="padding: 24px 28px; text-align: left;">
       <h1 style="margin: 0; font-size: 26px; font-weight: 800; color: #0F172A; line-height: 1.3;">
-        Next-Generation Multi-Platform Cybersecurity & Real-Time Phishing Threat Defense
+        Next-Generation Multi-Platform Cybersecurity &amp; Real-Time Phishing Threat Defense
       </h1>
       <p style="margin: 8px 0 16px 0; font-size: 14px; color: #64748B; line-height: 1.6;">
         An explainable cybersecurity ecosystem pairing a <b>24-Feature Machine Learning Inference Engine</b> (PhiUSIIL benchmark) with a <b>Deterministic Heuristic Defense Matrix</b> across Web, Chromium MV3 Extensions, and Native Android devices.
@@ -81,24 +81,24 @@
 </div>
 
 <!-- ==========================================
-     SECTION 1: ARCHITECTURE & CROSS-DEVICE
+     SECTION 1: ANIMATED SYSTEM ARCHITECTURE
      ========================================== -->
 
 <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; padding: 32px 28px; box-shadow: 0 4px 16px rgba(0,0,0,0.03); margin-bottom: 24px;">
 
   <div style="border-bottom: 1px solid #F1F5F9; padding-bottom: 12px; margin-bottom: 24px;">
     <h2 style="margin: 0; font-size: 22px; font-weight: 800; color: #0F172A;">
-      🏛️ End-to-End System Architecture
+      🏛️ End-to-End System Architecture (Animated)
     </h2>
     <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748B;">
-      Tri-tier deployment isolating edge client ingress, offline hybrid ML inference, and cloud SecOps persistence.
+      Tri-tier deployment isolating edge client ingress, offline hybrid ML inference (&lt;10ms), and cloud SecOps persistence.
     </p>
   </div>
 
-  <div align="center" style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 16px; padding: 20px; margin-bottom: 28px;">
-    <img src="public/system-architecture-diagram.png" alt="AV-SAFE End-to-End System Architecture" width="100%" style="border-radius: 12px; display: block;" />
-    <p style="margin: 12px 0 0 0; font-size: 12px; font-weight: 600; color: #64748B;">
-      Figure 1.0 — Architecture Workflow: Ingress Clients (Web, Extension, Android) ➔ Hybrid Detection Core ➔ SOC Cloud Telemetry
+  <div align="center" style="background: #0B1120; border: 1px solid #334155; border-radius: 16px; padding: 20px; margin-bottom: 28px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);">
+    <img src="public/animated_threat_engine.svg" alt="AV-SAFE End-to-End Animated System Architecture" width="100%" style="border-radius: 12px; display: block;" />
+    <p style="margin: 14px 0 0 0; font-size: 12px; font-weight: 600; color: #94A3B8;">
+      Figure 1.0 — Real-Time Packet Flow: Ingress Clients (Web, MV3 Extension, Android) ➔ 24-Vector ML Engine ➔ Policy Enforcement &amp; Cloud Telemetry
     </p>
   </div>
 
@@ -121,7 +121,92 @@
 </div>
 
 <!-- ==========================================
-     SECTION 2: LIVE SOC SECOPS DASHBOARD
+     SECTION 2: ANIMATED DETECTION PIPELINES
+     ========================================== -->
+
+<div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; padding: 32px 28px; box-shadow: 0 4px 16px rgba(0,0,0,0.03); margin-bottom: 24px;">
+
+  <div style="border-bottom: 1px solid #F1F5F9; padding-bottom: 12px; margin-bottom: 20px;">
+    <h2 style="margin: 0; font-size: 22px; font-weight: 800; color: #0F172A;">
+      🧠 Animated 6-Stage Detection Pipeline
+    </h2>
+    <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748B;">
+      Zero-latency signal transformation pipeline evaluating statistical entropy, homoglyph punycode, typosquat distance, and ML weights.
+    </p>
+  </div>
+
+  <div align="center" style="background: #0B1120; border: 1px solid #334155; border-radius: 16px; padding: 18px; margin-bottom: 28px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);">
+    <img src="public/animated_pipeline.svg" alt="Animated 6-Stage Threat Detection Pipeline" width="100%" style="border-radius: 10px; display: block;" />
+    <p style="margin: 12px 0 0 0; font-size: 12px; font-weight: 600; color: #94A3B8;">
+      Figure 2.0 — Live signal pipeline: Canonicalization ➔ Entropy ➔ Homoglyph Scan ➔ Typosquat ➔ ML Inference ➔ Action Verdict
+    </p>
+  </div>
+
+  <div style="border-bottom: 1px solid #F1F5F9; padding-bottom: 12px; margin-bottom: 20px;">
+    <h2 style="margin: 0; font-size: 22px; font-weight: 800; color: #0F172A;">
+      📱 Animated Android Intent Gatekeeper &amp; Siren Flow
+    </h2>
+    <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748B;">
+      How AV-SAFE halts malicious link traversal from SMS, WhatsApp, and Telegram before browser handover.
+    </p>
+  </div>
+
+  <div align="center" style="background: #0B1120; border: 1px solid #334155; border-radius: 16px; padding: 18px; margin-bottom: 24px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);">
+    <img src="public/animated_android_shield.svg" alt="Animated Android Shield Interception Lifecycle" width="100%" style="border-radius: 10px; display: block;" />
+    <p style="margin: 12px 0 0 0; font-size: 12px; font-weight: 600; color: #94A3B8;">
+      Figure 2.1 — Mobile lifecycle: Link tap in chat app ➔ OS Intent trap ➔ On-device scoring ➔ Hardware audio siren ➔ Safe Sandbox
+    </p>
+  </div>
+
+  <!-- Scoring Tier Matrix Graphic -->
+  <div style="border-bottom: 1px solid #F1F5F9; padding-bottom: 12px; margin-bottom: 20px;">
+    <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: #0F172A;">
+      ⚖️ Dynamic Threat Scoring Matrix
+    </h2>
+    <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748B;">
+      Explainable risk tiers and automated enforcement policies based on combined scores.
+    </p>
+  </div>
+
+  <div align="center" style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 16px; padding: 16px; margin-bottom: 20px;">
+    <img src="public/threat-scoring-matrix.png" alt="Dynamic Threat Scoring Matrix" width="100%" style="border-radius: 10px; display: block;" />
+  </div>
+
+  <table width="100%" border="0" cellspacing="0" cellpadding="10" style="border-collapse: collapse; font-size: 13px; border: 1px solid #E2E8F0; border-radius: 10px; overflow: hidden;">
+    <thead>
+      <tr style="background: #F1F5F9; color: #0F172A; text-align: left;">
+        <th style="padding: 12px; border-bottom: 1px solid #E2E8F0;">Score Range</th>
+        <th style="padding: 12px; border-bottom: 1px solid #E2E8F0;">Classification</th>
+        <th style="padding: 12px; border-bottom: 1px solid #E2E8F0;">Heuristic Indicators Triggered</th>
+        <th style="padding: 12px; border-bottom: 1px solid #E2E8F0;">Ecosystem Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; font-weight: bold; color: #16A34A;">80 – 100</td>
+        <td style="padding: 12px; border-bottom: 1px solid #E2E8F0;"><span style="background: #DCFCE7; color: #166534; font-weight: 700; padding: 2px 8px; border-radius: 4px;">SAFE</span></td>
+        <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; color: #475569;">Verified root domains, valid SSL cert, 0 heuristic triggers, balanced character entropy.</td>
+        <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; color: #16A34A; font-weight: 600;">Allow Immediate Navigation</td>
+      </tr>
+      <tr>
+        <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; font-weight: bold; color: #D97706;">45 – 79</td>
+        <td style="padding: 12px; border-bottom: 1px solid #E2E8F0;"><span style="background: #FEF3C7; color: #92400E; font-weight: 700; padding: 2px 8px; border-radius: 4px;">SUSPICIOUS</span></td>
+        <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; color: #475569;">Abusive TLD (.xyz, .top), high entropy, deep subdomain count (&gt;3), suspicious paths.</td>
+        <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; color: #D97706; font-weight: 600;">Warn User + Offer Safe Sandbox</td>
+      </tr>
+      <tr>
+        <td style="padding: 12px; font-weight: bold; color: #DC2626;">0 – 44</td>
+        <td style="padding: 12px;"><span style="background: #FEE2E2; color: #991B1B; font-weight: 700; padding: 2px 8px; border-radius: 4px;">DANGEROUS</span></td>
+        <td style="padding: 12px; color: #475569;">Confirmed typosquatting, IDN homoglyphs, brand keyword spoofing, or blacklist match.</td>
+        <td style="padding: 12px; color: #DC2626; font-weight: 600;">Hard Intercept + Audio Hazard Alert</td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+
+<!-- ==========================================
+     SECTION 3: LIVE SOC SECOPS DASHBOARD
      ========================================== -->
 
 <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; padding: 32px 28px; box-shadow: 0 4px 16px rgba(0,0,0,0.03); margin-bottom: 24px;">
@@ -138,21 +223,21 @@
   <div align="center" style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 16px; padding: 20px; margin-bottom: 24px;">
     <img src="public/secops-soc-dashboard.jpg" alt="AV-SAFE Centralized Threat Shield SOC Dashboard" width="100%" style="border-radius: 12px; border: 1px solid #E2E8F0; box-shadow: 0 4px 18px rgba(0,0,0,0.05); display: block;" />
     <p style="margin: 12px 0 0 0; font-size: 12px; font-weight: 600; color: #64748B;">
-      Figure 2.0 — Live SecOps SOC Operations Console: Real-time scan telemetry, safe vs malicious ratios, and source splits
+      Figure 3.0 — Live SecOps SOC Operations Console: Real-time scan telemetry, safe vs malicious ratios, and source splits
     </p>
   </div>
 
   <div align="center" style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 16px; padding: 20px;">
     <img src="public/threat-dashboard.png" alt="Threat Analytics Detail Dashboard" width="100%" style="border-radius: 12px; border: 1px solid #E2E8F0; display: block;" />
     <p style="margin: 12px 0 0 0; font-size: 12px; font-weight: 600; color: #64748B;">
-      Figure 2.1 — Granular breakdown: Targeted brands, top malicious TLD distributions, and neural coefficient verification
+      Figure 3.1 — Granular breakdown: Targeted brands, top malicious TLD distributions, and neural coefficient verification
     </p>
   </div>
 
 </div>
 
 <!-- ==========================================
-     SECTION 3: CLIENT INTERCEPTION INTERFACES
+     SECTION 4: CLIENT INTERCEPTION INTERFACES
      ========================================== -->
 
 <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; padding: 32px 28px; box-shadow: 0 4px 16px rgba(0,0,0,0.03); margin-bottom: 24px;">
@@ -222,7 +307,7 @@
 </div>
 
 <!-- ==========================================
-     SECTION 4: 4-PANEL WEB DIAGNOSTIC SUITE
+     SECTION 5: 4-PANEL WEB DIAGNOSTIC SUITE
      ========================================== -->
 
 <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; padding: 32px 28px; box-shadow: 0 4px 16px rgba(0,0,0,0.03); margin-bottom: 24px;">
@@ -232,7 +317,7 @@
       🔍 Modular Threat Diagnostic Suites
     </h2>
     <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748B;">
-      Explore the comprehensive analytical modules built into the web security console.
+      Explore the analytical modules built into the web security console.
     </p>
   </div>
 
@@ -252,7 +337,7 @@
       <!-- Panel 2 -->
       <td width="50%" valign="top" style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 14px; padding: 18px;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-          <span style="font-size: 14px; font-weight: 700; color: #0F172A;">2. Threat Feeds & Protection</span>
+          <span style="font-size: 14px; font-weight: 700; color: #0F172A;">2. Threat Feeds &amp; Protection</span>
           <span style="font-size: 10px; font-weight: 700; background: #DCFCE7; color: #166534; padding: 2px 8px; border-radius: 9999px;">ZERO-LATENCY</span>
         </div>
         <img src="public/2nd_page2.png" alt="Threat Feeds and Protection" width="100%" style="border-radius: 8px; border: 1px solid #E2E8F0; margin-bottom: 10px; display: block;" />
@@ -276,7 +361,7 @@
       <!-- Panel 4 -->
       <td width="50%" valign="top" style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 14px; padding: 18px;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-          <span style="font-size: 14px; font-weight: 700; color: #0F172A;">4. Mobile Gateway & Sandboxing</span>
+          <span style="font-size: 14px; font-weight: 700; color: #0F172A;">4. Mobile Gateway &amp; Sandboxing</span>
           <span style="font-size: 10px; font-weight: 700; background: #F3E8FF; color: #6B21A8; padding: 2px 8px; border-radius: 9999px;">KOTLIN ART ENGINE</span>
         </div>
         <img src="public/2nd_page4.png" alt="Mobile Gateway and Sandboxing" width="100%" style="border-radius: 8px; border: 1px solid #E2E8F0; margin-bottom: 10px; display: block;" />
@@ -290,73 +375,6 @@
 </div>
 
 <!-- ==========================================
-     SECTION 5: DETECTION PIPELINE & TIERS
-     ========================================== -->
-
-<div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; padding: 32px 28px; box-shadow: 0 4px 16px rgba(0,0,0,0.03); margin-bottom: 24px;">
-
-  <div style="border-bottom: 1px solid #F1F5F9; padding-bottom: 12px; margin-bottom: 20px;">
-    <h2 style="margin: 0; font-size: 22px; font-weight: 800; color: #0F172A;">
-      🧠 Hybrid Detection Engine Pipeline
-    </h2>
-    <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748B;">
-      Deterministic 6-stage pipeline executing zero-latency on-device inference without cloud dependencies.
-    </p>
-  </div>
-
-  <!-- Pipeline Graphic -->
-  <div align="center" style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 16px; padding: 16px; margin-bottom: 28px;">
-    <img src="public/threat-detection-pipeline.png" alt="6-Stage Threat Detection Pipeline" width="100%" style="border-radius: 10px; display: block;" />
-  </div>
-
-  <!-- Scoring Tier Matrix Graphic -->
-  <div style="border-bottom: 1px solid #F1F5F9; padding-bottom: 12px; margin-bottom: 20px;">
-    <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: #0F172A;">
-      ⚖️ Dynamic Threat Scoring Matrix
-    </h2>
-    <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748B;">
-      Explainable risk tiers and automated enforcement policies based on combined scores.
-    </p>
-  </div>
-
-  <div align="center" style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 16px; padding: 16px; margin-bottom: 20px;">
-    <img src="public/threat-scoring-matrix.png" alt="Dynamic Threat Scoring Matrix" width="100%" style="border-radius: 10px; display: block;" />
-  </div>
-
-  <table width="100%" border="0" cellspacing="0" cellpadding="10" style="border-collapse: collapse; font-size: 13px; border: 1px solid #E2E8F0; border-radius: 10px; overflow: hidden;">
-    <thead>
-      <tr style="background: #F1F5F9; color: #0F172A; text-align: left;">
-        <th style="padding: 12px; border-bottom: 1px solid #E2E8F0;">Score Range</th>
-        <th style="padding: 12px; border-bottom: 1px solid #E2E8F0;">Classification</th>
-        <th style="padding: 12px; border-bottom: 1px solid #E2E8F0;">Heuristic Indicators Triggered</th>
-        <th style="padding: 12px; border-bottom: 1px solid #E2E8F0;">Ecosystem Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; font-weight: bold; color: #16A34A;">80 – 100</td>
-        <td style="padding: 12px; border-bottom: 1px solid #E2E8F0;"><span style="background: #DCFCE7; color: #166534; font-weight: 700; padding: 2px 8px; border-radius: 4px;">SAFE</span></td>
-        <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; color: #475569;">Verified root domains, valid SSL cert, 0 heuristic triggers, balanced character entropy.</td>
-        <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; color: #16A34A; font-weight: 600;">Allow Immediate Navigation</td>
-      </tr>
-      <tr>
-        <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; font-weight: bold; color: #D97706;">45 – 79</td>
-        <td style="padding: 12px; border-bottom: 1px solid #E2E8F0;"><span style="background: #FEF3C7; color: #92400E; font-weight: 700; padding: 2px 8px; border-radius: 4px;">SUSPICIOUS</span></td>
-        <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; color: #475569;">Abusive TLD (.xyz, .top), high entropy, deep subdomain count (&gt;3), suspicious paths.</td>
-        <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; color: #D97706; font-weight: 600;">Warn User + Offer Safe Sandbox</td>
-      </tr>
-      <tr>
-        <td style="padding: 12px; font-weight: bold; color: #DC2626;">0 – 44</td>
-        <td style="padding: 12px;"><span style="background: #FEE2E2; color: #991B1B; font-weight: 700; padding: 2px 8px; border-radius: 4px;">DANGEROUS</span></td>
-        <td style="padding: 12px; color: #475569;">Confirmed typosquatting, IDN homoglyphs, brand keyword spoofing, or blacklist match.</td>
-        <td style="padding: 12px; color: #DC2626; font-weight: 600;">Hard Intercept + Audio Hazard Alert</td>
-      </tr>
-    </tbody>
-  </table>
-
-</div>
-
-<!-- ==========================================
      SECTION 6: TECHNOLOGY STACK
      ========================================== -->
 
@@ -364,7 +382,7 @@
 
   <div style="border-bottom: 1px solid #F1F5F9; padding-bottom: 12px; margin-bottom: 20px;">
     <h2 style="margin: 0; font-size: 22px; font-weight: 800; color: #0F172A;">
-      🛠️ Technology Stack & Engineering Specifications
+      🛠️ Technology Stack &amp; Engineering Specifications
     </h2>
   </div>
 
@@ -378,7 +396,7 @@
           <li><b>Tailwind CSS v4</b> + PostCSS</li>
           <li><b>Recharts 3.9</b> (Real-Time Visuals)</li>
           <li><b>Framer Motion 12.42</b></li>
-          <li><b>MongoDB & Mongoose 9.7</b></li>
+          <li><b>MongoDB &amp; Mongoose 9.7</b></li>
         </ul>
       </td>
       <td width="33.3%" valign="top" style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px;">
@@ -416,7 +434,7 @@
 
   <div style="border-bottom: 1px solid #F1F5F9; padding-bottom: 12px; margin-bottom: 20px;">
     <h2 style="margin: 0; font-size: 22px; font-weight: 800; color: #0F172A;">
-      ⚙️ Deployment & Quickstart Guide
+      ⚙️ Deployment &amp; Quickstart Guide
     </h2>
   </div>
 
@@ -436,7 +454,7 @@
   # 4. Start Next.js development server
   npm run dev
   ```
-  * Access **Landing Page & Web Scanner**: [http://localhost:3000](http://localhost:3000)
+  * Access **Landing Page &amp; Web Scanner**: [http://localhost:3000](http://localhost:3000)
   * Access **SecOps SOC Dashboard**: [http://localhost:3000/system](http://localhost:3000/system)
 
   <br />
@@ -458,58 +476,58 @@
 </div>
 
 <!-- ==========================================
-     SECTION 8: MEET THE BUILDERS
+     SECTION 8: FOUNDERS & LEAD ARCHITECTS
      ========================================== -->
 
 <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; padding: 32px 28px; box-shadow: 0 4px 16px rgba(0,0,0,0.03); margin-bottom: 24px;">
 
-  <div align="center" style="margin-bottom: 24px;">
+  <div align="center" style="margin-bottom: 28px;">
     <span style="font-size: 11px; font-weight: 800; color: #1463FF; background: #EFF6FF; border: 1px solid #DBEAFE; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.5px;">
-      🏆 MEET THE BUILDERS
+      🏆 CORE ENGINEERING TEAM
     </span>
     <h2 style="margin: 10px 0 4px 0; font-size: 24px; font-weight: 800; color: #0F172A;">
-      Architected by Security & AI Pioneers
+      Meet the Founders &amp; Architects
     </h2>
     <p style="margin: 0; font-size: 13px; color: #64748B;">
-      The core engineering team behind AV-SAFE's zero-latency threat engine, mobile protections, and cloud intelligence.
+      The core innovators behind AV-SAFE's zero-latency threat engine, mobile protection matrix, and SecOps cloud intelligence.
     </p>
   </div>
 
-  <table width="100%" border="0" cellspacing="12" cellpadding="0">
+  <table width="100%" border="0" cellspacing="14" cellpadding="0">
     <tr>
-      <!-- Builder 1: Hritik -->
-      <td width="33.3%" valign="top" style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 14px; padding: 22px; text-align: center;">
-        <img src="public/team-hritik-hd.png" alt="Hritik Jaishwal" width="130" style="border-radius: 50%; border: 3px solid #1463FF; box-shadow: 0 4px 12px rgba(20,99,255,0.18); margin-bottom: 12px;" />
-        <div style="font-size: 16px; font-weight: 800; color: #0F172A;">Hritik Jaishwal</div>
-        <div style="font-size: 12px; font-weight: 600; color: #1463FF; margin-top: 2px;">Lead Security Researcher & ML Architect</div>
-        <div style="font-size: 11px; font-weight: 500; color: #64748B; margin-top: 2px;">Phishing Detection Engine & Heuristics Core</div>
+      <!-- Founder 1: Anmol Malviya -->
+      <td width="33.3%" valign="top" style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 16px; padding: 22px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+        <img src="public/team_founder_anmol.jpg" alt="Anmol Malviya" width="130" height="130" style="border-radius: 50%; border: 3px solid #1463FF; box-shadow: 0 4px 14px rgba(20,99,255,0.22); margin-bottom: 12px; object-fit: cover;" />
+        <div style="font-size: 17px; font-weight: 800; color: #0F172A;">Anmol Malviya</div>
+        <div style="font-size: 12px; font-weight: 700; color: #1463FF; margin-top: 2px;">Co-Founder &amp; AI / Threat Intel Lead</div>
+        <div style="font-size: 11px; font-weight: 500; color: #64748B; margin-top: 3px;">ML Vector Inference &amp; Platform Architecture</div>
         <hr style="border: 0; border-top: 1px solid #E2E8F0; margin: 12px 0;" />
-        <p style="font-size: 12px; color: #475569; line-height: 1.5; margin: 0; text-align: left;">
-          Architected the 24-feature zero-latency URL scanner, Shannon entropy matrix, and heuristic defense against IDN homograph and typosquatting attacks.
+        <p style="font-size: 12px; color: #475569; line-height: 1.55; margin: 0; text-align: left;">
+          Engineered the 24-feature ML vector classification engine, threat intelligence ingestion pipelines, real-time blacklist edge caching, and model retraining feedback loops.
         </p>
       </td>
 
-      <!-- Builder 2: Tanay -->
-      <td width="33.3%" valign="top" style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 14px; padding: 22px; text-align: center;">
-        <img src="public/team-tanay-hd.png" alt="Tanay Agrawal" width="130" style="border-radius: 50%; border: 3px solid #6366F1; box-shadow: 0 4px 12px rgba(99,102,241,0.18); margin-bottom: 12px;" />
-        <div style="font-size: 16px; font-weight: 800; color: #0F172A;">Tanay Agrawal</div>
-        <div style="font-size: 12px; font-weight: 600; color: #6366F1; margin-top: 2px;">Full-Stack & Systems Engineer</div>
-        <div style="font-size: 11px; font-weight: 500; color: #64748B; margin-top: 2px;">Platform Architecture & Realtime Protection</div>
+      <!-- Founder 2: Tanay Agrawal -->
+      <td width="33.3%" valign="top" style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 16px; padding: 22px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+        <img src="public/team_founder_tanay.jpg" alt="Tanay Agrawal" width="130" height="130" style="border-radius: 50%; border: 3px solid #6366F1; box-shadow: 0 4px 14px rgba(99,102,241,0.22); margin-bottom: 12px; object-fit: cover;" />
+        <div style="font-size: 17px; font-weight: 800; color: #0F172A;">Tanay Agrawal</div>
+        <div style="font-size: 12px; font-weight: 700; color: #6366F1; margin-top: 2px;">Co-Founder &amp; Full-Stack Systems Lead</div>
+        <div style="font-size: 11px; font-weight: 500; color: #64748B; margin-top: 3px;">SecOps Console &amp; Interception Gatekeepers</div>
         <hr style="border: 0; border-top: 1px solid #E2E8F0; margin: 12px 0;" />
-        <p style="font-size: 12px; color: #475569; line-height: 1.5; margin: 0; text-align: left;">
-          Built the Next.js SecOps console, Android client infrastructure, telemetry-free on-device sandbox, and real-time Recharts dashboard visualization.
+        <p style="font-size: 12px; color: #475569; line-height: 1.55; margin: 0; text-align: left;">
+          Architected the high-throughput Next.js SecOps dashboard, Chromium MV3 DeclarativeNetRequest edge worker, scriptless sandbox virtualization, and live analytics telemetry.
         </p>
       </td>
 
-      <!-- Builder 3: Anmol -->
-      <td width="33.3%" valign="top" style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 14px; padding: 22px; text-align: center;">
-        <img src="public/team-anmol-hd.png" alt="Anmol Malviya" width="130" style="border-radius: 50%; border: 3px solid #10B981; box-shadow: 0 4px 12px rgba(16,185,129,0.18); margin-bottom: 12px;" />
-        <div style="font-size: 16px; font-weight: 800; color: #0F172A;">Anmol Malviya</div>
-        <div style="font-size: 12px; font-weight: 600; color: #10B981; margin-top: 2px;">AI & Threat Intelligence Engineer</div>
-        <div style="font-size: 11px; font-weight: 500; color: #64748B; margin-top: 2px;">RAG Pipeline & Model Retraining</div>
+      <!-- Founder 3: Hritik Jaishwal -->
+      <td width="33.3%" valign="top" style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 16px; padding: 22px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+        <img src="public/team_founder_hritik.jpg" alt="Hritik Jaishwal" width="130" height="130" style="border-radius: 50%; border: 3px solid #10B981; box-shadow: 0 4px 14px rgba(16,185,129,0.22); margin-bottom: 12px; object-fit: cover;" />
+        <div style="font-size: 17px; font-weight: 800; color: #0F172A;">Hritik Jaishwal</div>
+        <div style="font-size: 12px; font-weight: 700; color: #10B981; margin-top: 2px;">Co-Founder &amp; Security / Mobile Lead</div>
+        <div style="font-size: 11px; font-weight: 500; color: #64748B; margin-top: 3px;">Native Android Shield &amp; Heuristics Core</div>
         <hr style="border: 0; border-top: 1px solid #E2E8F0; margin: 12px 0;" />
-        <p style="font-size: 12px; color: #475569; line-height: 1.5; margin: 0; text-align: left;">
-          Spearheaded threat intelligence vector embedding pipelines, automated phishing telemetry classification, and continuous feedback loop retraining.
+        <p style="font-size: 12px; color: #475569; line-height: 1.55; margin: 0; text-align: left;">
+          Developed the Kotlin Native Android Link Shield, deep intent filter trap, hardware audio hazard siren, Shannon entropy calculator, and typosquatting detection matrix.
         </p>
       </td>
     </tr>
