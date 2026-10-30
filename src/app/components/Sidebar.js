@@ -58,15 +58,15 @@ export default function Sidebar({ activeTab, setActiveTab, threatStats, navItems
         </div>
         <div className="grid grid-cols-3 gap-2 text-center">
           <div className="bg-white p-2 rounded-xl border border-slate-200/80 shadow-2xs">
-            <span className="block text-sm font-bold text-[#10B981]">{threatStats?.safe ?? 8}</span>
+            <span className="block text-sm font-bold text-[#10B981]">{threatStats?.safe ?? 0}</span>
             <span className="text-[9px] text-slate-500 font-medium block mt-0.5">Safe</span>
           </div>
           <div className="bg-white p-2 rounded-xl border border-slate-200/80 shadow-2xs">
-            <span className="block text-sm font-bold text-[#F59E0B]">{threatStats?.suspicious ?? 3}</span>
+            <span className="block text-sm font-bold text-[#F59E0B]">{threatStats?.suspicious ?? 0}</span>
             <span className="text-[9px] text-slate-500 font-medium block mt-0.5">Warn</span>
           </div>
           <div className="bg-white p-2 rounded-xl border border-slate-200/80 shadow-2xs">
-            <span className="block text-sm font-bold text-[#EF4444]">{threatStats?.dangerous ?? 4}</span>
+            <span className="block text-sm font-bold text-[#EF4444]">{threatStats?.dangerous ?? 0}</span>
             <span className="text-[9px] text-slate-500 font-medium block mt-0.5">Threat</span>
           </div>
         </div>
