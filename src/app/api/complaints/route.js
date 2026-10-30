@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Complaint from '@/lib/models/Complaint';
+import UrlScan from '@/lib/models/UrlScan';
 import { validateComplaintInput } from '@/lib/validation/complaint';
 import { checkRateLimit } from '@/lib/security/rateLimit';
 
@@ -93,6 +94,22 @@ export async function POST(request) {
       clientIp
     });
 
+    // Mirror complaint into UrlScan so it reflects across scan history & overview
+    try {
+      const targetUrl = validation.data.normalizedUrl || validation.data.originalUrl;
+      await UrlScan.deleteMany({ url: targetUrl });
+      await UrlScan.create({
+        url: targetUrl,
+        rating: validation.data.detectionVerdict === 'DANGEROUS' ? 'DANGEROUS' : (validation.data.detectionVerdict === 'SAFE' ? 'SAFE' : 'SUSPICIOUS'),
+        score: validation.data.safetyScore,
+        detectionReasons: validation.data.detectionReasons || [],
+        date: new Date().toLocaleDateString(),
+        createdAt: new Date()
+      });
+    } catch (mirrorErr) {
+      console.warn('Could not mirror complaint to UrlScan:', mirrorErr);
+    }
+
     return NextResponse.json(
       {
         success: true,
@@ -136,4 +153,3 @@ export async function GET(request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-
