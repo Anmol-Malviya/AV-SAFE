@@ -19,6 +19,7 @@ export async function GET() {
       url: item.url,
       rating: item.rating,
       score: item.score,
+      source: item.source || 'ANDROID_BROWSER',
       date: item.date || new Date(item.createdAt).toLocaleDateString(),
       createdAt: item.createdAt,
       detectionReasons: item.detectionReasons || []
@@ -40,7 +41,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid JSON request body' }, { status: 400 });
     }
 
-    const { url, rating, score, detectionReasons } = body;
+    const { url, rating, score, detectionReasons, source } = body;
 
     if (!url || !rating || score === undefined) {
       return NextResponse.json({ error: 'url, rating, and score are required' }, { status: 400 });
@@ -67,6 +68,7 @@ export async function POST(request) {
       url: validUrl.originalUrl,
       rating: validRating,
       score: validScore,
+      source: source || 'WEB_SCANNER',
       detectionReasons: Array.isArray(detectionReasons) ? detectionReasons : [],
       date: new Date().toLocaleDateString(),
       createdAt: new Date()

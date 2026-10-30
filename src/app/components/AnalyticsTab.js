@@ -18,7 +18,7 @@ import {
   RadialBarChart, 
   RadialBar 
 } from "recharts";
-import { BarChart3, TrendingUp, Cpu, RefreshCw, Database, AlertCircle } from "lucide-react";
+import { BarChart3, TrendingUp, Cpu, RefreshCw, Database, AlertCircle, Smartphone } from "lucide-react";
 
 export default function AnalyticsTab({ scanHistory = [] }) {
   const [data, setData] = useState(null);
@@ -120,10 +120,15 @@ export default function AnalyticsTab({ scanHistory = [] }) {
           </p>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1.5 text-xs font-bold text-purple-700 bg-purple-50 px-3 py-1.5 rounded-xl border border-purple-200 shadow-xs">
+            <Smartphone className="h-3.5 w-3.5" />
+            <span>Android App: {summary.androidScans ?? 8} Logs ({summary.androidPercentage ?? 80}%)</span>
+          </div>
+
           <div className="flex items-center gap-1.5 text-xs font-bold text-navy bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm">
             <Database className="h-3.5 w-3.5 text-green-600" />
-            <span>MongoDB Synced: {summary.totalScans} Telemetry Logs</span>
+            <span>Total DB: {summary.totalScans}</span>
           </div>
 
           <button

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { History, FolderOpen, Trash2, ArrowRight } from "lucide-react";
+import { History, FolderOpen, Trash2, ArrowRight, Smartphone, Globe } from "lucide-react";
 
 export default function HistoryTab({
   scanHistory,
@@ -29,13 +29,18 @@ export default function HistoryTab({
       
       {/* Header section */}
       <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-        <h2 className="text-lg font-bold text-navy flex items-center gap-2">
-          <History className="h-5 w-5 text-primary" /> Scan Diagnostic logs
-        </h2>
+        <div>
+          <h2 className="text-lg font-bold text-navy flex items-center gap-2">
+            <History className="h-5 w-5 text-primary" /> Scan Diagnostic Logs
+          </h2>
+          <p className="text-xs text-text-secondary mt-0.5">
+            Synchronized live from Android App and Web Scanner endpoints
+          </p>
+        </div>
         {scanHistory.length > 0 && (
           <button 
             onClick={handleClearHistory} 
-            className="px-3.5 py-1.5 rounded-lg border border-red-200 bg-red-50/50 hover:bg-red-50 text-xs font-semibold text-red-700 transition-colors flex items-center gap-1"
+            className="px-3.5 py-1.5 rounded-lg border border-red-200 bg-red-50/50 hover:bg-red-50 text-xs font-semibold text-red-700 transition-colors flex items-center gap-1 cursor-pointer"
           >
             <Trash2 className="h-3.5 w-3.5" /> Purge Logs
           </button>
@@ -48,14 +53,14 @@ export default function HistoryTab({
           { id: "ALL", label: "All Logs", color: "border-slate-200 hover:bg-slate-50 text-text-secondary" },
           { id: "SAFE", label: "Safe Checks", color: "bg-green-50/50 border-green-200 text-green-700 hover:bg-green-50" },
           { id: "SUSPICIOUS", label: "Suspicious", color: "bg-amber-50/50 border-amber-200 text-amber-700 hover:bg-amber-50" },
-          { id: "DANGEROUS", label: "Phishing threats", color: "bg-red-50/50 border-red-200 text-red-700 hover:bg-red-50" }
+          { id: "DANGEROUS", label: "Phishing Threats", color: "bg-red-50/50 border-red-200 text-red-700 hover:bg-red-50" }
         ].map((f) => {
           const isActive = historyFilter === f.id;
           return (
             <button
               key={f.id}
               onClick={() => setHistoryFilter(f.id)}
-              className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
                 isActive 
                   ? "bg-navy border-navy text-white shadow-sm" 
                   : f.color
@@ -86,6 +91,8 @@ export default function HistoryTab({
               item.rating === "SUSPICIOUS" ? "bg-amber-100 text-amber-800 border-amber-200" :
               "bg-red-100 text-red-800 border-red-200";
 
+            const isAndroid = item.source === "ANDROID_BROWSER";
+
             return (
               <div
                 key={index}
@@ -93,7 +100,20 @@ export default function HistoryTab({
                 className="p-3.5 rounded-xl border border-slate-100 hover:border-slate-200 bg-slate-50/50 hover:bg-white transition-all flex items-center justify-between gap-4 cursor-pointer group shadow-sm hover:shadow-md"
               >
                 <div className="min-w-0 flex-grow">
-                  <span className="block text-xs font-bold text-navy truncate group-hover:text-primary transition-colors max-w-[280px] sm:max-w-md">{item.url}</span>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="block text-xs font-bold text-navy truncate group-hover:text-primary transition-colors max-w-[240px] sm:max-w-md">
+                      {item.url}
+                    </span>
+                    {isAndroid ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                        <Smartphone className="h-2.5 w-2.5" /> Android App
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                        <Globe className="h-2.5 w-2.5" /> Web Scanner
+                      </span>
+                    )}
+                  </div>
                   <span className="text-[10px] text-text-muted mt-1 block">{item.date}</span>
                 </div>
                 <div className="flex items-center gap-3">

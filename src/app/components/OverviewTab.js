@@ -16,7 +16,9 @@ import {
   ChevronRight,
   ArrowRight,
   QrCode,
-  Scan
+  Scan,
+  Smartphone,
+  Globe
 } from "lucide-react";
 import { 
   AreaChart, 
@@ -176,6 +178,7 @@ export default function OverviewTab({
       return {
         url: item.url,
         rating: item.rating || "SAFE",
+        source: item.source || "ANDROID_BROWSER",
         time: timeAgo || "Recent"
       };
     });
@@ -533,11 +536,20 @@ export default function OverviewTab({
                         onClick={() => handleRecentClick(item.url)}
                         className="group flex items-center justify-between p-2.5 rounded-xl hover:bg-[#F8FAFC] transition-colors cursor-pointer border border-transparent hover:border-[#E5ECF5]"
                       >
-                        <div className="flex items-center gap-3 min-w-0 flex-1 mr-3">
+                        <div className="flex items-center gap-2.5 min-w-0 flex-1 mr-3">
                           {renderIcon(item.rating)}
                           <span className="text-xs font-medium text-[#101D36] group-hover:text-[#1463FF] transition-colors truncate font-mono">
                             {item.url}
                           </span>
+                          {item.source === "ANDROID_BROWSER" ? (
+                            <span className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-purple-50 text-purple-700 border border-purple-200 shrink-0">
+                              <Smartphone className="h-2.5 w-2.5" /> Android App
+                            </span>
+                          ) : (
+                            <span className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-50 text-blue-700 border border-blue-200 shrink-0">
+                              <Globe className="h-2.5 w-2.5" /> Web
+                            </span>
+                          )}
                         </div>
 
                         <div className="flex items-center gap-4 shrink-0">

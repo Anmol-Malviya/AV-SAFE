@@ -92,6 +92,7 @@ export async function GET() {
           url: s.url,
           rating: s.rating,
           score: s.score,
+          source: s.source || 'ANDROID_BROWSER',
           createdAt: s.createdAt ? new Date(s.createdAt) : new Date(),
           reasons: s.detectionReasons || [],
           clientIp: null,
@@ -107,6 +108,7 @@ export async function GET() {
           url: c.normalizedUrl || c.originalUrl,
           rating: c.detectionVerdict === 'DANGEROUS' ? 'DANGEROUS' : (c.detectionVerdict === 'SAFE' ? 'SAFE' : 'SUSPICIOUS'),
           score: c.safetyScore ?? 50,
+          source: c.source || 'ANDROID_BROWSER',
           createdAt: c.createdAt ? new Date(c.createdAt) : new Date(),
           reasons: c.detectionReasons || [],
           clientIp: c.clientIp || null,
@@ -117,6 +119,11 @@ export async function GET() {
 
     const items = Array.from(combinedMap.values());
     const totalScans = items.length;
+
+    // Platform distribution (Android vs Web)
+    const androidScans = items.filter((i) => i.source === 'ANDROID_BROWSER').length;
+    const webScans = items.filter((i) => i.source !== 'ANDROID_BROWSER').length;
+    const androidPercentage = totalScans > 0 ? Math.round((androidScans / totalScans) * 100) : 0;
 
     // 1. Weekly Diagnostic Volumes (past 7 days Mon-Sun)
     const orderedDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -221,7 +228,10 @@ export async function GET() {
         suspiciousCount,
         dangerousCount,
         threatsCount,
-        averageScore
+        averageScore,
+        androidScans,
+        webScans,
+        androidPercentage
       },
       trendsData,
       categoryData,
@@ -238,4 +248,3 @@ export async function GET() {
     );
   }
 }
-
