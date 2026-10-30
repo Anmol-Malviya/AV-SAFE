@@ -119,21 +119,32 @@ flowchart TD
 
 ## 📸 Platform Interface Showcase
 
-### 1. Unified Web SecOps Dashboard & Android Mobile Client
+### 1. Centralized Threat Shield SOC Console (Main Dashboard UI)
+> **The central operations hub for real-time threat telemetry:**
+> Aggregates synchronized live audit streams from Android endpoints, Browser Extensions, and Web Scanner inputs. Features the AI Threat Risk Meter circular gauge, live 24-hour scan volume timeline (Recharts), active threat alerts, and instant link verification.
+
 <div align="center">
-  <img src="public/av-safe-hero-banner.jpg" alt="AV-SAFE Threat Defense Ecosystem" width="95%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); margin-bottom: 8px;" />
-  <p align="center"><em>Unified SecOps Console & Android Link Protection Client</em></p>
+  <img src="public/secops-soc-dashboard.jpg" alt="AV-SAFE Centralized Threat Shield SOC Dashboard" width="100%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(20,99,255,0.12); margin-bottom: 8px;" />
+  <p align="center"><em>Centralized Threat Shield SOC Console — Security Overview, AI Threat Risk Meter (47/100 Attention Index), 24h Scanned Threat Timeline, and real-time multi-platform audit log stream.</em></p>
 </div>
 
 <br />
 
-### 2. Browser Extension: Real-Time Threat Interception Page
+### 2. Browser Extension: Real-Time Threat Interception Shield
 > **What appears when you click a suspicious or malicious link:**
-> When the AV-SAFE Browser Extension detects a malicious or deceptive website, it immediately blocks navigation and launches this full-screen Threat Interception Shield before any payload or login form can load.
+> When the AV-SAFE Browser Extension detects a malicious or deceptive website, it immediately halts navigation before any network payload or phishing login form can execute, displaying this full-screen threat defense interface.
 
 <div align="center">
-  <img src="public/extension-threat-interception.jpg" alt="AV-SAFE Browser Extension Threat Interception Page" width="95%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(239,68,68,0.15); margin-bottom: 8px;" />
+  <img src="public/extension-threat-interception.jpg" alt="AV-SAFE Browser Extension Threat Interception Page" width="100%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(239,68,68,0.15); margin-bottom: 8px;" />
   <p align="center"><em>Active Threat Interception Shield — Displays the blocked destination, AI heuristic risk breakdown (Insecure HTTP, Brand Spoofing, Suspicious Keywords), Safety Score meter, and Safe Sandbox options.</em></p>
+</div>
+
+<br />
+
+### 3. Multi-Device Unified Protection (Mobile & Desktop)
+<div align="center">
+  <img src="public/av-safe-hero-banner.jpg" alt="AV-SAFE Unified Protection Ecosystem" width="100%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); margin-bottom: 8px;" />
+  <p align="center"><em>Synchronized Security Across Desktop SOC & Android Mobile Link Protection Client</em></p>
 </div>
 
 ## 🧠 Detection Engine Pipeline
