@@ -323,14 +323,18 @@ export default function SystemPage() {
     });
   };
 
-  const handleCheckEmailHeaders = () => {
-    if (!emailHeadersInput.trim()) return;
+  const handleCheckEmailHeaders = (customHeaders) => {
+    const textToAnalyze = typeof customHeaders === "string" ? customHeaders : emailHeadersInput;
+    if (!textToAnalyze || !textToAnalyze.trim()) return;
+    if (typeof customHeaders === "string") {
+      setEmailHeadersInput(customHeaders);
+    }
     setEmailScanLoading(true);
     setTimeout(() => {
-      const result = analyzeEmailHeaders(emailHeadersInput);
+      const result = analyzeEmailHeaders(textToAnalyze);
       setEmailScanResult(result);
       setEmailScanLoading(false);
-    }, 1000);
+    }, 700);
   };
 
   const handleQrScanSuccess = (decodedUrl) => {
@@ -421,6 +425,7 @@ export default function SystemPage() {
               emailHeadersInput={emailHeadersInput}
               setEmailHeadersInput={setEmailHeadersInput}
               emailScanResult={emailScanResult}
+              setEmailScanResult={setEmailScanResult}
               emailScanLoading={emailScanLoading}
               handleCheckEmailHeaders={handleCheckEmailHeaders}
               handleClearEmailInput={handleClearEmailInput}
