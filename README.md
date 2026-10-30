@@ -307,75 +307,7 @@
 </div>
 
 <!-- ==========================================
-     SECTION 5: 4-PANEL WEB DIAGNOSTIC SUITE
-     ========================================== -->
-
-<div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; padding: 32px 28px; box-shadow: 0 4px 16px rgba(0,0,0,0.03); margin-bottom: 24px;">
-
-  <div style="border-bottom: 1px solid #F1F5F9; padding-bottom: 12px; margin-bottom: 24px;">
-    <h2 style="margin: 0; font-size: 22px; font-weight: 800; color: #0F172A;">
-      🔍 Modular Threat Diagnostic Suites
-    </h2>
-    <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748B;">
-      Explore the analytical modules built into the web security console.
-    </p>
-  </div>
-
-  <table width="100%" border="0" cellspacing="16" cellpadding="0">
-    <tr>
-      <!-- Panel 1 -->
-      <td width="50%" valign="top" style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 14px; padding: 18px;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-          <span style="font-size: 14px; font-weight: 700; color: #0F172A;">1. 24-Feature URL Scanner</span>
-          <span style="font-size: 10px; font-weight: 700; background: #DBEAFE; color: #1E40AF; padding: 2px 8px; border-radius: 9999px;">ML + HEURISTICS</span>
-        </div>
-        <img src="public/2nd_page1.png" alt="24-Feature URL Analysis" width="100%" style="border-radius: 8px; border: 1px solid #E2E8F0; margin-bottom: 10px; display: block;" />
-        <p style="font-size: 12px; color: #475569; line-height: 1.5; margin: 0;">
-          Extracts Shannon entropy, structural syntax lengths, suspicious TLD indicators, sensitive keyword patterns, and Punycode homograph scripts.
-        </p>
-      </td>
-      <!-- Panel 2 -->
-      <td width="50%" valign="top" style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 14px; padding: 18px;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-          <span style="font-size: 14px; font-weight: 700; color: #0F172A;">2. Threat Feeds &amp; Protection</span>
-          <span style="font-size: 10px; font-weight: 700; background: #DCFCE7; color: #166534; padding: 2px 8px; border-radius: 9999px;">ZERO-LATENCY</span>
-        </div>
-        <img src="public/2nd_page2.png" alt="Threat Feeds and Protection" width="100%" style="border-radius: 8px; border: 1px solid #E2E8F0; margin-bottom: 10px; display: block;" />
-        <p style="font-size: 12px; color: #475569; line-height: 1.5; margin: 0;">
-          Automated edge-cache synchronization with active phishing databases and real-time blacklists to intercept known malicious campaigns instantly.
-        </p>
-      </td>
-    </tr>
-    <tr>
-      <!-- Panel 3 -->
-      <td width="50%" valign="top" style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 14px; padding: 18px;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-          <span style="font-size: 14px; font-weight: 700; color: #0F172A;">3. Email RFC 822 Header Parser</span>
-          <span style="font-size: 10px; font-weight: 700; background: #FEF3C7; color: #92400E; padding: 2px 8px; border-radius: 9999px;">SPF / DKIM / DMARC</span>
-        </div>
-        <img src="public/2nd_page3.png" alt="Email Header Security Parser" width="100%" style="border-radius: 8px; border: 1px solid #E2E8F0; margin-bottom: 10px; display: block;" />
-        <p style="font-size: 12px; color: #475569; line-height: 1.5; margin: 0;">
-          Inspects raw headers for cryptographic SPF authentication, DKIM digital signatures, and DMARC domain alignment to expose spoofed sender addresses.
-        </p>
-      </td>
-      <!-- Panel 4 -->
-      <td width="50%" valign="top" style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 14px; padding: 18px;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-          <span style="font-size: 14px; font-weight: 700; color: #0F172A;">4. Mobile Gateway &amp; Sandboxing</span>
-          <span style="font-size: 10px; font-weight: 700; background: #F3E8FF; color: #6B21A8; padding: 2px 8px; border-radius: 9999px;">KOTLIN ART ENGINE</span>
-        </div>
-        <img src="public/2nd_page4.png" alt="Mobile Gateway and Sandboxing" width="100%" style="border-radius: 8px; border: 1px solid #E2E8F0; margin-bottom: 10px; display: block;" />
-        <p style="font-size: 12px; color: #475569; line-height: 1.5; margin: 0;">
-          On-device intent handler guarding links across messaging apps, triggering hardware alarm notifications and providing a scriptless sandbox preview.
-        </p>
-      </td>
-    </tr>
-  </table>
-
-</div>
-
-<!-- ==========================================
-     SECTION 6: TECHNOLOGY STACK
+     SECTION 5: TECHNOLOGY STACK
      ========================================== -->
 
 <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; padding: 32px 28px; box-shadow: 0 4px 16px rgba(0,0,0,0.03); margin-bottom: 24px;">
@@ -427,7 +359,7 @@
 </div>
 
 <!-- ==========================================
-     SECTION 7: DEPLOYMENT GUIDE
+     SECTION 6: DEPLOYMENT GUIDE
      ========================================== -->
 
 <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; padding: 32px 28px; box-shadow: 0 4px 16px rgba(0,0,0,0.03); margin-bottom: 24px;">
@@ -476,7 +408,7 @@
 </div>
 
 <!-- ==========================================
-     SECTION 8: FOUNDERS & LEAD ARCHITECTS
+     SECTION 7: FOUNDERS & LEAD ARCHITECTS
      ========================================== -->
 
 <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; padding: 32px 28px; box-shadow: 0 4px 16px rgba(0,0,0,0.03); margin-bottom: 24px;">
