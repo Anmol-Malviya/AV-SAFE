@@ -5,8 +5,10 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
@@ -15,10 +17,14 @@ import androidx.appcompat.app.AppCompatActivity
 class WarningActivity : AppCompatActivity() {
 
     private var isSubmittingComplaint = false
+    private var mediaPlayer: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_warning)
+
+        // Play warning alert sound
+        playWarningSound()
 
         val url = intent.getStringExtra("URL") ?: ""
         val rating = intent.getStringExtra("RATING") ?: "SUSPICIOUS"
@@ -216,6 +222,34 @@ class WarningActivity : AppCompatActivity() {
             }
             startActivity(genericIntent)
             finish()
+        }
+    }
+
+    private fun playWarningSound() {
+        try {
+            mediaPlayer = MediaPlayer.create(this, R.raw.warning_sound)
+            mediaPlayer?.setOnCompletionListener { mp ->
+                mp.release()
+                mediaPlayer = null
+            }
+            mediaPlayer?.start()
+        } catch (e: Exception) {
+            Log.e("WarningActivity", "Error playing warning sound", e)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        try {
+            mediaPlayer?.let {
+                if (it.isPlaying) {
+                    it.stop()
+                }
+                it.release()
+            }
+            mediaPlayer = null
+        } catch (e: Exception) {
+            Log.e("WarningActivity", "Error releasing MediaPlayer", e)
         }
     }
 }

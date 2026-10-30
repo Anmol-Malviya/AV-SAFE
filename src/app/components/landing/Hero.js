@@ -15,7 +15,8 @@ import {
   Zap,
   Activity,
   Smartphone,
-  Laptop
+  Laptop,
+  Network
 } from "lucide-react";
 import { analyzeURL } from "@/lib/phishingEngine";
 import { buttonHover, buttonTap, fadeInUp } from "@/lib/animations";
@@ -251,6 +252,15 @@ export default function Hero() {
                 <Activity className="w-4 h-4 text-[#38BDF8]" />
                 <span>Launch Live SOC Console</span>
               </Link>
+              <a
+                href="/av_safe_architecture.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-blue-50 hover:bg-blue-100 border border-blue-200 text-[#1463FF] text-xs sm:text-sm font-semibold px-4 py-2.5 transition-all shadow-sm"
+              >
+                <Network className="w-4 h-4 text-[#1463FF]" />
+                <span>View Architecture</span>
+              </a>
               <a
                 href="/AV-SAFE.apk"
                 download
