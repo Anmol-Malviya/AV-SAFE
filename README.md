@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/android_phone_illustration.png" alt="AV-SAFE Threat Shield" width="120" style="margin-bottom: 12px;" />
+  <img src="public/av-safe-hero-banner.jpg" alt="AV-SAFE Multi-Platform Threat Defense" width="100%" style="border-radius: 14px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);" />
 
   # 🛡️ AV-SAFE (Phish-Guard)
 
@@ -113,6 +113,16 @@ flowchart TD
 * **Geographical Threat Vectors & Targeted Brands**: Horizontal distribution bar charts powered by Recharts.
 
 ---
+
+
+---
+
+## 📸 Platform Interface Showcase
+
+<div align="center">
+  <img src="public/av-safe-hero-banner.jpg" alt="AV-SAFE Threat Defense Ecosystem" width="95%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.12);" />
+  <p align="center"><em>AV-SAFE Unified Platform — Real-Time Cloud SOC SecOps Dashboard & Android On-Device Link Protection Client</em></p>
+</div>
 
 ## 🧠 Detection Engine Pipeline
 
