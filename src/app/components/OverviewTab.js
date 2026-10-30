@@ -28,25 +28,6 @@ import {
   CartesianGrid 
 } from "recharts";
 
-// Default old searched data preserved from original reference
-const DEFAULT_OLD_SEARCHES = [
-  { url: "https://example.com", rating: "SAFE", time: "2 min ago" },
-  { url: "http://secure-login-update.com", rating: "SUSPICIOUS", time: "12 min ago" },
-  { url: "https://github.com", rating: "SAFE", time: "28 min ago" },
-  { url: "http://paypal-account-verifiy.net", rating: "MALICIOUS", time: "1 hour ago" }
-];
-
-// Timeline area chart points matching original reference
-const TIMELINE_DATA = [
-  { time: "12 AM", scans: 3, safe: 3, threats: 0 },
-  { time: "4 AM", scans: 2, safe: 2, threats: 0 },
-  { time: "8 AM", scans: 7, safe: 6, threats: 1 },
-  { time: "12 PM", scans: 5, safe: 4, threats: 1 },
-  { time: "4 PM", scans: 12, safe: 2, threats: 0 },
-  { time: "8 PM", scans: 18, safe: 16, threats: 2 },
-  { time: "11 PM", scans: 14, safe: 13, threats: 1 }
-];
-
 // Recharts Custom Tooltip declared outside of render
 function CustomTimelineTooltip({ active, payload }) {
   if (active && payload && payload.length) {
@@ -54,10 +35,10 @@ function CustomTimelineTooltip({ active, payload }) {
     return (
       <div className="bg-white border border-[#E5ECF5] rounded-xl px-3 py-2 shadow-md text-left">
         <span className="text-xs font-bold text-[#101D36] block">
-          {data.scans || 12} links scanned
+          {data.scans || 0} links scanned
         </span>
         <span className="text-[11px] text-slate-500 block">
-          {data.safe ?? 2} safe, {data.threats ?? 0} threats
+          {data.safe ?? 0} safe, {data.threats ?? 0} threats
         </span>
       </div>
     );
@@ -135,8 +116,8 @@ export default function OverviewTab({
     };
   }, [averageSafetyScore]);
 
-  // Total audited links count, preserving the historical base count
-  const totalAuditedLinks = (scanHistory && scanHistory.length > 0) ? Math.max(15, scanHistory.length) : 15;
+  // Total audited links count dynamically from real database scan history
+  const totalAuditedLinks = scanHistory ? scanHistory.length : 0;
   const activeThreatCount = threatStats?.dangerous ?? 0;
 
   const handleRecentClick = (url) => {
@@ -145,37 +126,59 @@ export default function OverviewTab({
     if (handleCheckUrl) handleCheckUrl(url);
   };
 
-  // Recent logs list from actual history, preserving old searched records
-  const displayLogs = useMemo(() => {
-    if (scanHistory && scanHistory.length > 0) {
-      const userScans = scanHistory.map((item, idx) => {
-        let timeAgo = item.timeAgo || item.time;
-        if (!timeAgo && item.timestamp) {
-          const diffMs = nowTimestamp - new Date(item.timestamp).getTime();
-          const diffMin = Math.floor(diffMs / 60000);
-          if (diffMin < 1) timeAgo = "Just now";
-          else if (diffMin < 60) timeAgo = `${diffMin} min ago`;
-          else {
-            const diffHrs = Math.floor(diffMin / 60);
-            if (diffHrs < 24) timeAgo = `${diffHrs}h ago`;
-            else timeAgo = new Date(item.timestamp).toLocaleDateString([], { month: "short", day: "numeric" });
-          }
-        }
-        return {
-          url: item.url,
-          rating: item.rating || "SAFE",
-          time: timeAgo || (idx === 0 ? "2 min ago" : "Recent")
-        };
-      });
+  // Timeline area chart dynamically calculated from database scanHistory
+  const timelineData = useMemo(() => {
+    const buckets = [
+      { label: "12 AM", startHour: 0, endHour: 4, scans: 0, safe: 0, threats: 0 },
+      { label: "4 AM", startHour: 4, endHour: 8, scans: 0, safe: 0, threats: 0 },
+      { label: "8 AM", startHour: 8, endHour: 12, scans: 0, safe: 0, threats: 0 },
+      { label: "12 PM", startHour: 12, endHour: 16, scans: 0, safe: 0, threats: 0 },
+      { label: "4 PM", startHour: 16, endHour: 20, scans: 0, safe: 0, threats: 0 },
+      { label: "8 PM", startHour: 20, endHour: 23, scans: 0, safe: 0, threats: 0 },
+      { label: "11 PM", startHour: 23, endHour: 24, scans: 0, safe: 0, threats: 0 }
+    ];
 
-      // Preserve old searched records
-      const existingUrls = new Set(userScans.map((u) => (u.url || "").toLowerCase()));
-      const preservedOld = DEFAULT_OLD_SEARCHES.filter(
-        (o) => !existingUrls.has(o.url.toLowerCase())
-      );
-      return [...userScans, ...preservedOld].slice(0, 4);
+    if (scanHistory && scanHistory.length > 0) {
+      scanHistory.forEach((item) => {
+        const itemDate = item.createdAt ? new Date(item.createdAt) : new Date();
+        const hour = itemDate.getHours();
+        const bucket = buckets.find((b) => hour >= b.startHour && hour < b.endHour) || buckets[buckets.length - 1];
+        bucket.scans += 1;
+        if (item.rating === "SAFE") bucket.safe += 1;
+        else bucket.threats += 1;
+      });
     }
-    return DEFAULT_OLD_SEARCHES;
+
+    return buckets.map((b) => ({
+      time: b.label,
+      scans: b.scans,
+      safe: b.safe,
+      threats: b.threats
+    }));
+  }, [scanHistory]);
+
+  // Recent logs list purely from real scan history
+  const displayLogs = useMemo(() => {
+    if (!scanHistory || scanHistory.length === 0) return [];
+    return scanHistory.slice(0, 4).map((item) => {
+      let timeAgo = item.timeAgo || item.time || item.date;
+      if (item.createdAt) {
+        const diffMs = nowTimestamp - new Date(item.createdAt).getTime();
+        const diffMin = Math.floor(diffMs / 60000);
+        if (diffMin < 1) timeAgo = "Just now";
+        else if (diffMin < 60) timeAgo = `${diffMin} min ago`;
+        else {
+          const diffHrs = Math.floor(diffMin / 60);
+          if (diffHrs < 24) timeAgo = `${diffHrs}h ago`;
+          else timeAgo = new Date(item.createdAt).toLocaleDateString([], { month: "short", day: "numeric" });
+        }
+      }
+      return {
+        url: item.url,
+        rating: item.rating || "SAFE",
+        time: timeAgo || "Recent"
+      };
+    });
   }, [scanHistory, nowTimestamp]);
 
   const renderVerdictBadge = (rating) => {
@@ -481,7 +484,7 @@ export default function OverviewTab({
               <div className="h-36 w-full -ml-3">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart
-                    data={TIMELINE_DATA}
+                    data={timelineData}
                     margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                   >
                     <defs>
@@ -501,8 +504,7 @@ export default function OverviewTab({
                       axisLine={false} 
                       tickLine={false} 
                       tick={{ fill: "#94A3B8", fontSize: 10 }}
-                      domain={[0, 30]}
-                      ticks={[0, 10, 20, 30]}
+                      allowDecimals={false}
                     />
                     <Tooltip content={<CustomTimelineTooltip />} />
                     <Area
@@ -517,32 +519,38 @@ export default function OverviewTab({
                 </ResponsiveContainer>
               </div>
 
-              {/* List of Recent Scans, preserving old searched records */}
+              {/* List of Recent Scans from real database */}
               <div className="mt-3 pt-3 border-t border-[#F1F5F9]">
-                <div className="space-y-2">
-                  {displayLogs.map((item, idx) => (
-                    <div
-                      key={idx}
-                      onClick={() => handleRecentClick(item.url)}
-                      className="group flex items-center justify-between p-2.5 rounded-xl hover:bg-[#F8FAFC] transition-colors cursor-pointer border border-transparent hover:border-[#E5ECF5]"
-                    >
-                      <div className="flex items-center gap-3 min-w-0 flex-1 mr-3">
-                        {renderIcon(item.rating)}
-                        <span className="text-xs font-medium text-[#101D36] group-hover:text-[#1463FF] transition-colors truncate font-mono">
-                          {item.url}
-                        </span>
-                      </div>
+                {displayLogs.length === 0 ? (
+                  <div className="py-6 text-center text-xs text-slate-400">
+                    No URL diagnostic records yet. Enter a link below to inspect threats in real time.
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {displayLogs.map((item, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() => handleRecentClick(item.url)}
+                        className="group flex items-center justify-between p-2.5 rounded-xl hover:bg-[#F8FAFC] transition-colors cursor-pointer border border-transparent hover:border-[#E5ECF5]"
+                      >
+                        <div className="flex items-center gap-3 min-w-0 flex-1 mr-3">
+                          {renderIcon(item.rating)}
+                          <span className="text-xs font-medium text-[#101D36] group-hover:text-[#1463FF] transition-colors truncate font-mono">
+                            {item.url}
+                          </span>
+                        </div>
 
-                      <div className="flex items-center gap-4 shrink-0">
-                        {renderVerdictBadge(item.rating)}
-                        <span className="text-[11px] text-slate-400 font-normal w-16 text-right">
-                          {item.time}
-                        </span>
-                        <ChevronRight className="h-3.5 w-3.5 text-slate-400 group-hover:text-[#101D36] transition-colors" />
+                        <div className="flex items-center gap-4 shrink-0">
+                          {renderVerdictBadge(item.rating)}
+                          <span className="text-[11px] text-slate-400 font-normal w-16 text-right">
+                            {item.time}
+                          </span>
+                          <ChevronRight className="h-3.5 w-3.5 text-slate-400 group-hover:text-[#101D36] transition-colors" />
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>

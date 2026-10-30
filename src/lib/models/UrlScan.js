@@ -4,6 +4,7 @@ const UrlScanSchema = new mongoose.Schema({
   url: { type: String, required: true },
   rating: { type: String, required: true },
   score: { type: Number, required: true },
+  detectionReasons: { type: [String], default: [] },
   date: { type: String, default: () => new Date().toLocaleDateString() },
   createdAt: { type: Date, default: Date.now }
 });

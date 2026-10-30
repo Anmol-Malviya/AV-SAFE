@@ -30,30 +30,12 @@ import SettingsTab from "../components/SettingsTab";
 import ComplaintsTab from "../components/ComplaintsTab";
 import SafeSandboxModal from "../components/SafeSandboxModal";
 
-const DEFAULT_INITIAL_HISTORY = [
-  { url: "https://example.com", rating: "SAFE", score: 98, date: "Today", timeAgo: "2 min ago" },
-  { url: "http://secure-login-update.com", rating: "SUSPICIOUS", score: 48, date: "Today", timeAgo: "12 min ago" },
-  { url: "https://github.com", rating: "SAFE", score: 100, date: "Today", timeAgo: "28 min ago" },
-  { url: "http://paypal-account-verifiy.net", rating: "DANGEROUS", score: 12, date: "Today", timeAgo: "1 hour ago" },
-  { url: "https://google.com", rating: "SAFE", score: 100, date: "Yesterday", timeAgo: "1 day ago" },
-  { url: "https://portal-login-auth.com", rating: "DANGEROUS", score: 15, date: "Yesterday", timeAgo: "1 day ago" },
-  { url: "https://microsoft.com", rating: "SAFE", score: 100, date: "Yesterday", timeAgo: "1 day ago" },
-  { url: "https://account-verify-update.net", rating: "SUSPICIOUS", score: 55, date: "2 days ago", timeAgo: "2 days ago" },
-  { url: "https://aws.amazon.com", rating: "SAFE", score: 100, date: "2 days ago", timeAgo: "2 days ago" },
-  { url: "https://apple-security-check.info", rating: "DANGEROUS", score: 10, date: "3 days ago", timeAgo: "3 days ago" },
-  { url: "https://wikipedia.org", rating: "SAFE", score: 100, date: "3 days ago", timeAgo: "3 days ago" },
-  { url: "https://chase-security-verify.com", rating: "DANGEROUS", score: 8, date: "3 days ago", timeAgo: "3 days ago" },
-  { url: "https://cloudflare.com", rating: "SAFE", score: 100, date: "4 days ago", timeAgo: "4 days ago" },
-  { url: "https://netflix-account-reset.org", rating: "SUSPICIOUS", score: 52, date: "4 days ago", timeAgo: "4 days ago" },
-  { url: "https://stackoverflow.com", rating: "SAFE", score: 100, date: "5 days ago", timeAgo: "5 days ago" }
-];
-
 export default function SystemPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [urlInput, setUrlInput] = useState("");
   const [isOnline, setIsOnline] = useState(true);
   const [scanResult, setScanResult] = useState(null);
-  const [scanHistory, setScanHistory] = useState(DEFAULT_INITIAL_HISTORY);
+  const [scanHistory, setScanHistory] = useState([]);
   const [historyFilter, setHistoryFilter] = useState("ALL");
 
   // Deep Scan states
@@ -106,17 +88,12 @@ export default function SystemPage() {
       const loadHistory = async () => {
         try {
           if (navigator.onLine) {
-            const res = await fetch("/api/history");
+            const res = await fetch("/api/history", { cache: "no-store" });
             if (res.ok) {
               const data = await res.json();
-              if (Array.isArray(data) && data.length > 0) {
-                const existingUrls = new Set(data.map((d) => (d.url || "").toLowerCase()));
-                const preserved = DEFAULT_INITIAL_HISTORY.filter(
-                  (d) => !existingUrls.has(d.url.toLowerCase())
-                );
-                const merged = [...data, ...preserved];
-                setScanHistory(merged);
-                localStorage.setItem("phishguard_history", JSON.stringify(merged));
+              if (Array.isArray(data)) {
+                setScanHistory(data);
+                localStorage.setItem("phishguard_history", JSON.stringify(data));
                 return;
               }
             }
@@ -129,12 +106,8 @@ export default function SystemPage() {
         if (savedHistory) {
           try {
             const parsed = JSON.parse(savedHistory);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              const existingUrls = new Set(parsed.map((d) => (d.url || "").toLowerCase()));
-              const preserved = DEFAULT_INITIAL_HISTORY.filter(
-                (d) => !existingUrls.has(d.url.toLowerCase())
-              );
-              setScanHistory([...parsed, ...preserved]);
+            if (Array.isArray(parsed)) {
+              setScanHistory(parsed);
               return;
             }
           } catch {
@@ -142,8 +115,7 @@ export default function SystemPage() {
           }
         }
 
-        setScanHistory(DEFAULT_INITIAL_HISTORY);
-        localStorage.setItem("phishguard_history", JSON.stringify(DEFAULT_INITIAL_HISTORY));
+        setScanHistory([]);
       };
 
       loadHistory();
@@ -301,7 +273,9 @@ export default function SystemPage() {
       url: finalResult.url,
       rating: finalResult.rating,
       score: finalResult.score,
+      detectionReasons: finalResult.warnings || [],
       date: new Date().toLocaleDateString(),
+      createdAt: new Date().toISOString()
     };
 
     if (isOnline) {
@@ -313,7 +287,7 @@ export default function SystemPage() {
     }
 
     setScanHistory((prevHistory) => {
-      const base = (prevHistory && prevHistory.length > 0) ? prevHistory : DEFAULT_INITIAL_HISTORY;
+      const base = Array.isArray(prevHistory) ? prevHistory : [];
       const filtered = base.filter(
         (item) => (item.url || "").toLowerCase() !== finalResult.url.toLowerCase()
       );
@@ -382,7 +356,7 @@ export default function SystemPage() {
 
       {/* Main Content Pane */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        <Header isOnline={isOnline} setActiveTab={setActiveTab} />
+        <Header isOnline={isOnline} setActiveTab={setActiveTab} scanHistory={scanHistory} />
         
         <main className="flex-1 overflow-y-auto bg-[#F8FAFD] p-6">
           <AnimatePresence mode="wait">

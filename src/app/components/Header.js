@@ -18,45 +18,33 @@ import {
   RotateCw
 } from "lucide-react";
 
-const INITIAL_ALERTS = [
-  {
-    id: "alert-1",
-    title: "Typosquat Intercepted",
-    desc: "Detected fake paypal login target link.",
-    time: "10m ago",
-    read: false,
-    severity: "critical",
-    category: "url-scanner",
-    target: "paypal.com-verify.xyz"
-  },
-  {
-    id: "alert-2",
-    title: "DKIM Signature Invalid",
-    desc: "Forced reject on suspicious spf verify.",
-    time: "1h ago",
-    read: false,
-    severity: "warning",
-    category: "email-scanner",
-    target: "billing@paypal-support.com"
-  },
-  {
-    id: "alert-3",
-    title: "Threat Feed Synced",
-    desc: "15,000 active domain rules loaded into memory.",
-    time: "3h ago",
-    read: true,
-    severity: "info",
-    category: "overview",
-    target: "Phishing.Database"
-  }
-];
-
-export default function Header({ isOnline = true, setActiveTab, onSearch }) {
+export default function Header({ isOnline = true, setActiveTab, onSearch, scanHistory = [] }) {
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState(INITIAL_ALERTS);
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef(null);
+
+  // Generate notifications from real threats in database
+  const derivedAlerts = useMemo(() => {
+    if (!scanHistory || scanHistory.length === 0) return [];
+    const threats = scanHistory.filter((s) => s.rating === "DANGEROUS" || s.rating === "SUSPICIOUS");
+    return threats.slice(0, 8).map((t, idx) => ({
+      id: `threat-${idx}-${t.url}`,
+      title: t.rating === "DANGEROUS" ? "Phishing Threat Intercepted" : "Suspicious Activity Detected",
+      desc: (t.detectionReasons && t.detectionReasons[0]) || `URL rated ${t.rating} with safety score ${t.score}/100`,
+      time: t.timeAgo || t.date || "Recent",
+      read: false,
+      severity: t.rating === "DANGEROUS" ? "critical" : "warning",
+      category: "url-scanner",
+      target: t.url
+    }));
+  }, [scanHistory]);
+
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    setNotifications(derivedAlerts);
+  }, [derivedAlerts]);
 
   const unreadCount = useMemo(() => {
     return notifications.filter((n) => !n.read).length;
@@ -124,7 +112,7 @@ export default function Header({ isOnline = true, setActiveTab, onSearch }) {
 
   const handleRestoreSampleAlerts = (e) => {
     if (e) e.stopPropagation();
-    setNotifications(INITIAL_ALERTS);
+    setNotifications(derivedAlerts);
   };
 
   const handleItemClick = (alert) => {

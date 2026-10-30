@@ -3,53 +3,31 @@ import dbConnect from '../../../lib/mongodb';
 import UrlScan from '../../../lib/models/UrlScan';
 import { validateAndNormalizeUrl } from '@/lib/security/urlValidation';
 
-const DEFAULT_HISTORY = [
-  { url: "https://example.com", rating: "SAFE", score: 98, date: "Today" },
-  { url: "http://secure-login-update.com", rating: "SUSPICIOUS", score: 48, date: "Today" },
-  { url: "https://github.com", rating: "SAFE", score: 100, date: "Today" },
-  { url: "http://paypal-account-verifiy.net", rating: "DANGEROUS", score: 12, date: "Today" },
-  { url: "https://google.com", rating: "SAFE", score: 100, date: "Yesterday" },
-  { url: "https://portal-login-auth.com", rating: "DANGEROUS", score: 15, date: "Yesterday" },
-  { url: "https://microsoft.com", rating: "SAFE", score: 100, date: "Yesterday" },
-  { url: "https://account-verify-update.net", rating: "SUSPICIOUS", score: 55, date: "2 days ago" },
-  { url: "https://aws.amazon.com", rating: "SAFE", score: 100, date: "2 days ago" },
-  { url: "https://apple-security-check.info", rating: "DANGEROUS", score: 10, date: "3 days ago" },
-  { url: "https://wikipedia.org", rating: "SAFE", score: 100, date: "3 days ago" },
-  { url: "https://chase-security-verify.com", rating: "DANGEROUS", score: 8, date: "3 days ago" },
-  { url: "https://cloudflare.com", rating: "SAFE", score: 100, date: "4 days ago" },
-  { url: "https://netflix-account-reset.org", rating: "SUSPICIOUS", score: 52, date: "4 days ago" },
-  { url: "https://stackoverflow.com", rating: "SAFE", score: 100, date: "5 days ago" }
-];
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
     await dbConnect();
     const history = await UrlScan.find({})
       .sort({ createdAt: -1 })
-      .limit(50)
+      .limit(100)
       .lean();
 
-    // Format response to match expected UI structure
+    // Format response to match expected UI structure with real timestamps
     const formatted = history.map((item) => ({
+      _id: item._id?.toString(),
       url: item.url,
       rating: item.rating,
       score: item.score,
-      date: item.date
+      date: item.date || new Date(item.createdAt).toLocaleDateString(),
+      createdAt: item.createdAt,
+      detectionReasons: item.detectionReasons || []
     }));
 
-    if (formatted.length === 0) {
-      return NextResponse.json(DEFAULT_HISTORY);
-    }
-
-    const existingUrls = new Set(formatted.map((i) => i.url.toLowerCase()));
-    const merged = [
-      ...formatted,
-      ...DEFAULT_HISTORY.filter((i) => !existingUrls.has(i.url.toLowerCase()))
-    ];
-    return NextResponse.json(merged);
+    return NextResponse.json(formatted);
   } catch (err) {
-    console.error('Failed to fetch scan history:', err);
-    return NextResponse.json(DEFAULT_HISTORY);
+    console.error('Failed to fetch scan history from database:', err);
+    return NextResponse.json([], { status: 500 });
   }
 }
 
@@ -62,7 +40,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid JSON request body' }, { status: 400 });
     }
 
-    const { url, rating, score } = body;
+    const { url, rating, score, detectionReasons } = body;
 
     if (!url || !rating || score === undefined) {
       return NextResponse.json({ error: 'url, rating, and score are required' }, { status: 400 });
@@ -82,19 +60,21 @@ export async function POST(request) {
 
     await dbConnect();
 
-    // Safely delete previous scans matching the normalized URL without regex injection
+    // Safely delete previous duplicate scan for this URL so latest status is at top
     await UrlScan.deleteMany({ url: validUrl.originalUrl });
 
     const newScan = await UrlScan.create({
       url: validUrl.originalUrl,
       rating: validRating,
       score: validScore,
-      date: new Date().toLocaleDateString()
+      detectionReasons: Array.isArray(detectionReasons) ? detectionReasons : [],
+      date: new Date().toLocaleDateString(),
+      createdAt: new Date()
     });
 
     return NextResponse.json({ success: true, data: newScan });
   } catch (err) {
-    console.error('Failed to save scan result:', err);
+    console.error('Failed to save scan result to database:', err);
     return NextResponse.json({ error: 'Failed to save scan result' }, { status: 500 });
   }
 }
@@ -103,7 +83,7 @@ export async function DELETE() {
   try {
     await dbConnect();
     await UrlScan.deleteMany({});
-    return NextResponse.json({ success: true, message: 'Scan history cleared successfully' });
+    return NextResponse.json({ success: true, message: 'Scan history cleared successfully from database' });
   } catch (err) {
     console.error('Failed to clear scan history:', err);
     return NextResponse.json({ error: 'Failed to clear scan history' }, { status: 500 });
