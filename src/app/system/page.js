@@ -30,12 +30,30 @@ import SettingsTab from "../components/SettingsTab";
 import ComplaintsTab from "../components/ComplaintsTab";
 import SafeSandboxModal from "../components/SafeSandboxModal";
 
+const DEFAULT_INITIAL_HISTORY = [
+  { url: "https://example.com", rating: "SAFE", score: 98, date: "Today", timeAgo: "2 min ago" },
+  { url: "http://secure-login-update.com", rating: "SUSPICIOUS", score: 48, date: "Today", timeAgo: "12 min ago" },
+  { url: "https://github.com", rating: "SAFE", score: 100, date: "Today", timeAgo: "28 min ago" },
+  { url: "http://paypal-account-verifiy.net", rating: "DANGEROUS", score: 12, date: "Today", timeAgo: "1 hour ago" },
+  { url: "https://google.com", rating: "SAFE", score: 100, date: "Yesterday", timeAgo: "1 day ago" },
+  { url: "https://portal-login-auth.com", rating: "DANGEROUS", score: 15, date: "Yesterday", timeAgo: "1 day ago" },
+  { url: "https://microsoft.com", rating: "SAFE", score: 100, date: "Yesterday", timeAgo: "1 day ago" },
+  { url: "https://account-verify-update.net", rating: "SUSPICIOUS", score: 55, date: "2 days ago", timeAgo: "2 days ago" },
+  { url: "https://aws.amazon.com", rating: "SAFE", score: 100, date: "2 days ago", timeAgo: "2 days ago" },
+  { url: "https://apple-security-check.info", rating: "DANGEROUS", score: 10, date: "3 days ago", timeAgo: "3 days ago" },
+  { url: "https://wikipedia.org", rating: "SAFE", score: 100, date: "3 days ago", timeAgo: "3 days ago" },
+  { url: "https://chase-security-verify.com", rating: "DANGEROUS", score: 8, date: "3 days ago", timeAgo: "3 days ago" },
+  { url: "https://cloudflare.com", rating: "SAFE", score: 100, date: "4 days ago", timeAgo: "4 days ago" },
+  { url: "https://netflix-account-reset.org", rating: "SUSPICIOUS", score: 52, date: "4 days ago", timeAgo: "4 days ago" },
+  { url: "https://stackoverflow.com", rating: "SAFE", score: 100, date: "5 days ago", timeAgo: "5 days ago" }
+];
+
 export default function SystemPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [urlInput, setUrlInput] = useState("");
   const [isOnline, setIsOnline] = useState(true);
   const [scanResult, setScanResult] = useState(null);
-  const [scanHistory, setScanHistory] = useState([]);
+  const [scanHistory, setScanHistory] = useState(DEFAULT_INITIAL_HISTORY);
   const [historyFilter, setHistoryFilter] = useState("ALL");
 
   // Deep Scan states
@@ -91,9 +109,16 @@ export default function SystemPage() {
             const res = await fetch("/api/history");
             if (res.ok) {
               const data = await res.json();
-              setScanHistory(data);
-              localStorage.setItem("phishguard_history", JSON.stringify(data));
-              return;
+              if (Array.isArray(data) && data.length > 0) {
+                const existingUrls = new Set(data.map((d) => (d.url || "").toLowerCase()));
+                const preserved = DEFAULT_INITIAL_HISTORY.filter(
+                  (d) => !existingUrls.has(d.url.toLowerCase())
+                );
+                const merged = [...data, ...preserved];
+                setScanHistory(merged);
+                localStorage.setItem("phishguard_history", JSON.stringify(merged));
+                return;
+              }
             }
           }
         } catch (e) {
@@ -102,31 +127,23 @@ export default function SystemPage() {
 
         const savedHistory = localStorage.getItem("phishguard_history");
         if (savedHistory) {
-          setScanHistory(JSON.parse(savedHistory));
-        } else {
-          const mockHistory = [
-            {
-              url: "https://www.google.com",
-              rating: "SAFE",
-              score: 100,
-              date: new Date(Date.now() - 3600000 * 2).toLocaleDateString(),
-            },
-            {
-              url: "http://secure-paypal-login.com/update",
-              rating: "DANGEROUS",
-              score: 15,
-              date: new Date(Date.now() - 3600000 * 24).toLocaleDateString(),
-            },
-            {
-              url: "https://github.com",
-              rating: "SAFE",
-              score: 100,
-              date: new Date(Date.now() - 3600000 * 48).toLocaleDateString(),
-            },
-          ];
-          setScanHistory(mockHistory);
-          localStorage.setItem("phishguard_history", JSON.stringify(mockHistory));
+          try {
+            const parsed = JSON.parse(savedHistory);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              const existingUrls = new Set(parsed.map((d) => (d.url || "").toLowerCase()));
+              const preserved = DEFAULT_INITIAL_HISTORY.filter(
+                (d) => !existingUrls.has(d.url.toLowerCase())
+              );
+              setScanHistory([...parsed, ...preserved]);
+              return;
+            }
+          } catch {
+            // fallback
+          }
         }
+
+        setScanHistory(DEFAULT_INITIAL_HISTORY);
+        localStorage.setItem("phishguard_history", JSON.stringify(DEFAULT_INITIAL_HISTORY));
       };
 
       loadHistory();
@@ -296,10 +313,11 @@ export default function SystemPage() {
     }
 
     setScanHistory((prevHistory) => {
-      const filtered = prevHistory.filter(
-        (item) => item.url.toLowerCase() !== finalResult.url.toLowerCase()
+      const base = (prevHistory && prevHistory.length > 0) ? prevHistory : DEFAULT_INITIAL_HISTORY;
+      const filtered = base.filter(
+        (item) => (item.url || "").toLowerCase() !== finalResult.url.toLowerCase()
       );
-      const updated = [newHistoryItem, ...filtered].slice(0, 15);
+      const updated = [newHistoryItem, ...filtered].slice(0, 50);
       localStorage.setItem("phishguard_history", JSON.stringify(updated));
       return updated;
     });
@@ -362,7 +380,7 @@ export default function SystemPage() {
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header isOnline={isOnline} setActiveTab={setActiveTab} />
         
-        <main className="flex-1 overflow-y-auto bg-bg-primary p-6">
+        <main className="flex-1 overflow-y-auto bg-[#F8FAFD] p-6">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
