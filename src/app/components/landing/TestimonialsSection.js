@@ -17,7 +17,7 @@ export default function TestimonialsSection() {
       work: "Phishing Detection Engine & Heuristics Core",
       tag: "Security Lead",
       badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
-      avatarUrl: "", // placeholder mode
+      avatarUrl: "/team-hritik-hd.png",
       glowColor: "from-[#1463FF] to-sky-400",
       accentBg: "bg-gradient-to-br from-blue-600/20 via-sky-500/10 to-slate-900",
       accentIconColor: "text-blue-400",
@@ -32,7 +32,7 @@ export default function TestimonialsSection() {
       work: "Platform Architecture & Realtime Protection",
       tag: "Platform Core",
       badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200",
-      avatarUrl: "", // placeholder mode
+      avatarUrl: "/team-tanay-hd.png",
       glowColor: "from-indigo-500 to-purple-500",
       accentBg: "bg-gradient-to-br from-indigo-600/20 via-purple-500/10 to-slate-900",
       accentIconColor: "text-indigo-400",
@@ -47,7 +47,7 @@ export default function TestimonialsSection() {
       work: "RAG Pipeline & Continuous Model Retraining",
       tag: "AI & Intelligence",
       badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      avatarUrl: "", // placeholder mode
+      avatarUrl: "/team-anmol-hd.png",
       glowColor: "from-emerald-500 to-teal-400",
       accentBg: "bg-gradient-to-br from-emerald-600/20 via-teal-500/10 to-slate-900",
       accentIconColor: "text-emerald-400",
@@ -232,12 +232,10 @@ export default function TestimonialsSection() {
                       style={{ clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)" }}
                     >
                       {founders.hritik.avatarUrl ? (
-                        <Image
+                        <img
                           src={founders.hritik.avatarUrl}
                           alt={founders.hritik.name}
-                          width={220}
-                          height={250}
-                          className="w-full h-full object-cover object-center"
+                          className="w-full h-full object-cover object-center pointer-events-none select-none"
                         />
                       ) : (
                         <div className="flex flex-col items-center justify-center p-4">
@@ -271,12 +269,10 @@ export default function TestimonialsSection() {
                       style={{ clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)" }}
                     >
                       {founders.tanay.avatarUrl ? (
-                        <Image
+                        <img
                           src={founders.tanay.avatarUrl}
                           alt={founders.tanay.name}
-                          width={220}
-                          height={250}
-                          className="w-full h-full object-cover object-center"
+                          className="w-full h-full object-cover object-center pointer-events-none select-none"
                         />
                       ) : (
                         <div className="flex flex-col items-center justify-center p-4">
@@ -310,12 +306,10 @@ export default function TestimonialsSection() {
                       style={{ clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)" }}
                     >
                       {founders.anmol.avatarUrl ? (
-                        <Image
+                        <img
                           src={founders.anmol.avatarUrl}
                           alt={founders.anmol.name}
-                          width={220}
-                          height={250}
-                          className="w-full h-full object-cover object-center"
+                          className="w-full h-full object-cover object-center pointer-events-none select-none"
                         />
                       ) : (
                         <div className="flex flex-col items-center justify-center p-4">
@@ -486,13 +480,21 @@ export default function TestimonialsSection() {
                       className={`w-full h-full ${m.accentBg} overflow-hidden relative flex flex-col items-center justify-center text-white`}
                       style={{ clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)" }}
                     >
-                      <div className="flex flex-col items-center justify-center p-3">
-                        <div className="w-12 h-12 rounded-full bg-white/10 border border-white/20 flex items-center justify-center mb-1 text-white">
-                          <User className="w-6 h-6" />
+                      {m.avatarUrl ? (
+                        <img
+                          src={m.avatarUrl}
+                          alt={m.name}
+                          className="w-full h-full object-cover object-center pointer-events-none select-none"
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center p-3">
+                          <div className="w-12 h-12 rounded-full bg-white/10 border border-white/20 flex items-center justify-center mb-1 text-white">
+                            <User className="w-6 h-6" />
+                          </div>
+                          <span className="text-sm font-extrabold tracking-wider">{m.initials}</span>
+                          <span className="text-[9px] font-mono opacity-80 uppercase">Placeholder</span>
                         </div>
-                        <span className="text-sm font-extrabold tracking-wider">{m.initials}</span>
-                        <span className="text-[9px] font-mono opacity-80 uppercase">Placeholder</span>
-                      </div>
+                      )}
                     </div>
                   </div>
 
