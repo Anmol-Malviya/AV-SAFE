@@ -1,20 +1,22 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { 
+import {
   Link2,
-  ShieldCheck, 
-  ShieldAlert, 
-  Shield, 
+  ShieldCheck,
+  ShieldAlert,
+  Shield,
   Sparkles,
   FlaskConical,
-  Clock, 
+  Clock,
   AlertTriangle,
   ChevronRight,
   ArrowRight,
   Smartphone,
   Monitor,
-  Globe
+  Globe,
+  QrCode,
+  Scan
 } from "lucide-react";
 import { 
   AreaChart, 
@@ -33,7 +35,7 @@ function CustomTimelineTooltip({ active, payload }) {
     return (
       <div className="bg-white border border-[#E5ECF5] rounded-xl px-3 py-2 shadow-md text-left">
         <span className="text-xs font-bold text-[#101D36] block">
-          {data.scans} links audited
+          {data.scans || 0} links audited
         </span>
         <span className="text-[11px] text-slate-500 block">
           {data.safe ?? 0} safe, {data.threats ?? 0} threats
@@ -98,8 +100,8 @@ export default function OverviewTab({
     };
   }, [averageSafetyScore, scanHistory.length]);
 
-  // Total audited links count strictly from live history
-  const totalAuditedLinks = scanHistory.length;
+  // Total audited links count dynamically from real database scan history
+  const totalAuditedLinks = scanHistory ? scanHistory.length : 0;
   const activeThreatCount = threatStats?.dangerous ?? 0;
 
   const handleRecentClick = (url) => {
@@ -108,12 +110,43 @@ export default function OverviewTab({
     if (handleCheckUrl) handleCheckUrl(url);
   };
 
-  // Recent logs list purely from live real history
+  // Timeline area chart dynamically calculated from database scanHistory
+  const timelineData = useMemo(() => {
+    const buckets = [
+      { label: "12 AM", startHour: 0, endHour: 4, scans: 0, safe: 0, threats: 0 },
+      { label: "4 AM", startHour: 4, endHour: 8, scans: 0, safe: 0, threats: 0 },
+      { label: "8 AM", startHour: 8, endHour: 12, scans: 0, safe: 0, threats: 0 },
+      { label: "12 PM", startHour: 12, endHour: 16, scans: 0, safe: 0, threats: 0 },
+      { label: "4 PM", startHour: 16, endHour: 20, scans: 0, safe: 0, threats: 0 },
+      { label: "8 PM", startHour: 20, endHour: 23, scans: 0, safe: 0, threats: 0 },
+      { label: "11 PM", startHour: 23, endHour: 24, scans: 0, safe: 0, threats: 0 }
+    ];
+
+    if (scanHistory && scanHistory.length > 0) {
+      scanHistory.forEach((item) => {
+        const itemDate = item.createdAt ? new Date(item.createdAt) : new Date();
+        const hour = itemDate.getHours();
+        const bucket = buckets.find((b) => hour >= b.startHour && hour < b.endHour) || buckets[buckets.length - 1];
+        bucket.scans += 1;
+        if (item.rating === "SAFE") bucket.safe += 1;
+        else bucket.threats += 1;
+      });
+    }
+
+    return buckets.map((b) => ({
+      time: b.label,
+      scans: b.scans,
+      safe: b.safe,
+      threats: b.threats
+    }));
+  }, [scanHistory]);
+
+  // Recent logs list purely from real scan history
   const displayLogs = useMemo(() => {
     if (!scanHistory || scanHistory.length === 0) return [];
     return scanHistory.slice(0, 5).map((item, idx) => {
-      let timeAgo = item.timeAgo || item.time;
-      if (!timeAgo && item.createdAt) {
+      let timeAgo = item.timeAgo || item.time || item.date;
+      if (item.createdAt) {
         const diffMs = nowTimestamp - new Date(item.createdAt).getTime();
         const diffMin = Math.floor(diffMs / 60000);
         if (diffMin < 1) timeAgo = "Just now";
@@ -133,30 +166,6 @@ export default function OverviewTab({
       };
     });
   }, [scanHistory, nowTimestamp]);
-
-  // Live dynamic hourly timeline data calculated from actual records
-  const timelineData = useMemo(() => {
-    const hours = ["12 AM", "4 AM", "8 AM", "12 PM", "4 PM", "8 PM", "11 PM"];
-    const base = hours.map((h) => ({ time: h, scans: 0, safe: 0, threats: 0 }));
-
-    if (scanHistory.length === 0) {
-      return base;
-    }
-
-    // Map scans into current time windows
-    scanHistory.forEach((scan) => {
-      const isThreat = scan.rating === "DANGEROUS" || scan.rating === "MALICIOUS" || scan.rating === "SUSPICIOUS";
-      const bucketIdx = Math.min(6, Math.floor(Math.random() * 7)); // Spread evenly across active windows
-      base[bucketIdx].scans += 1;
-      if (isThreat) {
-        base[bucketIdx].threats += 1;
-      } else {
-        base[bucketIdx].safe += 1;
-      }
-    });
-
-    return base;
-  }, [scanHistory]);
 
   const renderVerdictBadge = (rating) => {
     const norm = (rating || "").toUpperCase();
@@ -209,7 +218,7 @@ export default function OverviewTab({
             Security Overview
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Realtime telemetry streaming from Android endpoints and Web scans.
+            Realtime telemetry streaming from Android endpoints, Web scans, and Browser Extensions.
           </p>
         </div>
 
@@ -414,7 +423,7 @@ export default function OverviewTab({
                 </button>
               </div>
               <p className="text-xs text-slate-500 mb-3 leading-relaxed">
-                Chronological live logs of Android and Web link verification activities.
+                Chronological live logs of Android, Browser Extension, and Web link verification activities.
               </p>
 
               {/* Area Chart */}
@@ -460,7 +469,7 @@ export default function OverviewTab({
               <div className="mt-3 pt-3 border-t border-[#F1F5F9]">
                 {displayLogs.length === 0 ? (
                   <div className="py-6 text-center text-xs text-slate-400">
-                    No scans recorded yet. Scan a link via Android App or URL Scanner to see live audits here.
+                    No scans recorded yet. Scan a link via Android App, Extension, or URL Scanner to see live audits here.
                   </div>
                 ) : (
                   <div className="space-y-2">

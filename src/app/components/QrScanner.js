@@ -219,7 +219,7 @@ export default function QrScanner({ onScanSuccess, onScanError }) {
   };
 
   // ─── File / drag-and-drop scan ────────────────────────────────
-  const scanFile = async (file) => {
+  const scanFile = useCallback(async (file) => {
     if (!file) return;
     setFileScanError("");
     setScanResult("");
@@ -238,7 +238,7 @@ export default function QrScanner({ onScanSuccess, onScanError }) {
     } finally {
       setIsFileScanning(false);
     }
-  };
+  }, [onScanSuccess]);
 
   const handleFileChange = (e) => scanFile(e.target.files[0]);
 
@@ -247,7 +247,7 @@ export default function QrScanner({ onScanSuccess, onScanError }) {
     setIsDragging(false);
     const file = e.dataTransfer.files?.[0];
     if (file && file.type.startsWith("image/")) scanFile(file);
-  }, []);
+  }, [scanFile]);
 
   const handleDragOver  = (e) => { e.preventDefault(); setIsDragging(true); };
   const handleDragLeave = () => setIsDragging(false);

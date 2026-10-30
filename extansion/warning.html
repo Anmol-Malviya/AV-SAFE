@@ -2,220 +2,290 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>High-Risk Threat Blocked | AV-SAFE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Threat Intercepted | AV-SAFE Shield</title>
   <link rel="stylesheet" href="warning.css">
 </head>
 <body>
-  <div class="ios-screen-wrapper">
+  <div class="page-wrapper">
 
-    <!-- 1. Native Status Bar mockup for authentic iOS feel -->
-    <div class="ios-status-bar" aria-hidden="true">
-      <span class="status-time" id="status-time">9:41</span>
-      <div class="status-notch-indicator"></div>
-      <div class="status-icons">
-        <svg class="status-icon" viewBox="0 0 18 12" width="16" height="11" fill="currentColor">
-          <path d="M1 8.5h2v3H1v-3zm4-3h2v6H5v-6zm4-3h2v9H9v-9zm4-2.5h2v11.5h-2V0z"/>
-        </svg>
-        <svg class="status-icon" viewBox="0 0 16 12" width="15" height="11" fill="currentColor">
-          <path d="M8 2.5c2.4 0 4.6 1 6.2 2.6l1.4-1.4C13.6 1.8 11 1 8 1 5 1 2.4 1.8.4 3.7l1.4 1.4C3.4 3.5 5.6 2.5 8 2.5zm0 4c1.4 0 2.7.6 3.6 1.5l1.4-1.4C11.8 5.4 10 4.5 8 4.5s-3.8.9-5 2.1l1.4 1.4C5.3 7.1 6.6 6.5 8 6.5zm0 4c.8 0 1.5.7 1.5 1.5S8.8 13.5 8 13.5 6.5 12.8 6.5 12 7.2 10.5 8 10.5z"/>
-        </svg>
-        <svg class="status-icon" viewBox="0 0 25 12" width="22" height="11" fill="currentColor">
-          <rect x="0.5" y="0.5" width="21" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1"/>
-          <rect x="2" y="2" width="16" height="8" rx="1.5"/>
-          <path d="M23 4.5v3c.8-.3.8-2.7 0-3z"/>
-        </svg>
+    <!-- Top Navigation Header -->
+    <header class="top-nav">
+      <div class="nav-content">
+        <div class="brand-bar">
+          <img src="ic_app_logo.png" class="brand-icon" alt="AV-SAFE Logo" />
+          <div class="brand-title-group">
+            <span class="brand-name">AV-SAFE</span>
+            <span class="brand-tag">REAL-TIME THREAT SHIELD</span>
+          </div>
+        </div>
+        <div class="nav-right">
+          <div id="shield-status-pill" class="badge-shield-active">
+            <span class="shield-pulse-dot"></span>
+            <span>Protection Active</span>
+          </div>
+          <button id="btn-header-dashboard" class="btn-nav-dashboard" title="Open AV-SAFE Web Console">
+            <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+            <span>Open Web Dashboard</span>
+          </button>
+        </div>
       </div>
-    </div>
+    </header>
 
-    <!-- 2. Threat Indicator: Warning triangle badge with soft glow -->
-    <div class="shield-section">
-      <div class="shield-aura"></div>
-      <img src="ic_warning_triangle_shield.png" alt="Threat Blocked" class="warning-triangle-img" width="88" height="88" />
-    </div>
+    <!-- Main Threat Interception Container -->
+    <main class="warning-container">
 
-    <!-- 3. Main Heading -->
-    <h1 class="warning-title" id="warning-title">High-Risk Threat Blocked</h1>
+      <!-- Hero Threat Alert -->
+      <section class="hero-alert">
+        <!-- Big Centered Warning Triangle Icon with Soft Red Circle -->
+        <div class="hero-icon-disc">
+          <svg viewBox="0 0 24 24" width="46" height="46" fill="var(--danger-red)" stroke="none">
+            <path d="M12 2L1 21h22L12 2zm0 3.8L20.2 19H3.8L12 5.8zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/>
+          </svg>
+        </div>
 
-    <!-- 4. Supporting Text -->
-    <p class="warning-description">
-      This link looks suspicious and may be harmful to your device and data.
-    </p>
+        <!-- Headline -->
+        <h1 class="warning-headline" id="warning-title">Malicious Threat Intercepted</h1>
 
-    <!-- 5. Safety Score Pill -->
-    <div class="score-pill-container">
-      <div class="score-pill" id="score-pill">
-        <span class="score-pill-label">Safety Score: <span id="safety-score">1</span> / 100</span>
-        <span class="score-pill-divider">·</span>
-        <span class="score-pill-verdict" id="score-verdict">DANGEROUS</span>
-      </div>
-    </div>
-
-    <!-- 6. URL Container: Minimal rounded white container with Link icon, URL, and Copy button -->
-    <div class="ios-row-container url-container">
-      <div class="row-icon-disc blue-soft">
-        <svg viewBox="0 0 24 24" width="18" height="18" stroke="#007AFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-        </svg>
-      </div>
-      <div class="url-text-wrapper">
-        <span id="blocked-url" class="blocked-url-text">https://practice.expandtesting.com/login#google_vignette</span>
-      </div>
-      <button id="btn-copy-url" class="btn-icon-tap" aria-label="Copy URL" title="Copy URL">
-        <svg viewBox="0 0 24 24" width="18" height="18" stroke="#8E8E93" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="9" y="3" width="10" height="14" rx="2" ry="2"></rect>
-          <path d="M5 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1"></path>
-        </svg>
-      </button>
-    </div>
-
-    <!-- 7. Threat Explanation: Soft red tinted card with warning icon -->
-    <div class="threat-explanation-card">
-      <div class="row-icon-disc red-soft">
-        <svg viewBox="0 0 24 24" width="18" height="18" stroke="#FF3B30" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-          <line x1="12" y1="9" x2="12" y2="13"></line>
-          <line x1="12" y1="17" x2="12.01" y2="17"></line>
-        </svg>
-      </div>
-      <div class="threat-explanation-content">
-        <h2 class="threat-heading">Why this is blocked</h2>
-        <p class="threat-body" id="threat-reason-body">
-          Deceptive keywords: URL paths use security/urgency words to trick you.
+        <!-- Supporting Text -->
+        <p class="warning-lead">
+          AV-SAFE blocked this website because it may be dangerous and could put your data, passwords, or personal information at risk.
         </p>
-      </div>
-    </div>
 
-    <!-- 8. Primary Action: Prominent Blue Button -->
-    <button id="btn-back" class="ios-btn-primary">
-      <svg viewBox="0 0 24 24" width="19" height="19" stroke="#FFFFFF" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="action-lead-icon">
-        <line x1="19" y1="12" x2="5" y2="12"></line>
-        <polyline points="12 19 5 12 12 5"></polyline>
-      </svg>
-      <span class="btn-text">Go Back to Safety</span>
-      <svg viewBox="0 0 24 24" width="17" height="17" stroke="#FFFFFF" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="action-trail-chevron">
-        <polyline points="9 18 15 12 9 6"></polyline>
-      </svg>
-    </button>
-
-    <!-- 9. Secondary Action: Open in Restricted Sandbox -->
-    <button id="btn-sandbox" class="ios-row-button">
-      <div class="row-icon-disc blue-soft">
-        <svg viewBox="0 0 24 24" width="19" height="19" stroke="#007AFF" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-          <line x1="12" y1="22.08" x2="12" y2="12"></line>
-        </svg>
-      </div>
-      <div class="row-text-block">
-        <span class="row-title">Open in Restricted Sandbox</span>
-        <span class="row-subtitle">Open in isolated, secure environment</span>
-      </div>
-      <svg viewBox="0 0 24 24" width="16" height="16" stroke="#C7C7CC" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="row-chevron">
-        <polyline points="9 18 15 12 9 6"></polyline>
-      </svg>
-    </button>
-
-    <!-- 10. Report Action: Report This Link -->
-    <button id="btn-report" class="ios-row-button">
-      <div class="row-icon-disc gray-soft">
-        <svg viewBox="0 0 24 24" width="18" height="18" stroke="#64748B" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
-          <line x1="4" y1="22" x2="4" y2="15"></line>
-        </svg>
-      </div>
-      <div class="row-text-block">
-        <span class="row-title">Report This Link</span>
-        <span class="row-subtitle">Help us keep the web safer</span>
-      </div>
-      <svg viewBox="0 0 24 24" width="16" height="16" stroke="#C7C7CC" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="row-chevron">
-        <polyline points="9 18 15 12 9 6"></polyline>
-      </svg>
-    </button>
-
-    <!-- 11. Advanced Options Toggle -->
-    <div class="advanced-toggle-wrapper">
-      <button id="btn-details-toggle" class="btn-advanced-toggle" aria-expanded="false">
-        <span id="advanced-toggle-label">Advanced Options</span>
-        <svg id="chevron-icon" class="chevron-toggle" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
-      </button>
-    </div>
-
-    <!-- Hidden Accordion Content -->
-    <div id="details-section" class="details-section hidden">
-      <div class="details-card">
-        <div class="diagnosis-summary">
-          <span class="diag-label">Analysis Result:</span>
-          <span class="diag-status" id="diag-status">DANGEROUS</span>
+        <!-- Threat Severity Badge -->
+        <div class="severity-badge-row">
+          <span class="badge-critical-threat" id="score-verdict">
+            <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <span id="verdict-text">Critical Threat</span>
+          </span>
         </div>
+      </section>
 
-        <div class="details-group">
-          <span class="details-group-title">Triggered Threat Rules</span>
-          <ul id="reasons-list" class="reasons-list"></ul>
-        </div>
-
-        <div class="details-group">
-          <div class="ml-meta">
-            <span class="details-group-title">AI Confidence:</span>
-            <span id="ml-prob-text" class="ml-prob-val">0.00%</span>
+      <!-- 1. Blocked Destination Card -->
+      <section class="card destination-card">
+        <div class="destination-left">
+          <div class="dest-icon-bubble">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="var(--danger-red)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
           </div>
-          <div class="progress-bar-track">
-            <div id="ml-progress-fill" class="progress-fill" style="width: 0%"></div>
+          <div class="dest-text-content">
+            <span class="card-label">Blocked Destination</span>
+            <span id="blocked-url" class="blocked-url-text">http://detecting-destination...</span>
+            <span class="dest-subtext">This website has been blocked by AV-SAFE.</span>
           </div>
         </div>
-      </div>
-    </div>
+        <button id="btn-copy-url" class="btn-copy-url" title="Copy blocked URL">
+          <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span>Copy URL</span>
+        </button>
+      </section>
 
-    <!-- 12. Dangerous Override: Pale-red outlined action -->
-    <button id="btn-proceed" class="ios-btn-danger-outline hidden">
-      <svg viewBox="0 0 24 24" width="17" height="17" stroke="#FF3B30" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" class="action-lead-icon">
-        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-        <polyline points="15 3 21 3 21 9"></polyline>
-        <line x1="10" y1="14" x2="21" y2="3"></line>
-      </svg>
-      <span class="btn-text">Open anyway (unsafe)</span>
-      <svg viewBox="0 0 24 24" width="16" height="16" stroke="#FF3B30" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="action-trail-chevron">
-        <polyline points="9 18 15 12 9 6"></polyline>
-      </svg>
-    </button>
-
-    <!-- iOS Home Indicator -->
-    <div class="ios-home-indicator" aria-hidden="true"></div>
-
-    <!-- Toast Notification for Copy URL -->
-    <div id="ios-toast" class="ios-toast" role="status" aria-live="polite">URL copied to clipboard</div>
-
-    <!-- Native iOS-style Report Modal -->
-    <div id="report-modal" class="report-modal-overlay hidden">
-      <div class="report-sheet">
-        <div class="sheet-handle"></div>
-        <div class="sheet-header">
-          <h3 class="sheet-title">Report Threat</h3>
-          <button id="btn-close-modal" class="btn-sheet-close">Cancel</button>
+      <!-- 2. Why This Website Was Blocked Card -->
+      <section class="card reasons-card">
+        <div class="reasons-header">
+          <div class="reasons-header-left">
+            <svg class="warning-triangle-small" viewBox="0 0 24 24" width="17" height="17" fill="var(--danger-red)">
+              <path d="M12 2L1 21h22L12 2zm0 3.8L20.2 19H3.8L12 5.8zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/>
+            </svg>
+            <div>
+              <h2 class="card-heading">Why this website was blocked</h2>
+              <p class="card-subheading">Our security system detected multiple risk factors on this website.</p>
+            </div>
+          </div>
+          <span class="badge-engine-type">AI • HEURISTIC ENGINE</span>
         </div>
-        <p class="sheet-target" id="modal-target-url"></p>
-        
-        <label class="sheet-label" for="report-category">Threat Category</label>
-        <select id="report-category" class="sheet-select">
-          <option value="PHISHING">Phishing / Credential Theft</option>
-          <option value="MALWARE">Malware / Ransomware</option>
-          <option value="FAKE_LOGIN">Deceptive Login Form</option>
-          <option value="SCAM">Financial Scam</option>
-          <option value="SUSPICIOUS_REDIRECT">Suspicious Redirect</option>
-          <option value="OTHER">Other Malicious Content</option>
-        </select>
 
-        <label class="sheet-label" for="report-comments">Additional Details (Optional)</label>
-        <textarea id="report-comments" class="sheet-textarea" rows="3" placeholder="Provide extra context if applicable..."></textarea>
+        <!-- Risk Factors Grid (Dynamic findings) -->
+        <div id="risk-factors-grid" class="risk-factors-grid">
+          <!-- Populated dynamically by warning.js -->
+        </div>
+      </section>
 
-        <button id="btn-submit-report" class="sheet-submit-btn">
-          Submit Report
+      <!-- 3. Safety Score Card -->
+      <section class="card score-card">
+        <div class="score-header">
+          <div class="score-header-left">
+            <div class="score-icon-bubble">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="var(--danger-red)" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <polyline points="9 12 11 14 15 10"></polyline>
+              </svg>
+            </div>
+            <div>
+              <h2 class="card-heading">Safety Score</h2>
+              <p class="card-subheading">Based on AI analysis and threat intelligence.</p>
+            </div>
+          </div>
+
+          <div class="score-display-right">
+            <div class="score-ratio-row">
+              <span id="safety-score" class="score-current">--</span>
+              <span class="score-divider">/</span>
+              <span class="score-max">100</span>
+            </div>
+            <span id="score-classification-text" class="score-classification-label">Very Dangerous</span>
+          </div>
+        </div>
+
+        <!-- Horizontal Progress Bar -->
+        <div class="score-progress-track">
+          <div id="score-progress-bar" class="score-progress-fill" style="width: 6%;"></div>
+        </div>
+      </section>
+
+      <!-- Primary Action: Return to Safety -->
+      <div class="primary-action-wrap">
+        <button id="btn-back" class="btn-return-safety">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>Return to Safety (Recommended)</span>
         </button>
       </div>
+
+      <!-- Secondary Actions Grid -->
+      <div class="secondary-actions-grid">
+        <!-- 1. Safe Sandbox -->
+        <button id="btn-sandbox" class="btn-secondary-action">
+          <svg viewBox="0 0 24 24" width="15" height="15" stroke="var(--primary)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="2" y1="10" x2="22" y2="10"></line>
+            <line x1="6" y1="21" x2="18" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          <span>Safe Sandbox</span>
+        </button>
+
+        <!-- 2. Report Threat -->
+        <button id="btn-report" class="btn-secondary-action">
+          <svg viewBox="0 0 24 24" width="15" height="15" stroke="var(--danger-red)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+            <line x1="4" y1="22" x2="4" y2="15"></line>
+          </svg>
+          <span>Report Threat</span>
+        </button>
+
+        <!-- 3. Open Dashboard -->
+        <button id="btn-open-dashboard-action" class="btn-secondary-action">
+          <svg viewBox="0 0 24 24" width="15" height="15" stroke="#10B981" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+          </svg>
+          <span>Open Dashboard</span>
+        </button>
+      </div>
+
+      <!-- Collapsible Technical Telemetry Card -->
+      <section class="card technical-card">
+        <button id="btn-details-toggle" class="telemetry-toggle-header" aria-expanded="false">
+          <div class="telemetry-title-left">
+            <svg viewBox="0 0 24 24" width="15" height="15" stroke="var(--primary)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <span class="telemetry-title">Technical Telemetry & Detection Rules</span>
+          </div>
+          <svg id="chevron-icon" class="chevron-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+
+        <!-- Collapsible Content -->
+        <div id="details-section" class="telemetry-details-body hidden">
+          <div class="telemetry-content-inner">
+            <h4 class="telemetry-subhead">Triggered Security Rules & Diagnostics:</h4>
+            <ul id="reasons-list" class="technical-rules-list">
+              <!-- Populated by warning.js -->
+            </ul>
+
+            <div class="telemetry-metrics-row">
+              <div class="metric-chip">
+                <span class="metric-name">Classification Model:</span>
+                <span class="metric-val">Logistic Regression (24 Features)</span>
+              </div>
+              <div class="metric-chip">
+                <span class="metric-name">Threat Probability:</span>
+                <span id="ml-prob-text" class="metric-val">--</span>
+              </div>
+            </div>
+
+            <!-- Dangerous Override Notice -->
+            <div class="override-box">
+              <p class="override-warning-text">
+                Bypassing this shield allows this website to execute scripts and potentially access session cookies. Only proceed if you are a security researcher or verify this destination is completely benign.
+              </p>
+              <button id="btn-proceed" class="btn-danger-override">
+                Proceed to Unsafe Site (Not Recommended) ⚠
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Incident Report Modal Sheet -->
+    <div id="report-modal" class="modal-overlay hidden">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <div class="modal-title-row">
+            <div class="modal-title-icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="var(--danger-red)" stroke-width="2.2" fill="none">
+                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                <line x1="4" y1="22" x2="4" y2="15"></line>
+              </svg>
+            </div>
+            <h3 class="modal-heading">Report Threat to AV-SAFE SecOps</h3>
+          </div>
+          <button id="btn-close-modal" class="btn-modal-close" title="Close modal">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <label class="modal-field-label">Target URL</label>
+          <div id="modal-target-url" class="modal-url-display">—</div>
+
+          <label class="modal-field-label" for="report-category">Threat Classification</label>
+          <select id="report-category" class="modal-select">
+            <option value="PHISHING">Phishing / Credential Theft</option>
+            <option value="FAKE_LOGIN">Deceptive Login / Brand Impersonation</option>
+            <option value="MALWARE">Malware / Ransomware</option>
+            <option value="SCAM">Financial / Tech Support Fraud</option>
+            <option value="SUSPICIOUS_REDIRECT">Suspicious Redirector</option>
+            <option value="OTHER">Other Malicious Activity</option>
+          </select>
+
+          <label class="modal-field-label" for="report-comments">Additional Context (Optional)</label>
+          <textarea id="report-comments" class="modal-textarea" rows="3" placeholder="Provide extra notes or attack vectors..."></textarea>
+
+          <div id="modal-feedback-box" class="modal-feedback-box hidden"></div>
+
+          <div class="modal-actions-row">
+            <button id="btn-modal-cancel" class="btn-modal-cancel">Cancel</button>
+            <button id="btn-submit-report" class="btn-modal-submit">Submit Incident Report</button>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- Toast Notification -->
+    <div id="warning-toast" class="toast-popup hidden">Notification</div>
 
   </div>
 

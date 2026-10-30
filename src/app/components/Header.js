@@ -18,45 +18,39 @@ import {
   RotateCw
 } from "lucide-react";
 
-const INITIAL_ALERTS = [
-  {
-    id: "alert-1",
-    title: "Typosquat Intercepted",
-    desc: "Detected fake paypal login target link.",
-    time: "10m ago",
-    read: false,
-    severity: "critical",
-    category: "url-scanner",
-    target: "paypal.com-verify.xyz"
-  },
-  {
-    id: "alert-2",
-    title: "DKIM Signature Invalid",
-    desc: "Forced reject on suspicious spf verify.",
-    time: "1h ago",
-    read: false,
-    severity: "warning",
-    category: "email-scanner",
-    target: "billing@paypal-support.com"
-  },
-  {
-    id: "alert-3",
-    title: "Threat Feed Synced",
-    desc: "15,000 active domain rules loaded into memory.",
-    time: "3h ago",
-    read: true,
-    severity: "info",
-    category: "overview",
-    target: "Phishing.Database"
-  }
-];
-
-export default function Header({ isOnline = true, setActiveTab, onSearch }) {
+export default function Header({ isOnline = true, setActiveTab, onSearch, scanHistory = [] }) {
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState(INITIAL_ALERTS);
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef(null);
+
+  // Generate notifications from real threats in database
+  const derivedAlerts = useMemo(() => {
+    if (!scanHistory || scanHistory.length === 0) return [];
+    const threats = scanHistory.filter((s) => s.rating === "DANGEROUS" || s.rating === "SUSPICIOUS");
+    return threats.slice(0, 8).map((t, idx) => ({
+      id: `threat-${idx}-${t.url}`,
+      title: t.rating === "DANGEROUS" ? "Phishing Threat Intercepted" : "Suspicious Activity Detected",
+      desc: (t.detectionReasons && t.detectionReasons[0]) || `URL rated ${t.rating} with safety score ${t.score}/100`,
+      time: t.timeAgo || t.date || "Recent",
+      read: false,
+      severity: t.rating === "DANGEROUS" ? "critical" : "warning",
+      category: "url-scanner",
+      target: t.url
+    }));
+  }, [scanHistory]);
+
+  const [readIds, setReadIds] = useState(() => new Set());
+  const [dismissedIds, setDismissedIds] = useState(() => new Set());
+
+  const notifications = useMemo(() => {
+    return derivedAlerts
+      .filter((alert) => !dismissedIds.has(alert.id))
+      .map((alert) => ({
+        ...alert,
+        read: readIds.has(alert.id)
+      }));
+  }, [derivedAlerts, readIds, dismissedIds]);
 
   const unreadCount = useMemo(() => {
     return notifications.filter((n) => !n.read).length;
@@ -95,45 +89,46 @@ export default function Header({ isOnline = true, setActiveTab, onSearch }) {
 
   const handleMarkAllAsRead = (e) => {
     if (e) e.stopPropagation();
-    setNotifications((prev) =>
-      prev.map((alert) => ({
-        ...alert,
-        read: true
-      }))
-    );
+    setReadIds(new Set(derivedAlerts.map((a) => a.id)));
   };
 
   const handleToggleRead = (id, e) => {
     if (e) e.stopPropagation();
-    setNotifications((prev) =>
-      prev.map((alert) =>
-        alert.id === id ? { ...alert, read: !alert.read } : alert
-      )
-    );
+    setReadIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   };
 
   const handleDismissNotification = (id, e) => {
     if (e) e.stopPropagation();
-    setNotifications((prev) => prev.filter((alert) => alert.id !== id));
+    setDismissedIds((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
   };
 
   const handleClearAll = (e) => {
     if (e) e.stopPropagation();
-    setNotifications([]);
+    setDismissedIds(new Set(derivedAlerts.map((a) => a.id)));
   };
 
   const handleRestoreSampleAlerts = (e) => {
     if (e) e.stopPropagation();
-    setNotifications(INITIAL_ALERTS);
+    setDismissedIds(new Set());
+    setReadIds(new Set());
   };
 
   const handleItemClick = (alert) => {
     if (!alert.read) {
-      setNotifications((prev) =>
-        prev.map((item) =>
-          item.id === alert.id ? { ...item, read: true } : item
-        )
-      );
+      setReadIds((prev) => {
+        const next = new Set(prev);
+        next.add(alert.id);
+        return next;
+      });
     }
 
     if (alert.category && typeof setActiveTab === "function") {

@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { analyzeURL, analyzeEmailHeaders } from "../../lib/phishingEngine";
-import { 
+import {
   LayoutDashboard,
   Globe,
   Mail,
@@ -107,32 +107,70 @@ export default function SystemPage() {
 
   // Check online/offline status & trigger real-time polling every 4 seconds
   useEffect(() => {
+    let isCancelled = false;
+
+    const syncLiveHistory = async () => {
+      try {
+        if (typeof window !== "undefined" && navigator.onLine) {
+          const res = await fetch("/api/history", { cache: "no-store" });
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data) && !isCancelled) {
+              setScanHistory(data);
+              localStorage.setItem("phishguard_live_history", JSON.stringify(data));
+              return;
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Failed to load live history from database:", e);
+      }
+
+      if (typeof window !== "undefined" && !isCancelled) {
+        const saved = localStorage.getItem("phishguard_live_history");
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved);
+            if (Array.isArray(parsed) && !isCancelled) {
+              setScanHistory(parsed);
+            }
+          } catch {
+            // ignore fallback errors
+          }
+        }
+      }
+    };
+
     if (typeof window !== "undefined") {
-      setTimeout(() => setIsOnline(navigator.onLine), 0);
+      setTimeout(() => {
+        if (!isCancelled) setIsOnline(navigator.onLine);
+      }, 0);
+
       const handleOnline = () => {
         setIsOnline(true);
-        fetchLiveHistory();
+        syncLiveHistory();
       };
       const handleOffline = () => setIsOnline(false);
 
       window.addEventListener("online", handleOnline);
       window.addEventListener("offline", handleOffline);
 
-      // Initial load
-      fetchLiveHistory();
+      // Initial async load
+      syncLiveHistory();
 
       // Live realtime sync: poll every 4 seconds for fresh scans from Mobile App
       const liveInterval = setInterval(() => {
-        fetchLiveHistory();
+        syncLiveHistory();
       }, 4000);
 
       return () => {
+        isCancelled = true;
         window.removeEventListener("online", handleOnline);
         window.removeEventListener("offline", handleOffline);
         clearInterval(liveInterval);
       };
     }
-  }, [fetchLiveHistory]);
+  }, []);
 
   // Web Audio Success Beep
   const playSuccessBeep = () => {
@@ -295,7 +333,9 @@ export default function SystemPage() {
       rating: finalResult.rating,
       score: finalResult.score,
       source: "Web Dashboard",
+      detectionReasons: finalResult.warnings || [],
       date: new Date().toLocaleDateString(),
+      createdAt: new Date().toISOString()
     };
 
     if (isOnline) {
@@ -309,7 +349,8 @@ export default function SystemPage() {
     }
 
     setScanHistory((prevHistory) => {
-      const filtered = (prevHistory || []).filter(
+      const base = Array.isArray(prevHistory) ? prevHistory : [];
+      const filtered = base.filter(
         (item) => (item.url || "").toLowerCase() !== finalResult.url.toLowerCase()
       );
       const updated = [newHistoryItem, ...filtered].slice(0, 50);
@@ -318,14 +359,18 @@ export default function SystemPage() {
     });
   };
 
-  const handleCheckEmailHeaders = () => {
-    if (!emailHeadersInput.trim()) return;
+  const handleCheckEmailHeaders = (customHeaders) => {
+    const textToAnalyze = typeof customHeaders === "string" ? customHeaders : emailHeadersInput;
+    if (!textToAnalyze || !textToAnalyze.trim()) return;
+    if (typeof customHeaders === "string") {
+      setEmailHeadersInput(customHeaders);
+    }
     setEmailScanLoading(true);
     setTimeout(() => {
-      const result = analyzeEmailHeaders(emailHeadersInput);
+      const result = analyzeEmailHeaders(textToAnalyze);
       setEmailScanResult(result);
       setEmailScanLoading(false);
-    }, 1000);
+    }, 700);
   };
 
   const handleQrScanSuccess = (decodedUrl) => {
@@ -361,24 +406,24 @@ export default function SystemPage() {
 
   return (
     <div className="flex h-screen bg-[#F8FAFC] text-[#101D36] font-sans antialiased overflow-hidden selection:bg-[#1463FF]/15 selection:text-[#1463FF]">
-      
+
       {/* Desktop/Tablet Sidebar */}
-      <Sidebar 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
-        navItems={navItems} 
-        threatStats={threatStats} 
+      <Sidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        navItems={navItems}
+        threatStats={threatStats}
       />
 
       {/* Main Container */}
       <div className="flex flex-col flex-1 h-screen overflow-hidden">
-        
+
         {/* Top Header Bar */}
-        <Header 
-          threatStats={threatStats} 
-          isOnline={isOnline} 
-          setActiveTab={setActiveTab} 
-          scanHistory={scanHistory} 
+        <Header
+          threatStats={threatStats}
+          isOnline={isOnline}
+          setActiveTab={setActiveTab}
+          scanHistory={scanHistory}
         />
 
         {/* Dynamic Content Pane with Smooth Fade Transitions */}
@@ -425,6 +470,7 @@ export default function SystemPage() {
               emailHeadersInput={emailHeadersInput}
               setEmailHeadersInput={setEmailHeadersInput}
               emailScanResult={emailScanResult}
+              setEmailScanResult={setEmailScanResult}
               emailScanLoading={emailScanLoading}
               handleCheckEmailHeaders={handleCheckEmailHeaders}
               handleClearEmailInput={handleClearEmailInput}
@@ -470,10 +516,10 @@ export default function SystemPage() {
       </div>
 
       {/* Mobile Bottom Tab Bar */}
-      <BottomNav 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
-        navItems={navItems} 
+      <BottomNav
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        navItems={navItems}
       />
 
       {/* Safe Sandbox DOM Renderer Modal */}

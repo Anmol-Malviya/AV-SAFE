@@ -2,22 +2,23 @@
 
 import { useMemo, useState, useEffect } from "react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Shield, 
-  Link2, 
-  Download, 
-  Lightbulb, 
-  Lock, 
-  HelpCircle, 
-  Globe, 
-  Smartphone, 
-  CheckCircle2, 
-  AlertTriangle, 
-  ShieldAlert, 
-  Check, 
-  ShieldCheck, 
-  Settings, 
+import {
+  Shield,
+  Link2,
+  Download,
+  Lightbulb,
+  Lock,
+  HelpCircle,
+  Globe,
+  Smartphone,
+  CheckCircle2,
+  AlertTriangle,
+  ShieldAlert,
+  Check,
+  ShieldCheck,
+  Settings,
   Activity,
   RefreshCw,
   Search,
@@ -30,7 +31,9 @@ import {
   ExternalLink,
   Copy,
   CheckCheck,
-  QrCode
+  QrCode,
+  CreditCard,
+  Eye
 } from "lucide-react";
 
 const QrScanner = dynamic(() => import("./QrScanner"), { ssr: false });
@@ -52,6 +55,7 @@ export default function UrlCheckerTab({
 }) {
   const [scanStepIndex, setScanStepIndex] = useState(0);
   const [localScanning, setLocalScanning] = useState(false);
+  const [scanProgress, setScanProgress] = useState(0);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState(false);
@@ -70,20 +74,35 @@ export default function UrlCheckerTab({
 
   useEffect(() => {
     if (!localScanning && !deepScanLoading) return;
-    const interval = setInterval(() => {
+    const stepInterval = setInterval(() => {
       setScanStepIndex((prev) => (prev + 1) % scanSteps.length);
-    }, 300);
-    return () => clearInterval(interval);
+    }, 280);
+
+    const progressInterval = setInterval(() => {
+      setScanProgress((prev) => (prev < 90 ? prev + 5 : 90));
+    }, 100);
+
+    return () => {
+      clearInterval(stepInterval);
+      clearInterval(progressInterval);
+    };
   }, [localScanning, deepScanLoading, scanSteps.length]);
 
   const handleSubmit = () => {
     if (!urlInput.trim() || localScanning || deepScanLoading) return;
     setScanStepIndex(0);
+    setScanProgress(15);
     setLocalScanning(true);
     setTimeout(() => {
       handleCheckUrl(urlInput);
+      setScanProgress(100);
       setLocalScanning(false);
     }, 1500);
+  };
+
+  const handleClear = () => {
+    setScanProgress(0);
+    handleClearInput();
   };
 
   const isScanningActive = localScanning || deepScanLoading;
@@ -115,7 +134,7 @@ export default function UrlCheckerTab({
 
   return (
     <div className="space-y-6">
-      {/* ================= PAGE HEADING ================= */}
+      {/* ================= 1. PAGE HEADING ================= */}
       <div>
         <div className="flex items-center gap-1.5 text-[#1463FF] text-[11px] font-bold tracking-widest uppercase mb-1">
           <Zap className="h-3.5 w-3.5" />
@@ -129,9 +148,9 @@ export default function UrlCheckerTab({
         </p>
       </div>
 
-      {/* ================= MAIN SCANNER WORKSPACE (TOP ROW) ================= */}
+      {/* ================= 2. MAIN SCANNER WORKSPACE (TOP ROW) ================= */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-        
+
         {/* LEFT COLUMN: URL Analysis Form */}
         <div className="bg-white rounded-2xl border border-[#E5ECF5] p-6 sm:p-7 shadow-xs flex flex-col justify-between">
           <div>
@@ -175,7 +194,7 @@ export default function UrlCheckerTab({
                 <Link2 className="h-4 w-4 text-[#94A3B8] shrink-0" />
                 <input
                   type="text"
-                  placeholder="e.g. https://example.com"
+                  placeholder="https://example.com"
                   value={urlInput}
                   onChange={(e) => setUrlInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
@@ -184,7 +203,7 @@ export default function UrlCheckerTab({
                 {urlInput && (
                   <button
                     type="button"
-                    onClick={handleClearInput}
+                    onClick={handleClear}
                     className="absolute right-3 p-1 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
                     title="Clear input"
                   >
@@ -248,9 +267,9 @@ export default function UrlCheckerTab({
         </div>
 
         {/* RIGHT COLUMN: Security Evaluation Panel */}
-        <div className="bg-white rounded-2xl border border-[#E5ECF5] p-6 sm:p-7 shadow-xs flex flex-col justify-between min-h-[340px]">
+        <div className="bg-white rounded-2xl border border-[#E5ECF5] p-5 sm:p-6 shadow-xs flex flex-col justify-between min-h-[380px] overflow-hidden">
           <AnimatePresence mode="wait">
-            {/* SCANNING STATE */}
+            {/* SCANNING STATE (Modeled after Reference Image 1 "Scanning URL") */}
             {isScanningActive ? (
               <motion.div
                 key="scanning"
@@ -258,32 +277,45 @@ export default function UrlCheckerTab({
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.98 }}
                 transition={{ duration: 0.2 }}
-                className="flex-1 flex flex-col items-center justify-center py-6 text-center space-y-4"
+                className="flex-1 flex flex-col justify-center space-y-6"
               >
-                {/* Radar sweep circle */}
-                <div className="relative flex items-center justify-center w-20 h-20 rounded-full bg-[#1463FF]/5 border border-[#1463FF]/15">
-                  <RefreshCw className="h-8 w-8 text-[#1463FF] animate-spin" />
-                  <div className="absolute inset-0 rounded-full border border-[#1463FF]/20 animate-pulse-ring" />
+                {/* Top scanning card matching Image 1 */}
+                <div className="p-5 rounded-2xl bg-[#F0F6FE]/70 border border-[#1463FF]/20 flex items-center gap-4">
+                  <div className="relative flex items-center justify-center w-14 h-14 rounded-full bg-white border border-[#1463FF]/30 shadow-xs shrink-0">
+                    <Search className="h-6 w-6 text-[#1463FF] animate-pulse" />
+                    <div className="absolute inset-0 rounded-full border-2 border-dashed border-[#1463FF]/40 animate-spin" style={{ animationDuration: "8s" }} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-bold text-sm sm:text-base text-[#101D36]">
+                        Scanning URL
+                      </h3>
+                      <span className="text-xs font-mono font-bold text-[#1463FF]">
+                        {scanProgress}%
+                      </span>
+                    </div>
+                    <p className="text-xs text-[#64748B] mt-0.5 truncate">
+                      Analyzing domain, SSL records, DNS data and threat indicators...
+                    </p>
+                    {/* Progress bar */}
+                    <div className="w-full h-2 bg-blue-100/70 rounded-full overflow-hidden mt-3">
+                      <div
+                        className="h-full bg-[#1463FF] rounded-full transition-all duration-300"
+                        style={{ width: `${scanProgress}%` }}
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                <div className="space-y-1">
-                  <h3 className="font-bold text-base text-[#101D36]">
-                    AI Threat Diagnostics Running
-                  </h3>
-                  <p className="text-xs text-[#64748B] max-w-sm mx-auto">
-                    Dissecting URL parameters, checking homograph patterns, and validating hostname entropy.
+                {/* Real-time step progress text */}
+                <div className="text-center space-y-2">
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-xs text-[#64748B] font-mono">
+                    <Activity className="h-3.5 w-3.5 text-[#1463FF] animate-pulse" />
+                    <span>{scanSteps[scanStepIndex]}</span>
+                  </div>
+                  <p className="text-[11px] text-[#94A3B8]">
+                    Evaluating heuristic models, homograph permutations, and domain entropy
                   </p>
-                </div>
-
-                {/* Scan step pill */}
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-xs text-[#64748B] font-mono">
-                  <Activity className="h-3.5 w-3.5 text-[#1463FF] animate-pulse" />
-                  <span>{scanSteps[scanStepIndex]}</span>
-                </div>
-
-                {/* Progress bar */}
-                <div className="w-full max-w-xs mx-auto h-1.5 bg-slate-100 rounded-full overflow-hidden relative">
-                  <div className="absolute h-full w-1/3 bg-[#1463FF] rounded-full animate-scanning-bar" />
                 </div>
               </motion.div>
             ) : scanResult ? (
@@ -294,99 +326,90 @@ export default function UrlCheckerTab({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.25 }}
-                className="space-y-5"
+                className="space-y-4"
               >
-                {/* Header safety bar */}
+                {/* Status banner matching Reference Image 1 (Scan Completed / Threat Detected) */}
                 <div
-                  className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                  className={`p-4 rounded-xl border flex items-center gap-4 ${
                     scanResult.rating === "SAFE"
-                      ? "bg-emerald-50/70 border-emerald-200/80"
-                      : scanResult.rating === "SUSPICIOUS"
-                      ? "bg-amber-50/70 border-amber-200/80"
-                      : "bg-rose-50/70 border-rose-200/80"
+                      ? "bg-[#ECFDF5] border-emerald-200"
+                      : "bg-[#FEF2F2] border-rose-200"
                   }`}
                 >
-                  <div className="flex items-center gap-3 min-w-0">
-                    {/* Visual score circle */}
-                    <div className="relative flex items-center justify-center shrink-0">
-                      <svg className="w-14 h-14 transform -rotate-90">
-                        <circle cx="28" cy="28" r="24" stroke="#E2E8F0" strokeWidth="4" fill="transparent" />
-                        <motion.circle
-                          cx="28"
-                          cy="28"
-                          r="24"
-                          stroke={
-                            scanResult.rating === "SAFE"
-                              ? "#10B981"
-                              : scanResult.rating === "SUSPICIOUS"
-                              ? "#F59E0B"
-                              : "#EF4444"
-                          }
-                          strokeWidth="4"
-                          fill="transparent"
-                          strokeDasharray={2 * Math.PI * 24}
-                          initial={{ strokeDashoffset: 2 * Math.PI * 24 }}
-                          animate={{ strokeDashoffset: 2 * Math.PI * 24 * (1 - scanResult.score / 100) }}
-                          transition={{ duration: 0.7, ease: "easeOut" }}
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                      <div className="absolute flex flex-col items-center">
-                        <span className="text-xs font-extrabold text-[#101D36] leading-none">
-                          {scanResult.score}
-                        </span>
-                        <span className="text-[7px] text-[#64748B] mt-0.5">Score</span>
-                      </div>
-                    </div>
-
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-[#101D36]">Diagnostic Result</span>
-                        <button
-                          type="button"
-                          onClick={handleCopyUrl}
-                          className="text-slate-400 hover:text-slate-600 transition-colors p-0.5"
-                          title="Copy URL"
-                        >
-                          {copiedUrl ? <CheckCheck className="h-3 w-3 text-emerald-600" /> : <Copy className="h-3 w-3" />}
-                        </button>
-                      </div>
-                      <span className="text-xs text-[#64748B] block truncate max-w-[220px] sm:max-w-xs mt-0.5 font-mono select-all">
-                        {scanResult.url}
-                      </span>
-                    </div>
+                  <div className={`w-12 h-12 rounded-full border flex items-center justify-center shrink-0 ${
+                    scanResult.rating === "SAFE"
+                      ? "bg-white border-emerald-300 text-emerald-600 shadow-2xs"
+                      : "bg-white border-rose-300 text-rose-600 shadow-2xs"
+                  }`}>
+                    {scanResult.rating === "SAFE" ? (
+                      <CheckCircle2 className="h-6 w-6" />
+                    ) : (
+                      <AlertTriangle className="h-6 w-6" />
+                    )}
                   </div>
 
-                  {/* Verdict Badge */}
-                  <span
-                    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold shrink-0 self-start sm:self-auto border ${
-                      scanResult.rating === "SAFE"
-                        ? "bg-emerald-100 text-emerald-800 border-emerald-300"
-                        : scanResult.rating === "SUSPICIOUS"
-                        ? "bg-amber-100 text-amber-800 border-amber-300"
-                        : "bg-rose-100 text-rose-800 border-rose-300"
-                    }`}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-bold text-sm sm:text-base text-[#101D36]">
+                        {scanResult.rating === "SAFE" ? "Scan Completed" : "Threat Detected"}
+                      </h3>
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold border ${
+                          scanResult.rating === "SAFE"
+                            ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+                            : scanResult.rating === "SUSPICIOUS"
+                            ? "bg-amber-100 text-amber-800 border-amber-300"
+                            : "bg-rose-100 text-rose-800 border-rose-300"
+                        }`}
+                      >
+                        {scanResult.rating}
+                      </span>
+                    </div>
+                    <p className="text-xs text-[#64748B] mt-0.5">
+                      {scanResult.rating === "SAFE"
+                        ? "Analysis finished. Review the security evaluation on the left."
+                        : "Potential security risks found. Review the detailed analysis."}
+                    </p>
+
+                    {/* 100% completed status bar */}
+                    <div className="w-full h-1.5 bg-slate-200/70 rounded-full overflow-hidden mt-2">
+                      <div
+                        className={`h-full rounded-full ${
+                          scanResult.rating === "SAFE" ? "bg-[#10B981]" : "bg-[#EF4444]"
+                        }`}
+                        style={{ width: "100%" }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Scanned URL bar with copy */}
+                <div className="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-xl border border-slate-100">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-[10px] uppercase font-bold text-slate-400">URL</span>
+                    <span className="text-xs text-[#101D36] font-mono truncate max-w-[260px] sm:max-w-md select-all">
+                      {scanResult.url}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCopyUrl}
+                    className="text-slate-400 hover:text-slate-600 transition-colors p-1"
+                    title="Copy URL"
                   >
-                    {scanResult.rating === "SAFE" ? (
-                      <CheckCircle2 className="h-3.5 w-3.5" />
-                    ) : scanResult.rating === "SUSPICIOUS" ? (
-                      <AlertTriangle className="h-3.5 w-3.5" />
-                    ) : (
-                      <ShieldAlert className="h-3.5 w-3.5" />
-                    )}
-                    <span>{scanResult.rating}</span>
-                  </span>
+                    {copiedUrl ? <CheckCheck className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                  </button>
                 </div>
 
                 {/* BRAND ABUSE COMPARISON (If spoofing detected) */}
                 {scanResult.rating !== "SAFE" && matchedBrand && (
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <span className="text-[11px] font-bold text-[#101D36] uppercase tracking-wider flex items-center gap-1.5">
                       <ShieldAlert className="h-3.5 w-3.5 text-rose-500" />
                       Brand Abuse Comparison
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                      <div className="p-3 rounded-xl border border-rose-100 bg-rose-50/50">
+                      <div className="p-2.5 rounded-xl border border-rose-100 bg-rose-50/50">
                         <span className="text-[9px] uppercase tracking-wider text-rose-700 font-bold block">
                           SUSPICIOUS HOST
                         </span>
@@ -397,7 +420,7 @@ export default function UrlCheckerTab({
                           <AlertTriangle className="h-3 w-3" /> Spoof Attempt
                         </span>
                       </div>
-                      <div className="p-3 rounded-xl border border-emerald-100 bg-emerald-50/50">
+                      <div className="p-2.5 rounded-xl border border-emerald-100 bg-emerald-50/50">
                         <span className="text-[9px] uppercase tracking-wider text-emerald-700 font-bold block">
                           LEGITIMATE TARGET
                         </span>
@@ -414,18 +437,18 @@ export default function UrlCheckerTab({
 
                 {/* THREAT FACTORS LIST */}
                 {scanResult.warnings?.length > 0 && (
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <span className="text-[11px] font-bold text-[#101D36] uppercase tracking-wider flex items-center gap-1.5">
                       <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
                       Threat Indicators Detected ({scanResult.warnings.length})
                     </span>
-                    <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
+                    <div className="space-y-1.5 max-h-[140px] overflow-y-auto pr-1">
                       {scanResult.warnings.map((warning, idx) => (
-                        <div key={idx} className="p-3 rounded-xl border border-slate-100 bg-slate-50/70">
+                        <div key={idx} className="p-2.5 rounded-xl border border-slate-100 bg-slate-50/70">
                           <div className="flex justify-between items-center mb-0.5">
                             <span className="text-xs font-bold text-[#101D36]">{warning.title}</span>
                             <span
-                              className={`text-[9px] uppercase font-bold px-1.5 py-0.5 rounded ${
+                              className={`text-[9px] uppercase font-bold px-1.5 py-0.2 rounded ${
                                 warning.severity === "high"
                                   ? "bg-rose-100 text-rose-800"
                                   : "bg-amber-100 text-amber-800"
@@ -443,12 +466,12 @@ export default function UrlCheckerTab({
 
                 {/* SECURITY CONTROLS PASSED */}
                 {scanResult.safeIndicators?.length > 0 && (
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <span className="text-[11px] font-bold text-[#101D36] uppercase tracking-wider flex items-center gap-1.5">
                       <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
                       Security Controls Passed
                     </span>
-                    <div className="space-y-1.5">
+                    <div className="space-y-1">
                       {scanResult.safeIndicators.map((indicator, index) => (
                         <div
                           key={index}
@@ -464,12 +487,12 @@ export default function UrlCheckerTab({
 
                 {/* LIVE DNS & SSL METADATA (When Deep Inspection run) */}
                 {scanResult.deepScan && (
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <span className="text-[11px] font-bold text-[#101D36] uppercase tracking-wider flex items-center gap-1.5">
                       <Server className="h-3.5 w-3.5 text-[#1463FF]" />
                       Live DNS & SSL Server Metadata
                     </span>
-                    <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-3 space-y-2 text-xs text-[#64748B]">
+                    <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-3 space-y-1.5 text-xs text-[#64748B]">
                       <div className="flex justify-between">
                         <span>Target IP Address</span>
                         <span className="font-bold text-[#101D36] font-mono">
@@ -511,7 +534,7 @@ export default function UrlCheckerTab({
                   </button>
                   <button
                     type="button"
-                    onClick={handleClearInput}
+                    onClick={handleClear}
                     className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 px-4 text-xs font-semibold text-[#64748B] hover:text-[#101D36] transition-colors cursor-pointer"
                   >
                     <span>New Scan</span>
@@ -519,50 +542,210 @@ export default function UrlCheckerTab({
                 </div>
               </motion.div>
             ) : (
-              /* EMPTY IDLE STATE - EXACT MATCH TO VISUAL REFERENCE */
+              /* EMPTY IDLE STATE - PURE REACT + VECTOR SVG COMPONENTS (ZERO OVERFLOW) */
               <motion.div
                 key="idle"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className="flex-1 flex flex-col justify-between"
+                className="flex-1 flex flex-col justify-between py-1 select-none w-full"
               >
-                {/* Center graphic and message */}
-                <div className="flex-1 flex flex-col items-center justify-center py-8 text-center">
-                  {/* Concentric rings graphic */}
-                  <div className="relative flex items-center justify-center w-28 h-28 rounded-full border border-dashed border-[#1463FF]/30 bg-gradient-to-b from-[#F3F7FF] to-white/40 mb-5">
-                    <div className="w-20 h-20 rounded-full border border-[#1463FF]/20 bg-white flex items-center justify-center shadow-xs">
-                      <Shield className="h-9 w-9 text-[#1463FF]" strokeWidth={1.8} />
+                {/* Upper Centered Composition with Constrained Width for Orbit Fit */}
+                <div className="relative w-full h-[255px] sm:h-[275px] flex items-center justify-center my-auto overflow-hidden">
+                  {/* Center Shield & Orbital System (Pure Vector SVG) */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <svg
+                      viewBox="0 0 240 240"
+                      className="w-[230px] h-[230px] sm:w-[250px] sm:h-[250px]"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <defs>
+                        {/* Soft Ambient Radial Aura */}
+                        <radialGradient id="centerAura" cx="50%" cy="50%" r="50%">
+                          <stop offset="0%" stopColor="#1463FF" stopOpacity="0.10" />
+                          <stop offset="65%" stopColor="#00C2FF" stopOpacity="0.03" />
+                          <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+                        </radialGradient>
+
+                        {/* Inner Core Circle Gradient */}
+                        <radialGradient id="shieldCoreGradient" cx="50%" cy="40%" r="60%">
+                          <stop offset="0%" stopColor="#EFF6FF" />
+                          <stop offset="100%" stopColor="#DBEAFE" />
+                        </radialGradient>
+
+                        {/* Crisp Shield Gradient */}
+                        <linearGradient id="shieldBorderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#1463FF" />
+                          <stop offset="100%" stopColor="#00A3FF" />
+                        </linearGradient>
+
+                        {/* Shield Inner Glow */}
+                        <linearGradient id="shieldInnerGlow" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" stopColor="#1463FF" stopOpacity="0.09" />
+                          <stop offset="100%" stopColor="#1463FF" stopOpacity="0.02" />
+                        </linearGradient>
+
+                        {/* Glow Filter for Orbital Particle Nodes */}
+                        <filter id="nodeGlowFilter" x="-40%" y="-40%" width="180%" height="180%">
+                          <feGaussianBlur stdDeviation="2" result="blur" />
+                          <feMerge>
+                            <feMergeNode in="blur" />
+                            <feMergeNode in="SourceGraphic" />
+                          </feMerge>
+                        </filter>
+                      </defs>
+
+                      {/* Ambient Radial Aura */}
+                      <circle cx="120" cy="120" r="110" fill="url(#centerAura)" />
+
+                      {/* Outer Dashed Orbit Path (Radius 106) */}
+                      <circle
+                        cx="120"
+                        cy="120"
+                        r="106"
+                        stroke="#CBD5E1"
+                        strokeWidth="1.2"
+                        strokeDasharray="4 4"
+                        className="opacity-70"
+                      />
+
+                      {/* Middle Solid Orbit Path (Radius 88) */}
+                      <circle
+                        cx="120"
+                        cy="120"
+                        r="88"
+                        stroke="#E2E8F0"
+                        strokeWidth="1.2"
+                      />
+
+                      {/* Soft Shaded Ring (Radius 66) */}
+                      <circle
+                        cx="120"
+                        cy="120"
+                        r="66"
+                        stroke="#BFDBFE"
+                        strokeWidth="1.2"
+                        fill="#F8FAFC"
+                        fillOpacity="0.5"
+                      />
+
+                      {/* Inner Glowing Core (Radius 46) */}
+                      <circle
+                        cx="120"
+                        cy="120"
+                        r="46"
+                        fill="url(#shieldCoreGradient)"
+                        stroke="#93C5FD"
+                        strokeWidth="1.2"
+                      />
+
+                      {/* ORBITAL PARTICLES & NODES DIRECTLY ON PATHS */}
+                      {/* Top Right Cyan Node (radius ~88, angle ~45 deg) */}
+                      <circle cx="182" cy="58" r="4.5" fill="#00C2FF" filter="url(#nodeGlowFilter)" />
+                      <circle cx="182" cy="58" r="1.8" fill="#FFFFFF" />
+
+                      {/* Top Blue Node (radius ~106, angle ~90 deg) */}
+                      <circle cx="120" cy="14" r="3.5" fill="#1463FF" filter="url(#nodeGlowFilter)" />
+
+                      {/* Top Left Blue Node (radius ~88, angle ~135 deg) */}
+                      <circle cx="58" cy="58" r="4" fill="#1463FF" />
+
+                      {/* Far Left Green Node (radius ~88, angle ~180 deg) */}
+                      <circle cx="32" cy="120" r="3.5" fill="#10B981" filter="url(#nodeGlowFilter)" />
+
+                      {/* Bottom Right Purple Node (radius ~106, angle ~315 deg) */}
+                      <circle cx="195" cy="195" r="4" fill="#8B5CF6" filter="url(#nodeGlowFilter)" />
+
+                      {/* Bottom Blue Node (radius ~88, angle ~270 deg) */}
+                      <circle cx="120" cy="208" r="3" fill="#1463FF" />
+
+                      {/* Inner Cyan Pulse Node */}
+                      <circle cx="156" cy="84" r="3.2" fill="#00C2FF" />
+
+                      {/* ============= CENTRAL CYBER SECURITY SHIELD ============= */}
+                      {/* Shield Inner Fill */}
+                      <path
+                        d="M120 95 C128 92 136 89 144 89 C144 114 138 132 120 146 C102 132 96 114 96 89 C104 89 112 92 120 95 Z"
+                        fill="url(#shieldInnerGlow)"
+                      />
+
+                      {/* Crisp Vector Shield Stroke */}
+                      <path
+                        d="M120 95 C128 92 136 89 144 89 C144 114 138 132 120 146 C102 132 96 114 96 89 C104 89 112 92 120 95 Z"
+                        stroke="url(#shieldBorderGradient)"
+                        strokeWidth="3.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+
+                      {/* Shield Highlight Glint */}
+                      <path
+                        d="M120 100 C126 98 132 95 136 94 C136 109 133 121 120 132"
+                        stroke="#FFFFFF"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                        opacity="0.65"
+                      />
+                    </svg>
+                  </div>
+
+                  {/* Left Column Badges */}
+                  <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-around py-2 z-10">
+                    {/* 1. Threat Detection */}
+                    <div className="flex items-center gap-2 sm:gap-2.5 bg-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl border border-rose-100 shadow-[0_2px_10px_rgba(239,68,68,0.06)] hover:shadow-md transition-all">
+                      <div className="w-7 h-7 rounded-lg sm:rounded-xl bg-rose-50 border border-rose-100/80 flex items-center justify-center text-rose-500 shrink-0">
+                        <Shield className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      </div>
+                      <span className="text-[11px] sm:text-xs font-bold text-[#101D36] whitespace-nowrap">
+                        Threat Detection
+                      </span>
+                    </div>
+
+                    {/* 2. SSL Analysis */}
+                    <div className="flex items-center gap-2 sm:gap-2.5 bg-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl border border-blue-100 shadow-[0_2px_10px_rgba(20,99,255,0.06)] hover:shadow-md transition-all">
+                      <div className="w-7 h-7 rounded-lg sm:rounded-xl bg-blue-50 border border-blue-100/80 flex items-center justify-center text-[#1463FF] shrink-0">
+                        <Lock className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      </div>
+                      <span className="text-[11px] sm:text-xs font-bold text-[#101D36] whitespace-nowrap">
+                        SSL Analysis
+                      </span>
                     </div>
                   </div>
 
-                  <h3 className="text-base sm:text-lg font-bold text-[#101D36]">
-                    Awaiting Security Evaluation
-                  </h3>
-                  <p className="text-xs text-[#64748B] max-w-sm mt-1.5 leading-relaxed">
-                    Submit a URL on the left panel to scan structural characteristics, SSL records, and DNS profiles.
-                  </p>
+                  {/* Right Column Badges */}
+                  <div className="absolute right-0 top-0 bottom-0 flex flex-col justify-around py-2 z-10">
+                    {/* 3. DNS Inspection */}
+                    <div className="flex items-center gap-2 sm:gap-2.5 bg-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl border border-emerald-100 shadow-[0_2px_10px_rgba(16,185,129,0.06)] hover:shadow-md transition-all">
+                      <div className="w-7 h-7 rounded-lg sm:rounded-xl bg-emerald-50 border border-emerald-100/80 flex items-center justify-center text-emerald-600 shrink-0">
+                        <Database className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      </div>
+                      <span className="text-[11px] sm:text-xs font-bold text-[#101D36] whitespace-nowrap">
+                        DNS Inspection
+                      </span>
+                    </div>
+
+                    {/* 4. Brand Spoofing */}
+                    <div className="flex items-center gap-2 sm:gap-2.5 bg-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl border border-purple-100 shadow-[0_2px_10px_rgba(139,92,246,0.06)] hover:shadow-md transition-all">
+                      <div className="w-7 h-7 rounded-lg sm:rounded-xl bg-purple-50 border border-purple-100/80 flex items-center justify-center text-purple-600 shrink-0">
+                        <Crosshair className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      </div>
+                      <span className="text-[11px] sm:text-xs font-bold text-[#101D36] whitespace-nowrap">
+                        Brand Spoofing
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Bottom 4 capability indicators */}
-                <div className="pt-4 border-t border-[#E5ECF5]/80 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center sm:text-left">
-                  <div className="flex items-center justify-center sm:justify-start gap-1.5">
-                    <Shield className="h-4 w-4 text-[#EF4444] shrink-0" />
-                    <span className="text-[11px] font-semibold text-[#101D36]">Threat Detection</span>
-                  </div>
-                  <div className="flex items-center justify-center sm:justify-start gap-1.5">
-                    <Lock className="h-4 w-4 text-[#1463FF] shrink-0" />
-                    <span className="text-[11px] font-semibold text-[#101D36]">SSL Analysis</span>
-                  </div>
-                  <div className="flex items-center justify-center sm:justify-start gap-1.5">
-                    <Database className="h-4 w-4 text-[#10B981] shrink-0" />
-                    <span className="text-[11px] font-semibold text-[#101D36]">DNS Inspection</span>
-                  </div>
-                  <div className="flex items-center justify-center sm:justify-start gap-1.5">
-                    <Crosshair className="h-4 w-4 text-[#8B5CF6] shrink-0" />
-                    <span className="text-[11px] font-semibold text-[#101D36]">Brand Spoofing</span>
-                  </div>
+                {/* Text underneath */}
+                <div className="text-center pt-2">
+                  <h3 className="text-base sm:text-lg font-extrabold text-[#101D36] tracking-tight">
+                    Awaiting Security Evaluation
+                  </h3>
+                  <p className="text-xs text-[#64748B] max-w-sm mx-auto mt-1 leading-relaxed">
+                    Submit a URL on the left panel to scan structural characteristics, SSL records, and DNS profiles.
+                  </p>
                 </div>
               </motion.div>
             )}
@@ -570,10 +753,10 @@ export default function UrlCheckerTab({
         </div>
       </div>
 
-      {/* ================= LOWER WORKSPACE (BOTTOM ROW) ================= */}
+      {/* ================= 3. LOWER WORKSPACE (BOTTOM ROW) ================= */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-        
-        {/* LEFT BOTTOM CARD: Detection Indicators */}
+
+        {/* LEFT BOTTOM CARD: Detection Indicators (Matching Prompt Section 6) */}
         <div className="bg-white rounded-2xl border border-[#E5ECF5] p-6 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
@@ -582,59 +765,92 @@ export default function UrlCheckerTab({
                 Detection Indicators
               </h3>
             </div>
-            <p className="text-xs text-[#64748B] mb-4">
-              We analyze multiple signals to identify potential threats.
+            <p className="text-xs text-[#64748B] mb-5">
+              Review common warning signs before trusting a link.
             </p>
 
-            <div className="space-y-3">
+            <div className="space-y-3.5">
               <div className="flex items-center gap-3 text-xs text-[#101D36]">
-                <div className="h-7 w-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                  <Lock className="h-3.5 w-3.5" />
+                <div className="h-8 w-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100/60 shadow-2xs">
+                  <Lock className="h-4 w-4" />
                 </div>
-                <span>Official websites always use HTTPS/SSL.</span>
+                <span className="font-medium">Check domain spelling carefully.</span>
               </div>
 
               <div className="flex items-center gap-3 text-xs text-[#101D36]">
-                <div className="h-7 w-7 rounded-lg bg-blue-50 text-[#1463FF] flex items-center justify-center shrink-0">
-                  <HelpCircle className="h-3.5 w-3.5" />
+                <div className="h-8 w-8 rounded-xl bg-blue-50 text-[#1463FF] flex items-center justify-center shrink-0 border border-blue-100/60 shadow-2xs">
+                  <Eye className="h-4 w-4" />
                 </div>
-                <span>Watch for numeric characters mimicking alphabets.</span>
+                <span className="font-medium">Watch for lookalike domains.</span>
               </div>
 
               <div className="flex items-center gap-3 text-xs text-[#101D36]">
-                <div className="h-7 w-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-                  <Globe className="h-3.5 w-3.5" />
+                <div className="h-8 w-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 border border-purple-100/60 shadow-2xs">
+                  <CreditCard className="h-4 w-4" />
                 </div>
-                <span>Multi-layered subdomains denote obfuscation.</span>
+                <span className="font-medium">Verify unexpected login and payment links.</span>
               </div>
 
               <div className="flex items-center gap-3 text-xs text-[#101D36]">
-                <div className="h-7 w-7 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center shrink-0">
-                  <Smartphone className="h-3.5 w-3.5" />
+                <div className="h-8 w-8 rounded-xl bg-cyan-50 text-[#00C2FF] flex items-center justify-center shrink-0 border border-cyan-100/60 shadow-2xs">
+                  <QrCode className="h-4 w-4" />
                 </div>
-                <span>Scan QR codes in sandboxes first.</span>
+                <span className="font-medium">Treat suspicious QR destinations carefully.</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* RIGHT BOTTOM CARD: On-Device Protection Client */}
+        {/* RIGHT BOTTOM CARD: On-Device Protection Client ("Extend Your Protection" matching Reference Images 1 & 3) */}
         <div className="bg-[#0B1933] text-white rounded-2xl border border-slate-800 p-6 shadow-xs relative overflow-hidden flex flex-col justify-between">
           <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-            <div className="max-w-[320px]">
+            <div className="max-w-[330px]">
               <span className="text-[10px] font-bold text-[#00C2FF] uppercase tracking-wider block">
                 ON-DEVICE PROTECTION CLIENT
               </span>
-              <p className="text-xs text-slate-300 mt-2 leading-relaxed">
+              <h3 className="text-xl sm:text-2xl font-extrabold text-white mt-1 tracking-tight">
+                Extend Your Protection
+              </h3>
+              <p className="text-xs text-slate-300 mt-1.5 leading-relaxed">
                 Get offline local ML evaluation, sandbox renderings, and browser integrations on Android endpoints.
               </p>
-              <div className="mt-4">
+
+              {/* 4 Features Checkmarks in 2x2 grid (From Reference Image 1 & 3) */}
+              <div className="grid grid-cols-2 gap-2 mt-4 text-[11px] text-slate-200">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-4 h-4 rounded-full bg-[#00C2FF]/20 text-[#00C2FF] flex items-center justify-center shrink-0">
+                    <Check className="h-2.5 w-2.5" />
+                  </div>
+                  <span>Offline threat analysis</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-4 h-4 rounded-full bg-[#00C2FF]/20 text-[#00C2FF] flex items-center justify-center shrink-0">
+                    <Check className="h-2.5 w-2.5" />
+                  </div>
+                  <span>Browser integration</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-4 h-4 rounded-full bg-[#00C2FF]/20 text-[#00C2FF] flex items-center justify-center shrink-0">
+                    <Check className="h-2.5 w-2.5" />
+                  </div>
+                  <span>Sandbox renderings</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-4 h-4 rounded-full bg-[#00C2FF]/20 text-[#00C2FF] flex items-center justify-center shrink-0">
+                    <Check className="h-2.5 w-2.5" />
+                  </div>
+                  <span>Lightweight and secure</span>
+                </div>
+              </div>
+
+              {/* Download APK Button */}
+              <div className="mt-5">
                 <a
                   href="/AV-SAFE.apk"
                   download="AV-SAFE.apk"
-                  className="inline-flex h-9 items-center justify-center gap-2 rounded-xl border border-white/20 hover:border-white/40 bg-white/5 hover:bg-white/10 px-4 text-xs font-semibold text-white transition-all cursor-pointer shadow-xs"
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#1463FF] hover:bg-[#0D52DD] active:scale-[0.99] px-5 text-xs font-semibold text-white transition-all cursor-pointer shadow-sm shadow-[#1463FF]/30"
                 >
-                  <Download className="h-3.5 w-3.5" />
+                  <Download className="h-4 w-4" />
                   <span>Download APK File</span>
                 </a>
               </div>
@@ -643,41 +859,23 @@ export default function UrlCheckerTab({
               </span>
             </div>
 
-            {/* Stylized Smartphone graphic matching visual reference */}
-            <div className="hidden sm:flex relative items-center justify-center w-36 h-36 shrink-0">
-              {/* Background circular radar line */}
-              <div className="absolute inset-0 rounded-full border border-cyan-500/20 animate-pulse-ring" />
-              <div className="absolute w-28 h-28 rounded-full border border-blue-500/20" />
-
-              {/* Tilted phone mockup */}
-              <div className="relative w-20 h-32 rounded-2xl bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-slate-700/80 shadow-2xl flex flex-col items-center justify-center p-1.5 transform rotate-6">
-                {/* Notch */}
-                <div className="w-6 h-1 bg-slate-950 rounded-full mb-2" />
-                
-                {/* Screen with glowing Android robot */}
-                <div className="flex-1 w-full rounded-xl bg-[#071326] flex items-center justify-center border border-cyan-500/20">
-                  <svg className="w-7 h-7 text-[#00C2FF]" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.551 0 .9993.4482.9993.9993s-.4483.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993s-.4482.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 0 0-.1521-.5676.416.416 0 0 0-.5676.1521l-2.0223 3.503C15.5902 8.411 13.8532 8.0838 12 8.0838s-3.5902.3272-5.1368.866L4.8409 5.4468a.4161.4161 0 0 0-.5677-.1521.4157.4157 0 0 0-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.741h24c-.3432-4.0821-2.6889-7.5543-6.1185-9.4196" />
-                  </svg>
-                </div>
-              </div>
-
-              {/* Floating Badge 1: Blue Shield on top right */}
-              <div className="absolute -top-1 -right-1 w-8 h-8 rounded-xl bg-[#1463FF] border border-blue-400/40 shadow-lg flex items-center justify-center text-white z-20">
-                <Shield className="h-4 w-4" />
-              </div>
-
-              {/* Floating Badge 2: Blue Download on bottom right */}
-              <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-xl bg-[#1463FF] border border-blue-400/40 shadow-lg flex items-center justify-center text-white z-20">
-                <Download className="h-4 w-4" />
-              </div>
+            {/* Android phone mockup illustration (Using high quality extracted asset) */}
+            <div className="hidden sm:flex relative items-center justify-center w-44 h-48 shrink-0">
+              <Image
+                src="/android_phone_illustration.png"
+                alt="AV-SAFE Android Protection Client"
+                width={320}
+                height={400}
+                className="w-full h-full object-contain filter drop-shadow-[0_10px_20px_rgba(0,194,255,0.2)]"
+                priority
+              />
             </div>
           </div>
         </div>
 
       </div>
 
-      {/* ================= "HOW IT WORKS?" POPUP MODAL ================= */}
+      {/* ================= 4. "HOW IT WORKS?" POPUP MODAL ================= */}
       {showHowItWorks && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
           <div className="bg-white rounded-2xl border border-[#E5ECF5] shadow-2xl max-w-lg w-full p-6 space-y-4">
