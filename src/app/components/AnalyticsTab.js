@@ -146,16 +146,49 @@ export default function AnalyticsTab({ scanHistory = [] }) {
   }, [scanHistory, summary, COLORS]);
 
   const trendsData = useMemo(() => {
-    return data?.trendsData || [
-      { day: "Mon", Scans: 0, Threats: 0, Mobile: 0, Web: 0 },
-      { day: "Tue", Scans: 0, Threats: 0, Mobile: 0, Web: 0 },
-      { day: "Wed", Scans: 0, Threats: 0, Mobile: 0, Web: 0 },
-      { day: "Thu", Scans: 0, Threats: 0, Mobile: 0, Web: 0 },
-      { day: "Fri", Scans: 0, Threats: 0, Mobile: 0, Web: 0 },
-      { day: "Sat", Scans: 0, Threats: 0, Mobile: 0, Web: 0 },
-      { day: "Sun", Scans: 0, Threats: 0, Mobile: 0, Web: 0 }
-    ];
-  }, [data]);
+    if (data?.trendsData && data.trendsData.length > 0) {
+      const hasVolume = data.trendsData.some(d => (d.Mobile || 0) > 0 || (d.Web || 0) > 0 || (d.Scans || 0) > 0);
+      if (hasVolume) {
+        return data.trendsData.map(d => ({
+          ...d,
+          Mobile: d.Mobile !== undefined ? d.Mobile : 0,
+          Web: d.Web !== undefined ? d.Web : (d.Scans || 0)
+        }));
+      }
+    }
+
+    if (scanHistory && scanHistory.length > 0) {
+      const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const map = {};
+      days.forEach(d => { map[d] = { day: d, Scans: 0, Threats: 0, Mobile: 0, Web: 0 }; });
+
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      scanHistory.forEach(item => {
+        const date = item.timestamp ? new Date(item.timestamp) : (item.createdAt ? new Date(item.createdAt) : new Date());
+        const d = dayNames[date.getDay()];
+        if (map[d]) {
+          map[d].Scans += 1;
+          const isMobile = (item.source || '').toLowerCase().includes('android') || (item.source || '').toLowerCase().includes('app');
+          if (isMobile) map[d].Mobile += 1;
+          else map[d].Web += 1;
+          if (item.rating === 'DANGEROUS' || item.rating === 'SUSPICIOUS') map[d].Threats += 1;
+        }
+      });
+      return days.map(d => map[d]);
+    }
+
+    return (
+      data?.trendsData || [
+        { day: 'Mon', Scans: 0, Threats: 0, Mobile: 0, Web: 0 },
+        { day: 'Tue', Scans: 0, Threats: 0, Mobile: 0, Web: 0 },
+        { day: 'Wed', Scans: 0, Threats: 0, Mobile: 0, Web: 0 },
+        { day: 'Thu', Scans: 0, Threats: 0, Mobile: 0, Web: 0 },
+        { day: 'Fri', Scans: 0, Threats: 0, Mobile: 0, Web: 0 },
+        { day: 'Sat', Scans: 0, Threats: 0, Mobile: 0, Web: 0 },
+        { day: 'Sun', Scans: 0, Threats: 0, Mobile: 0, Web: 0 }
+      ]
+    );
+  }, [data, scanHistory]);
 
   const categoryData = useMemo(() => {
     return (data?.categoryData && data.categoryData.length > 0)
