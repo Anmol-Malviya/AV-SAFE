@@ -14,8 +14,8 @@ import {
 document.addEventListener('DOMContentLoaded', async () => {
   // SVG circular progress ring settings
   const progressRing = document.getElementById('progress-ring-fill');
-  const radius = 52;
-  const circumference = 2 * Math.PI * radius; // ~326.726
+  const radius = 54;
+  const circumference = 2 * Math.PI * radius; // ~339.29
 
   progressRing.style.strokeDasharray = `${circumference}`;
   progressRing.style.strokeDashoffset = `${circumference}`;
@@ -45,6 +45,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 7. Setup Incident Report Modal
   setupReportModal();
+
+  // 8. Setup Quick URL Scanner
+  setupCustomScanner();
 });
 
 // Segmented Navigation Tab Switcher
@@ -52,6 +55,7 @@ function setupNavigationTabs() {
   const tabs = document.querySelectorAll('.nav-tab');
   const panels = {
     shield: document.getElementById('view-shield'),
+    scanner: document.getElementById('view-scanner'),
     activity: document.getElementById('view-activity'),
     settings: document.getElementById('view-settings')
   };
@@ -757,4 +761,160 @@ function showToast(message) {
   setTimeout(() => {
     toast.classList.add('hidden');
   }, 2400);
+}
+
+// Quick URL Scanner Tab Setup
+function setupCustomScanner() {
+  const input = document.getElementById('custom-scan-input');
+  const btnRun = document.getElementById('btn-run-custom-scan');
+  const btnLabel = document.getElementById('btn-run-scan-label');
+  const btnClear = document.getElementById('btn-clear-scan-input');
+  const btnPaste = document.getElementById('btn-paste-clipboard');
+  const resultsCard = document.getElementById('custom-scan-results');
+  const ratingBadge = document.getElementById('custom-result-rating-badge');
+  const domainText = document.getElementById('custom-result-domain');
+  const scoreVal = document.getElementById('custom-result-score');
+  const descText = document.getElementById('custom-result-desc');
+  const warningsList = document.getElementById('custom-result-warnings');
+  const btnSandbox = document.getElementById('btn-custom-open-sandbox');
+  const btnReport = document.getElementById('btn-custom-report-threat');
+
+  let lastScannedUrl = '';
+  let lastAnalysis = null;
+
+  // Toggle clear button
+  input?.addEventListener('input', () => {
+    if (btnClear) {
+      if (input.value.trim()) btnClear.classList.remove('hidden');
+      else btnClear.classList.add('hidden');
+    }
+  });
+
+  btnClear?.addEventListener('click', () => {
+    if (input) {
+      input.value = '';
+      btnClear.classList.add('hidden');
+      resultsCard?.classList.add('hidden');
+      input.focus();
+    }
+  });
+
+  btnPaste?.addEventListener('click', async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text && input) {
+        input.value = text.trim();
+        btnClear?.classList.remove('hidden');
+        runCustomAnalysis(input.value);
+      }
+    } catch {
+      showToast('Could not read clipboard');
+    }
+  });
+
+  // Preset quick chips
+  document.querySelectorAll('.preset-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const targetUrl = chip.getAttribute('data-url');
+      if (input && targetUrl) {
+        input.value = targetUrl;
+        btnClear?.classList.remove('hidden');
+        runCustomAnalysis(targetUrl);
+      }
+    });
+  });
+
+  btnRun?.addEventListener('click', () => {
+    const rawUrl = input?.value.trim();
+    if (!rawUrl) {
+      showToast('Enter a URL to scan');
+      return;
+    }
+    runCustomAnalysis(rawUrl);
+  });
+
+  input?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const rawUrl = input.value.trim();
+      if (rawUrl) runCustomAnalysis(rawUrl);
+    }
+  });
+
+  btnSandbox?.addEventListener('click', () => {
+    if (lastScannedUrl) {
+      const sandboxUrl = chrome.runtime.getURL(`sandbox.html?url=${encodeURIComponent(lastScannedUrl)}`);
+      chrome.tabs.create({ url: sandboxUrl });
+    }
+  });
+
+  btnReport?.addEventListener('click', () => {
+    if (lastScannedUrl) {
+      window._currentActiveUrl = lastScannedUrl;
+      window._currentAnalysis = lastAnalysis;
+      openReportModal();
+    }
+  });
+
+  function runCustomAnalysis(url) {
+    if (!url) return;
+    lastScannedUrl = url;
+    if (btnRun) btnRun.disabled = true;
+    if (btnLabel) btnLabel.textContent = 'Analyzing...';
+
+    chrome.storage.local.get(['threatBlacklist'], (res) => {
+      const blacklistSet = new Set(res.threatBlacklist || []);
+      const analysis = analyzeURL(url, blacklistSet);
+      lastAnalysis = analysis;
+
+      setTimeout(() => {
+        if (btnRun) btnRun.disabled = false;
+        if (btnLabel) btnLabel.textContent = 'Run Diagnostic Scan';
+
+        if (resultsCard) resultsCard.classList.remove('hidden');
+
+        let displayHost = url;
+        try {
+          displayHost = new URL(url).hostname;
+        } catch {
+          displayHost = url.replace(/^https?:\/\//i, '').split('/')[0];
+        }
+
+        if (domainText) domainText.textContent = displayHost;
+        if (scoreVal) scoreVal.textContent = `${analysis.score}/100`;
+
+        const rating = analysis.rating || 'SAFE';
+        if (ratingBadge) {
+          ratingBadge.className = `rating-badge ${rating.toLowerCase()}`;
+          ratingBadge.textContent = rating === 'SAFE' ? 'SAFE LINK' : (rating === 'SUSPICIOUS' ? 'SUSPICIOUS' : 'CRITICAL THREAT');
+        }
+
+        if (descText) {
+          if (rating === 'SAFE') {
+            descText.textContent = 'Zero phishing vectors or malicious indicators detected. The link is rated safe.';
+          } else if (rating === 'SUSPICIOUS') {
+            descText.textContent = 'Caution: Potential typosquatting, deceptive domain, or high-risk TLD flagged.';
+          } else {
+            descText.textContent = 'High-Risk: Significant phishing heuristics or active blacklist match detected.';
+          }
+        }
+
+        if (warningsList) {
+          warningsList.innerHTML = '';
+          if (analysis.warnings && analysis.warnings.length > 0) {
+            analysis.warnings.forEach(w => {
+              const li = document.createElement('li');
+              li.className = 'threat-item';
+              li.innerHTML = `
+                <div class="threat-item-content">
+                  <span class="threat-item-title">${w.title || 'Security Flag'}</span>
+                  <span class="threat-item-desc">${w.desc || 'Anomalous pattern detected.'}</span>
+                </div>
+              `;
+              warningsList.appendChild(li);
+            });
+          }
+        }
+      }, 250);
+    });
+  }
 }

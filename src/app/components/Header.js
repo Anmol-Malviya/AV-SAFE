@@ -40,11 +40,17 @@ export default function Header({ isOnline = true, setActiveTab, onSearch, scanHi
     }));
   }, [scanHistory]);
 
-  const [notifications, setNotifications] = useState([]);
+  const [readIds, setReadIds] = useState(() => new Set());
+  const [dismissedIds, setDismissedIds] = useState(() => new Set());
 
-  useEffect(() => {
-    setNotifications(derivedAlerts);
-  }, [derivedAlerts]);
+  const notifications = useMemo(() => {
+    return derivedAlerts
+      .filter((alert) => !dismissedIds.has(alert.id))
+      .map((alert) => ({
+        ...alert,
+        read: readIds.has(alert.id)
+      }));
+  }, [derivedAlerts, readIds, dismissedIds]);
 
   const unreadCount = useMemo(() => {
     return notifications.filter((n) => !n.read).length;
@@ -83,45 +89,46 @@ export default function Header({ isOnline = true, setActiveTab, onSearch, scanHi
 
   const handleMarkAllAsRead = (e) => {
     if (e) e.stopPropagation();
-    setNotifications((prev) =>
-      prev.map((alert) => ({
-        ...alert,
-        read: true
-      }))
-    );
+    setReadIds(new Set(derivedAlerts.map((a) => a.id)));
   };
 
   const handleToggleRead = (id, e) => {
     if (e) e.stopPropagation();
-    setNotifications((prev) =>
-      prev.map((alert) =>
-        alert.id === id ? { ...alert, read: !alert.read } : alert
-      )
-    );
+    setReadIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   };
 
   const handleDismissNotification = (id, e) => {
     if (e) e.stopPropagation();
-    setNotifications((prev) => prev.filter((alert) => alert.id !== id));
+    setDismissedIds((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
   };
 
   const handleClearAll = (e) => {
     if (e) e.stopPropagation();
-    setNotifications([]);
+    setDismissedIds(new Set(derivedAlerts.map((a) => a.id)));
   };
 
   const handleRestoreSampleAlerts = (e) => {
     if (e) e.stopPropagation();
-    setNotifications(derivedAlerts);
+    setDismissedIds(new Set());
+    setReadIds(new Set());
   };
 
   const handleItemClick = (alert) => {
     if (!alert.read) {
-      setNotifications((prev) =>
-        prev.map((item) =>
-          item.id === alert.id ? { ...item, read: true } : item
-        )
-      );
+      setReadIds((prev) => {
+        const next = new Set(prev);
+        next.add(alert.id);
+        return next;
+      });
     }
 
     if (alert.category && typeof setActiveTab === "function") {

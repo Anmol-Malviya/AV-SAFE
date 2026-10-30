@@ -31,7 +31,12 @@
     {
       "resources": [
         "warning.html",
-        "sandbox.html"
+        "warning.css",
+        "warning.js",
+        "sandbox.html",
+        "sandbox.css",
+        "sandbox.js",
+        "ic_app_logo.png"
       ],
       "matches": [
         "<all_urls>"

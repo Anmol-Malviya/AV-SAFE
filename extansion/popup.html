@@ -11,9 +11,14 @@
     <!-- Header -->
     <header class="header">
       <div class="brand">
-        <img src="ic_app_logo.png" class="brand-logo-img" alt="AV-SAFE Shield Logo" />
+        <div class="brand-logo-glow">
+          <img src="ic_app_logo.png" class="brand-logo-img" alt="AV-SAFE Logo" />
+        </div>
         <div class="brand-text">
-          <span class="brand-name">AV-<span class="brand-name-suffix">SAFE</span></span>
+          <div class="brand-title-row">
+            <span class="brand-name">AV-<span class="brand-name-suffix">SAFE</span></span>
+            <span class="brand-version">v2.0</span>
+          </div>
           <span class="brand-tag">THREAT SHIELD</span>
         </div>
       </div>
@@ -27,32 +32,42 @@
 
         <!-- Quick Web Dashboard Launcher -->
         <button id="btn-header-dashboard" class="icon-btn" title="Open AV-SAFE Web Dashboard">
-          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="7" height="7"></rect>
-            <rect x="14" y="3" width="7" height="7"></rect>
-            <rect x="14" y="14" width="7" height="7"></rect>
-            <rect x="3" y="14" width="7" height="7"></rect>
+          <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
           </svg>
         </button>
       </div>
     </header>
 
-    <!-- Navigation Tabs -->
+    <!-- Navigation Tabs (Shield, Quick Scan, Activity, Settings) -->
     <nav class="nav-segmented">
       <button class="nav-tab active" data-tab="shield">
-        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
         </svg>
         <span>Shield</span>
       </button>
+
+      <button class="nav-tab" data-tab="scanner">
+        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <span>Scanner</span>
+      </button>
+
       <button class="nav-tab" data-tab="activity">
-        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
         </svg>
         <span>Activity</span>
       </button>
+
       <button class="nav-tab" data-tab="settings">
-        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"></circle>
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
@@ -85,9 +100,10 @@
         <!-- Security Gauge Card -->
         <div class="card gauge-card">
           <div class="gauge-centerpiece">
-            <svg class="progress-ring" width="124" height="124">
-              <circle class="progress-ring-bg" stroke="rgba(255,255,255,0.06)" stroke-width="8" fill="transparent" r="52" cx="62" cy="62"/>
-              <circle id="progress-ring-fill" class="progress-ring-fill" stroke="var(--color-safe)" stroke-width="8" stroke-dasharray="326.72" stroke-dashoffset="326.72" stroke-linecap="round" fill="transparent" r="52" cx="62" cy="62"/>
+            <div class="gauge-glow-ambient"></div>
+            <svg class="progress-ring" width="130" height="130">
+              <circle class="progress-ring-bg" stroke="rgba(255,255,255,0.06)" stroke-width="8" fill="transparent" r="54" cx="65" cy="65"/>
+              <circle id="progress-ring-fill" class="progress-ring-fill" stroke="var(--color-safe)" stroke-width="8" stroke-dasharray="339.29" stroke-dashoffset="339.29" stroke-linecap="round" fill="transparent" r="54" cx="65" cy="65"/>
             </svg>
             <div class="gauge-inner">
               <span id="score-text" class="score-number">--</span>
@@ -151,7 +167,7 @@
           </div>
         </div>
 
-        <!-- Deep Scan Real-Time Inspection Card (Hidden by default, shown when Deep Scan runs) -->
+        <!-- Deep Scan Real-Time Inspection Card -->
         <div id="deep-scan-card" class="card deep-scan-card hidden">
           <div class="card-header">
             <div class="header-title-row">
@@ -222,7 +238,89 @@
         </div>
       </section>
 
-      <!-- VIEW 2: ACTIVITY / TELEMETRY & SCAN HISTORY -->
+      <!-- VIEW 2: QUICK URL SCANNER (NEW TAB) -->
+      <section id="view-scanner" class="view-panel">
+        <div class="card scanner-box-card">
+          <div class="scanner-title-row">
+            <div class="scanner-title-left">
+              <div class="scanner-icon-bubble">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="var(--color-primary)" stroke-width="2.2" fill="none">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </div>
+              <div>
+                <h3 class="scanner-head">Instant URL Inspector</h3>
+                <span class="scanner-sub">Analyze any link before opening</span>
+              </div>
+            </div>
+            <button id="btn-paste-clipboard" class="btn-text-action" title="Paste link from clipboard">Paste</button>
+          </div>
+
+          <!-- Input Group -->
+          <div class="scanner-input-group">
+            <svg viewBox="0 0 24 24" width="15" height="15" stroke="var(--text-muted)" stroke-width="2" fill="none">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+            <input type="text" id="custom-scan-input" class="custom-scan-input" placeholder="Paste link (e.g. https://...)" />
+            <button id="btn-clear-scan-input" class="btn-clear-icon hidden" title="Clear">✕</button>
+          </div>
+
+          <!-- Sample Test Chips -->
+          <div class="preset-chips-row">
+            <span class="preset-label">Quick Test:</span>
+            <button class="preset-chip safe" data-url="https://google.com">google.com</button>
+            <button class="preset-chip danger" data-url="http://secure-paypal-login.com">paypal-login</button>
+            <button class="preset-chip warning" data-url="https://g00gle.com">g00gle.com</button>
+          </div>
+
+          <!-- Run Scan Button -->
+          <button id="btn-run-custom-scan" class="btn-action-primary">
+            <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.2" fill="none">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span id="btn-run-scan-label">Run Diagnostic Scan</span>
+          </button>
+        </div>
+
+        <!-- Custom Scan Results Panel -->
+        <div id="custom-scan-results" class="card custom-results-card hidden">
+          <div class="result-header">
+            <div class="result-header-left">
+              <span id="custom-result-rating-badge" class="rating-badge safe">SAFE</span>
+              <span id="custom-result-domain" class="result-domain-text">—</span>
+            </div>
+            <div class="result-score-box">
+              <span class="score-label">Score</span>
+              <span id="custom-result-score" class="score-val">--</span>
+            </div>
+          </div>
+
+          <p id="custom-result-desc" class="custom-result-desc">Scan complete.</p>
+
+          <ul id="custom-result-warnings" class="threat-reasons-list"></ul>
+
+          <div class="custom-result-actions">
+            <button id="btn-custom-open-sandbox" class="btn-secondary-sm">
+              <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="2" y1="10" x2="22" y2="10"></line>
+              </svg>
+              <span>Preview in Sandbox</span>
+            </button>
+            <button id="btn-custom-report-threat" class="btn-secondary-sm text-danger">
+              <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none">
+                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                <line x1="4" y1="22" x2="4" y2="15"></line>
+              </svg>
+              <span>Report Link</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 3: ACTIVITY / TELEMETRY & SCAN HISTORY -->
       <section id="view-activity" class="view-panel">
         <!-- Telemetry Stats Grid -->
         <div class="stats-grid">
@@ -268,7 +366,7 @@
         </div>
       </section>
 
-      <!-- VIEW 3: SETTINGS & CONTROLS -->
+      <!-- VIEW 4: SETTINGS & CONTROLS -->
       <section id="view-settings" class="view-panel">
         <!-- Security Toggles -->
         <div class="card settings-group">

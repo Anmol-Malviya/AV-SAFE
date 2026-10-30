@@ -38,9 +38,9 @@ export default function AnalyticsTab({ scanHistory = [] }) {
     lightBg: "#F8FAFC"
   };
 
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = async (isManual = false) => {
     try {
-      setIsRefreshing(true);
+      if (isManual) setIsRefreshing(true);
       setError(null);
       const res = await fetch("/api/analytics", { cache: "no-store" });
       if (!res.ok) {
@@ -62,7 +62,28 @@ export default function AnalyticsTab({ scanHistory = [] }) {
   };
 
   useEffect(() => {
-    fetchAnalytics();
+    let ignore = false;
+    async function init() {
+      try {
+        const res = await fetch("/api/analytics", { cache: "no-store" });
+        if (!res.ok) throw new Error(`Failed to fetch analytics: ${res.status}`);
+        const json = await res.json();
+        if (!ignore && json.success) {
+          setData(json);
+        }
+      } catch (err) {
+        if (!ignore) {
+          console.error("Error fetching analytics:", err);
+          setError(err.message);
+        }
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    }
+    init();
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   const trendsData = data?.trendsData || [
