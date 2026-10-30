@@ -17,8 +17,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const radius = 54;
   const circumference = 2 * Math.PI * radius; // ~339.29
 
-  progressRing.style.strokeDasharray = `${circumference}`;
-  progressRing.style.strokeDashoffset = `${circumference}`;
+  if (progressRing) {
+    progressRing.style.strokeDasharray = `${circumference}`;
+    progressRing.style.strokeDashoffset = `${circumference}`;
+  }
 
   // Current active URL & state
   let currentActiveUrl = '';
@@ -122,14 +124,23 @@ async function checkAndRenderServerStatus() {
 
 // Active Tab Security Inspection
 function inspectCurrentTab(circumference) {
+  if (typeof chrome === 'undefined' || !chrome.tabs || !chrome.tabs.query) {
+    displayUnknownState();
+    return;
+  }
+
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    if (chrome.runtime.lastError || !tabs || tabs.length === 0) {
+    if (chrome.runtime && chrome.runtime.lastError) {
+      displayUnknownState();
+      return;
+    }
+    if (!tabs || tabs.length === 0) {
       displayUnknownState();
       return;
     }
 
     const currentTab = tabs[0];
-    const url = currentTab.url || '';
+    const url = (currentTab && currentTab.url) || '';
     window._currentActiveUrl = url;
 
     // Check for internal browser URLs
@@ -138,7 +149,8 @@ function inspectCurrentTab(circumference) {
         url.startsWith('chrome-extension://') ||
         url.startsWith('about:') ||
         url.startsWith('edge://') ||
-        url.startsWith('file://')) {
+        url.startsWith('file://') ||
+        url.startsWith('view-source:')) {
       displaySystemPageState(url);
       return;
     }
@@ -146,41 +158,53 @@ function inspectCurrentTab(circumference) {
     // Parse URL components
     let parsedUrl;
     try {
-      parsedUrl = new URL(url);
+      const urlToParse = /^https?:\/\//i.test(url) ? url : `https://${url}`;
+      parsedUrl = new URL(urlToParse);
     } catch (e) {
-      parsedUrl = { hostname: url.split('/')[0], protocol: 'http:', pathname: '/' };
+      parsedUrl = { hostname: (url.split('/')[0] || url), protocol: 'http:', pathname: '/' };
     }
 
     // Protocol badge
     const protocolBadge = document.getElementById('target-protocol-badge');
     const isHttps = parsedUrl.protocol === 'https:';
-    protocolBadge.textContent = isHttps ? 'HTTPS' : 'HTTP';
-    protocolBadge.className = `protocol-badge ${isHttps ? 'https' : 'http'}`;
+    if (protocolBadge) {
+      protocolBadge.textContent = isHttps ? 'HTTPS' : 'HTTP';
+      protocolBadge.className = `protocol-badge ${isHttps ? 'https' : 'http'}`;
+    }
 
     // Target domain & path
-    document.getElementById('domain-text').textContent = parsedUrl.hostname;
-    document.getElementById('url-subpath').textContent = (parsedUrl.pathname || '/') + (parsedUrl.search ? '?...' : '');
+    const domainEl = document.getElementById('domain-text');
+    const pathEl = document.getElementById('url-subpath');
+    if (domainEl) domainEl.textContent = parsedUrl.hostname;
+    if (pathEl) pathEl.textContent = (parsedUrl.pathname || '/') + (parsedUrl.search ? '?...' : '');
 
     // Execute local AI + Heuristic detection engine
-    chrome.storage.local.get(['threatBlacklist'], (res) => {
-      const blacklistSet = new Set(res.threatBlacklist || []);
-      const analysis = analyzeURL(url, blacklistSet);
-      window._currentAnalysis = analysis;
-      renderAnalysis(analysis, circumference);
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+      chrome.storage.local.get(['threatBlacklist', 'autoLogScans'], (res) => {
+        const blacklist = (res && Array.isArray(res.threatBlacklist)) ? res.threatBlacklist : [];
+        const blacklistSet = new Set(blacklist);
+        let analysis;
+        try {
+          analysis = analyzeURL(url, blacklistSet);
+        } catch (err) {
+          console.error("Analysis error:", err);
+          analysis = { score: 50, rating: 'SUSPICIOUS', warnings: [] };
+        }
+        window._currentAnalysis = analysis;
+        renderAnalysis(analysis, circumference);
 
-      // Configure the sandbox preview button
-      const sandboxBtn = document.getElementById('btn-open-sandbox');
-      if (sandboxBtn) {
-        sandboxBtn.classList.remove('hidden');
-        sandboxBtn.onclick = () => {
-          const sandboxUrl = chrome.runtime.getURL(`sandbox.html?url=${encodeURIComponent(url)}`);
-          chrome.tabs.create({ url: sandboxUrl });
-        };
-      }
+        // Configure the sandbox preview button
+        const sandboxBtn = document.getElementById('btn-open-sandbox');
+        if (sandboxBtn) {
+          sandboxBtn.classList.remove('hidden');
+          sandboxBtn.onclick = () => {
+            const sandboxUrl = chrome.runtime.getURL(`sandbox.html?url=${encodeURIComponent(url)}`);
+            chrome.tabs.create({ url: sandboxUrl });
+          };
+        }
 
-      // Auto-log scan to backend /api/history
-      chrome.storage.local.get(['autoLogScans'], (settings) => {
-        if (settings.autoLogScans !== false) {
+        // Auto-log scan to backend /api/history
+        if (!res || res.autoLogScans !== false) {
           logScanTelemetry({
             url,
             rating: analysis.rating,
@@ -189,33 +213,54 @@ function inspectCurrentTab(circumference) {
           }).catch(() => {});
         }
       });
-    });
+    } else {
+      const analysis = analyzeURL(url);
+      window._currentAnalysis = analysis;
+      renderAnalysis(analysis, circumference);
+    }
   });
 }
 
 function displayUnknownState() {
-  document.getElementById('domain-text').textContent = 'Tab inaccessible';
-  document.getElementById('url-subpath').textContent = '';
-  document.getElementById('score-text').textContent = '--';
-  document.getElementById('quick-diagnosis').textContent = 'Unable to read active browser tab address.';
+  const domainText = document.getElementById('domain-text');
+  const urlSubpath = document.getElementById('url-subpath');
+  const scoreText = document.getElementById('score-text');
+  const quickDiagnosis = document.getElementById('quick-diagnosis');
+
+  if (domainText) domainText.textContent = 'Tab inaccessible';
+  if (urlSubpath) urlSubpath.textContent = '';
+  if (scoreText) scoreText.textContent = '--';
+  if (quickDiagnosis) quickDiagnosis.textContent = 'Unable to read active browser tab address.';
 }
 
 function displaySystemPageState(url) {
-  document.getElementById('domain-text').textContent = 'System Resource';
-  document.getElementById('url-subpath').textContent = url || 'chrome://';
-  document.getElementById('score-text').textContent = '100';
+  const domainText = document.getElementById('domain-text');
+  const urlSubpath = document.getElementById('url-subpath');
+  const scoreText = document.getElementById('score-text');
+
+  if (domainText) domainText.textContent = 'System Resource';
+  if (urlSubpath) urlSubpath.textContent = url || 'chrome://';
+  if (scoreText) scoreText.textContent = '100';
 
   const progressRing = document.getElementById('progress-ring-fill');
-  progressRing.style.strokeDashoffset = '0';
-  progressRing.style.stroke = 'var(--color-safe)';
+  if (progressRing) {
+    progressRing.style.strokeDashoffset = '0';
+    progressRing.style.stroke = 'var(--color-safe)';
+  }
 
   const ratingBadge = document.getElementById('status-rating-badge');
-  ratingBadge.className = 'rating-badge safe';
-  ratingBadge.textContent = 'TRUSTED INTERNAL';
+  if (ratingBadge) {
+    ratingBadge.className = 'rating-badge safe';
+    ratingBadge.textContent = 'TRUSTED INTERNAL';
+  }
 
-  document.getElementById('quick-diagnosis').textContent = 'This is an internal, protected browser environment.';
-  document.getElementById('warnings-card').classList.add('hidden');
-  document.getElementById('safe-summary-card').classList.remove('hidden');
+  const quickDiagnosis = document.getElementById('quick-diagnosis');
+  if (quickDiagnosis) quickDiagnosis.textContent = 'This is an internal, protected browser environment.';
+
+  const warningsCard = document.getElementById('warnings-card');
+  const safeCard = document.getElementById('safe-summary-card');
+  if (warningsCard) warningsCard.classList.add('hidden');
+  if (safeCard) safeCard.classList.remove('hidden');
 
   // Disable action buttons for system tabs
   const deepScanBtn = document.getElementById('btn-deep-scan');
@@ -453,6 +498,7 @@ function renderDeepScanResults(data) {
 
 // Telemetry & Settings Setup
 function loadSettingsAndStats() {
+  if (typeof chrome === 'undefined' || !chrome.storage || !chrome.storage.local) return;
   chrome.storage.local.get([
     'serverUrl',
     'shieldingActive',
@@ -463,34 +509,35 @@ function loadSettingsAndStats() {
     'ruleCount',
     'lastSyncTime'
   ], (res) => {
+    const data = res || {};
     // Checkbox toggles
     const toggleShield = document.getElementById('toggle-shielding');
     const toggleSusp = document.getElementById('toggle-suspicious');
     const toggleAutoLog = document.getElementById('toggle-autolog');
 
-    if (toggleShield) toggleShield.checked = res.shieldingActive !== false;
-    if (toggleSusp) toggleSusp.checked = res.blockSuspicious === true;
-    if (toggleAutoLog) toggleAutoLog.checked = res.autoLogScans !== false;
+    if (toggleShield) toggleShield.checked = data.shieldingActive !== false;
+    if (toggleSusp) toggleSusp.checked = data.blockSuspicious === true;
+    if (toggleAutoLog) toggleAutoLog.checked = data.autoLogScans !== false;
 
     // Stats
     const elScanned = document.getElementById('stat-scanned');
     const elBlocked = document.getElementById('stat-blocked');
     const elRules = document.getElementById('stat-rules');
 
-    if (elScanned) elScanned.textContent = (res.statsScanned || 0).toLocaleString();
-    if (elBlocked) elBlocked.textContent = (res.statsBlocked || 0).toLocaleString();
-    if (elRules) elRules.textContent = (res.ruleCount || 0).toLocaleString();
+    if (elScanned) elScanned.textContent = (data.statsScanned || 0).toLocaleString();
+    if (elBlocked) elBlocked.textContent = (data.statsBlocked || 0).toLocaleString();
+    if (elRules) elRules.textContent = (data.ruleCount || 0).toLocaleString();
 
     // Server input in settings
     const serverInput = document.getElementById('input-server-url');
-    if (serverInput) serverInput.value = res.serverUrl || DEFAULT_SERVER_URL;
+    if (serverInput) serverInput.value = data.serverUrl || DEFAULT_SERVER_URL;
 
     // Rules count in settings
     const syncRules = document.getElementById('sync-rules-count');
     const syncTime = document.getElementById('sync-last-time');
-    if (syncRules) syncRules.textContent = (res.ruleCount || 0).toLocaleString();
+    if (syncRules) syncRules.textContent = (data.ruleCount || 0).toLocaleString();
     if (syncTime) {
-      syncTime.textContent = res.lastSyncTime ? new Date(res.lastSyncTime).toLocaleDateString() : 'Never';
+      syncTime.textContent = data.lastSyncTime ? new Date(data.lastSyncTime).toLocaleDateString() : 'Never';
     }
   });
 }
@@ -639,8 +686,9 @@ function loadSettingsTabDetails() {
   const whitelistCard = document.getElementById('whitelist-card');
   const whitelistList = document.getElementById('whitelist-list');
 
+  if (typeof chrome === 'undefined' || !chrome.storage || !chrome.storage.local) return;
   chrome.storage.local.get(['bypassList'], (res) => {
-    const list = res.bypassList || [];
+    const list = (res && Array.isArray(res.bypassList)) ? res.bypassList : [];
     if (list.length === 0) {
       whitelistCard.classList.add('hidden');
       return;
@@ -872,7 +920,8 @@ function setupCustomScanner() {
     if (btnLabel) btnLabel.textContent = 'Analyzing...';
 
     chrome.storage.local.get(['threatBlacklist'], (res) => {
-      const blacklistSet = new Set(res.threatBlacklist || []);
+      const blacklist = (res && Array.isArray(res.threatBlacklist)) ? res.threatBlacklist : [];
+      const blacklistSet = new Set(blacklist);
       const analysis = analyzeURL(url, blacklistSet);
       lastAnalysis = analysis;
 
