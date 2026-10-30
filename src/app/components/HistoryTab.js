@@ -86,10 +86,15 @@ export default function HistoryTab({
       ) : (
         <div className="space-y-2 max-h-[480px] overflow-y-auto pr-1">
           {filteredHistory.map((item, index) => {
-            const badgeColor = 
-              item.rating === "SAFE" ? "bg-green-100 text-green-800 border-green-200" :
-              item.rating === "SUSPICIOUS" ? "bg-amber-100 text-amber-800 border-amber-200" :
-              "bg-red-100 text-red-800 border-red-200";
+            const normRating = (item.rating || "").toUpperCase();
+            const isMalicious = normRating === "DANGEROUS" || normRating === "MALICIOUS";
+            const isSuspicious = normRating === "SUSPICIOUS" || normRating === "WARN";
+            const badgeLabel = isMalicious ? "MALICIOUS" : isSuspicious ? "SUSPICIOUS" : "SAFE";
+            const badgeColor = isMalicious
+              ? "bg-red-100 text-red-800 border-red-200"
+              : isSuspicious
+              ? "bg-amber-100 text-amber-800 border-amber-200"
+              : "bg-green-100 text-green-800 border-green-200";
 
             const src = (item.source || "").toLowerCase();
             const isAndroid = src.includes("android") || src.includes("app");
@@ -129,7 +134,7 @@ export default function HistoryTab({
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
                   <span className={`px-2.5 py-0.5 rounded text-[10px] font-bold border ${badgeColor}`}>
-                    {item.rating}
+                    {badgeLabel}
                   </span>
                   <span className="text-[10px] font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5">
                     Inspect <ArrowRight className="h-3 w-3" />

@@ -109,7 +109,8 @@ class MainActivity : AppCompatActivity() {
                     url = trimmed,
                     rating = "DANGEROUS",
                     score = 0,
-                    source = "Android App"
+                    source = "Android App",
+                    detectionReasons = listOf("Unsupported or Malicious URI Protocol: '$scheme:' protocol is blocked.")
                 )
             )
 
@@ -133,7 +134,8 @@ class MainActivity : AppCompatActivity() {
                 url = result.url,
                 rating = result.rating,
                 score = result.score,
-                source = "Android App"
+                source = "Android App",
+                detectionReasons = result.warnings
             )
         )
 

@@ -425,6 +425,7 @@ object PhishingEngine {
         // Heuristics Checks
         val warnings = ArrayList<String>()
         var riskScore = 0
+        var hasHighSeverityWarning = false
 
         // Heuristics 1: Connection Security
         if (isHttps == 0) {
@@ -436,6 +437,7 @@ object PhishingEngine {
         if (isIpAddress) {
             warnings.add("• IP Domain: Uses raw numerical IP address instead of domain name.")
             riskScore += 35
+            hasHighSeverityWarning = true
         }
 
         // Heuristics 3: URL Shortener
@@ -452,6 +454,7 @@ object PhishingEngine {
                 warnings.add("• Typosquatting: Domain mimics verified brand '$typosquatTarget' using typos.")
             }
             riskScore += 50
+            hasHighSeverityWarning = true
         }
 
         // Heuristics 5: Sensitive Words Abuse
@@ -476,6 +479,7 @@ object PhishingEngine {
         if (rawUrl.contains("@")) {
             warnings.add("• Deceptive Credentials: URL uses '@' to force browser redirection.")
             riskScore += 30
+            hasHighSeverityWarning = true
         }
 
         // Heuristics 9: IDN Homograph / Cyrillic characters
@@ -483,6 +487,7 @@ object PhishingEngine {
         if (isPuny) {
             warnings.add("• IDN Homograph Attack: Obfuscates text using Cyrillic/non-English script mappings.")
             riskScore += 60
+            hasHighSeverityWarning = true
         }
 
         // Heuristics 10: Suspicious TLD
@@ -492,11 +497,15 @@ object PhishingEngine {
             riskScore += 20
         }
 
-        // Final score calculation
-        var finalRiskScore = if (warnings.isNotEmpty()) {
-            maxOf(riskScore, mlScore)
-        } else {
-            minOf(mlScore, 20) // cap at 20 (Safe) if no warnings triggered
+        // Smart Hybrid Score Calibration (Ensemble - aligned with Chrome Extension)
+        var finalRiskScore = Math.round((mlScore * 0.6) + (riskScore * 0.4)).toInt()
+
+        if (hasHighSeverityWarning) {
+            finalRiskScore = maxOf(finalRiskScore, 75)
+        } else if (mlScore > 90 && warnings.isNotEmpty()) {
+            finalRiskScore = maxOf(finalRiskScore, 60)
+        } else if (warnings.isEmpty()) {
+            finalRiskScore = minOf(finalRiskScore, 25)
         }
 
         finalRiskScore = minOf(maxOf(finalRiskScore, 0), 100)

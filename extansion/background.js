@@ -10,26 +10,46 @@ import {
 } from './apiClient.js';
 
 let threatBlacklistSet = new Set();
-const DASHBOARD_API_ENDPOINT = 'http://localhost:3000/api/history';
+const CLOUD_DASHBOARD_ENDPOINT = 'https://av-safe.vercel.app/api/history';
+const LOCAL_DASHBOARD_ENDPOINT = 'http://localhost:3000/api/history';
 
-// Broadcast real-time scan event to Central SOC Dashboard
-async function syncScanWithDashboard(url, rating, score) {
+// Broadcast real-time scan event to Central SOC Dashboard (supports both cloud and local)
+async function syncScanWithDashboard(url, rating, score, warnings = []) {
+  const payload = JSON.stringify({
+    url: url,
+    rating: rating,
+    score: score,
+    source: 'Browser Extension',
+    detectionReasons: Array.isArray(warnings)
+      ? warnings.map(w => typeof w === 'string' ? w : ((w.title || 'Threat') + ': ' + (w.desc || '')))
+      : []
+  });
+
+  const sendPost = async (endpoint) => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload,
+        signal: controller.signal
+      });
+      clearTimeout(timeout);
+      return res.ok;
+    } catch {
+      clearTimeout(timeout);
+      return false;
+    }
+  };
+
   try {
-    await fetch(DASHBOARD_API_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        url: url,
-        rating: rating,
-        score: score,
-        source: 'Browser Extension'
-      })
-    });
+    const cloudOk = await sendPost(CLOUD_DASHBOARD_ENDPOINT);
+    if (!cloudOk) {
+      await sendPost(LOCAL_DASHBOARD_ENDPOINT);
+    }
   } catch (err) {
-    // Non-blocking if dashboard/local server is temporarily inactive
-    console.debug('Dashboard sync ping skipped:', err.message);
+    console.debug('Dashboard sync skipped:', err.message);
   }
 }
 
@@ -180,7 +200,7 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
     const analysis = analyzeURL(url, threatBlacklistSet);
 
     // Sync scan record in real-time to Dashboard
-    syncScanWithDashboard(url, analysis.rating, analysis.score);
+    syncScanWithDashboard(url, analysis.rating, analysis.score, analysis.warnings);
 
     const isDangerous = analysis.rating === 'DANGEROUS';
     const isSuspicious = analysis.rating === 'SUSPICIOUS';
