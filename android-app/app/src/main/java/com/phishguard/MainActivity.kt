@@ -102,6 +102,17 @@ class MainActivity : AppCompatActivity() {
 
         if (scheme !in listOf("http", "https")) {
             Toast.makeText(this, "Blocked unsupported URI scheme: $scheme", Toast.LENGTH_LONG).show()
+            
+            // Sync blocked URI attempt to centralized dashboard
+            AppSyncManager.syncScanToDashboard(
+                AppSyncManager.ScanRecord(
+                    url = trimmed,
+                    rating = "DANGEROUS",
+                    score = 0,
+                    source = "Android App"
+                )
+            )
+
             val warningIntent = Intent(this, WarningActivity::class.java).apply {
                 putExtra("URL", trimmed)
                 putExtra("RATING", "DANGEROUS")
@@ -115,6 +126,16 @@ class MainActivity : AppCompatActivity() {
 
         // Run Phishing Detection Engine
         val result = PhishingEngine.verifyUrl(trimmed)
+
+        // Asynchronously sync scan results to Centralized Web Dashboard
+        AppSyncManager.syncScanToDashboard(
+            AppSyncManager.ScanRecord(
+                url = result.url,
+                rating = result.rating,
+                score = result.score,
+                source = "Android App"
+            )
+        )
 
         if (result.isSafe) {
             // Link is safe! Open in Chrome browser without intent looping

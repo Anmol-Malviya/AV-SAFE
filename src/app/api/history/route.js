@@ -4,21 +4,21 @@ import UrlScan from '../../../lib/models/UrlScan';
 import { validateAndNormalizeUrl } from '@/lib/security/urlValidation';
 
 const DEFAULT_HISTORY = [
-  { url: "https://example.com", rating: "SAFE", score: 98, date: "Today" },
-  { url: "http://secure-login-update.com", rating: "SUSPICIOUS", score: 48, date: "Today" },
-  { url: "https://github.com", rating: "SAFE", score: 100, date: "Today" },
-  { url: "http://paypal-account-verifiy.net", rating: "DANGEROUS", score: 12, date: "Today" },
-  { url: "https://google.com", rating: "SAFE", score: 100, date: "Yesterday" },
-  { url: "https://portal-login-auth.com", rating: "DANGEROUS", score: 15, date: "Yesterday" },
-  { url: "https://microsoft.com", rating: "SAFE", score: 100, date: "Yesterday" },
-  { url: "https://account-verify-update.net", rating: "SUSPICIOUS", score: 55, date: "2 days ago" },
-  { url: "https://aws.amazon.com", rating: "SAFE", score: 100, date: "2 days ago" },
-  { url: "https://apple-security-check.info", rating: "DANGEROUS", score: 10, date: "3 days ago" },
-  { url: "https://wikipedia.org", rating: "SAFE", score: 100, date: "3 days ago" },
-  { url: "https://chase-security-verify.com", rating: "DANGEROUS", score: 8, date: "3 days ago" },
-  { url: "https://cloudflare.com", rating: "SAFE", score: 100, date: "4 days ago" },
-  { url: "https://netflix-account-reset.org", rating: "SUSPICIOUS", score: 52, date: "4 days ago" },
-  { url: "https://stackoverflow.com", rating: "SAFE", score: 100, date: "5 days ago" }
+  { url: "https://example.com", rating: "SAFE", score: 98, source: "Web Dashboard", date: "Today" },
+  { url: "http://secure-login-update.com", rating: "SUSPICIOUS", score: 48, source: "Android App", date: "Today" },
+  { url: "https://github.com", rating: "SAFE", score: 100, source: "Web Dashboard", date: "Today" },
+  { url: "http://paypal-account-verifiy.net", rating: "DANGEROUS", score: 12, source: "Android App", date: "Today" },
+  { url: "https://google.com", rating: "SAFE", score: 100, source: "Web Dashboard", date: "Yesterday" },
+  { url: "https://portal-login-auth.com", rating: "DANGEROUS", score: 15, source: "Android App", date: "Yesterday" },
+  { url: "https://microsoft.com", rating: "SAFE", score: 100, source: "Web Dashboard", date: "Yesterday" },
+  { url: "https://account-verify-update.net", rating: "SUSPICIOUS", score: 55, source: "Android App", date: "2 days ago" },
+  { url: "https://aws.amazon.com", rating: "SAFE", score: 100, source: "Web Dashboard", date: "2 days ago" },
+  { url: "https://apple-security-check.info", rating: "DANGEROUS", score: 10, source: "Android App", date: "3 days ago" },
+  { url: "https://wikipedia.org", rating: "SAFE", score: 100, source: "Web Dashboard", date: "3 days ago" },
+  { url: "https://chase-security-verify.com", rating: "DANGEROUS", score: 8, source: "Android App", date: "3 days ago" },
+  { url: "https://cloudflare.com", rating: "SAFE", score: 100, source: "Web Dashboard", date: "4 days ago" },
+  { url: "https://netflix-account-reset.org", rating: "SUSPICIOUS", score: 52, source: "Android App", date: "4 days ago" },
+  { url: "https://stackoverflow.com", rating: "SAFE", score: 100, source: "Web Dashboard", date: "5 days ago" }
 ];
 
 export async function GET() {
@@ -26,15 +26,18 @@ export async function GET() {
     await dbConnect();
     const history = await UrlScan.find({})
       .sort({ createdAt: -1 })
-      .limit(50)
+      .limit(100)
       .lean();
 
-    // Format response to match expected UI structure
+    // Format response to match expected UI structure including device source
     const formatted = history.map((item) => ({
+      _id: item._id?.toString(),
       url: item.url,
       rating: item.rating,
       score: item.score,
-      date: item.date
+      source: item.source || "Web Dashboard",
+      date: item.date,
+      createdAt: item.createdAt
     }));
 
     if (formatted.length === 0) {
@@ -62,7 +65,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid JSON request body' }, { status: 400 });
     }
 
-    const { url, rating, score } = body;
+    const { url, rating, score, source } = body;
 
     if (!url || !rating || score === undefined) {
       return NextResponse.json({ error: 'url, rating, and score are required' }, { status: 400 });
@@ -79,6 +82,11 @@ export async function POST(request) {
 
     const numScore = parseInt(score, 10);
     const validScore = !isNaN(numScore) ? Math.min(100, Math.max(0, numScore)) : 50;
+    
+    // Normalize source (Android App, Web Dashboard, Browser Extension)
+    const validSource = source && typeof source === 'string' && source.trim().length > 0 
+      ? source.trim() 
+      : 'Web Dashboard';
 
     await dbConnect();
 
@@ -89,6 +97,7 @@ export async function POST(request) {
       url: validUrl.originalUrl,
       rating: validRating,
       score: validScore,
+      source: validSource,
       date: new Date().toLocaleDateString()
     });
 
