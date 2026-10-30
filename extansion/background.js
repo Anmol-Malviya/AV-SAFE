@@ -1,4 +1,13 @@
 import { analyzeURL } from './phishingEngine.js';
+import { 
+  logScanTelemetry, 
+  performDeepScan, 
+  submitIncidentComplaint, 
+  testServerConnection, 
+  fetchScanHistory, 
+  getDashboardUrl, 
+  DEFAULT_SERVER_URL 
+} from './apiClient.js';
 
 let threatBlacklistSet = new Set();
 
@@ -7,7 +16,7 @@ function loadBlacklistCache() {
   chrome.storage.local.get(['threatBlacklist'], (res) => {
     const list = res.threatBlacklist || [];
     threatBlacklistSet = new Set(list);
-    console.log(`Loaded ${threatBlacklistSet.size} threat blacklist domains into memory.`);
+    console.log(`[AV-SAFE Background] Loaded ${threatBlacklistSet.size} threat blacklist domains into memory.`);
   });
 }
 
@@ -17,15 +26,17 @@ loadBlacklistCache();
 chrome.storage.onChanged.addListener((changes, namespace) => {
   if (namespace === 'local' && changes.threatBlacklist) {
     threatBlacklistSet = new Set(changes.threatBlacklist.newValue || []);
-    console.log(`Reloaded threat blacklist cache. Total rules: ${threatBlacklistSet.size}`);
+    console.log(`[AV-SAFE Background] Reloaded threat blacklist cache. Total rules: ${threatBlacklistSet.size}`);
   }
 });
 
 // Initialize extension settings, stats, and rule databases
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.local.get([
+    'serverUrl',
     'shieldingActive',
     'blockSuspicious',
+    'autoLogScans',
     'bypassList',
     'statsScanned',
     'statsBlocked',
@@ -33,8 +44,10 @@ chrome.runtime.onInstalled.addListener(() => {
     'lastSyncTime'
   ], (res) => {
     const defaults = {};
+    if (res.serverUrl === undefined) defaults.serverUrl = DEFAULT_SERVER_URL;
     if (res.shieldingActive === undefined) defaults.shieldingActive = true;
     if (res.blockSuspicious === undefined) defaults.blockSuspicious = false;
+    if (res.autoLogScans === undefined) defaults.autoLogScans = true;
     if (res.bypassList === undefined) defaults.bypassList = [];
     if (res.statsScanned === undefined) defaults.statsScanned = 0;
     if (res.statsBlocked === undefined) defaults.statsBlocked = 0;
@@ -43,7 +56,6 @@ chrome.runtime.onInstalled.addListener(() => {
     
     if (Object.keys(defaults).length > 0) {
       chrome.storage.local.set(defaults, () => {
-        // Trigger first sync in background on installation
         if (!res.lastSyncTime) {
           syncThreatFeeds();
         }
@@ -56,7 +68,7 @@ chrome.runtime.onInstalled.addListener(() => {
 
 // Sync active phishing threat feeds from Phishing.Database
 async function syncThreatFeeds() {
-  console.log('Initiating active threat database sync...');
+  console.log('[AV-SAFE Background] Initiating active threat database sync...');
   try {
     const response = await fetch('https://raw.githubusercontent.com/Phishing-Database/Phishing.Database/master/phishing-domains-ACTIVE.txt');
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -68,7 +80,7 @@ async function syncThreatFeeds() {
       const line = lines[i].trim();
       if (line && !line.startsWith('#') && !line.startsWith('//')) {
         domains.push(line.toLowerCase());
-        // Limit to 15,000 domains for optimal performance
+        // Cache up to 15,000 domains for optimal performance
         if (domains.length >= 15000) break;
       }
     }
@@ -82,10 +94,10 @@ async function syncThreatFeeds() {
       }, resolve);
     });
 
-    console.log(`Threat feed sync complete. Stored ${domains.length} active rules.`);
+    console.log(`[AV-SAFE Background] Threat feed sync complete. Stored ${domains.length} active rules.`);
     return { success: true, count: domains.length, timestamp };
   } catch (e) {
-    console.error('Threat feed sync failed:', e);
+    console.error('[AV-SAFE Background] Threat feed sync failed:', e);
     return { success: false, error: e.message };
   }
 }
@@ -97,27 +109,33 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
 
   const url = details.url;
 
-  // Skip internal/extension pages
+  // Skip internal / browser extension pages
   if (
+    !url ||
     url.startsWith('chrome://') ||
     url.startsWith('chrome-extension://') ||
     url.startsWith('about:') ||
     url.startsWith('file://') ||
-    url.startsWith('edge://')
+    url.startsWith('edge://') ||
+    url.startsWith('view-source:')
   ) {
     return;
   }
 
   // Get current configurations from storage
   chrome.storage.local.get([
+    'serverUrl',
     'shieldingActive',
     'blockSuspicious',
+    'autoLogScans',
     'bypassList',
     'statsBlocked'
   ], (settings) => {
     const shieldingActive = settings.shieldingActive !== false;
     const blockSuspicious = settings.blockSuspicious === true;
+    const autoLogScans = settings.autoLogScans !== false;
     const bypassList = settings.bypassList || [];
+    const serverUrl = settings.serverUrl || DEFAULT_SERVER_URL;
 
     if (!shieldingActive) {
       incrementScannedCounter();
@@ -131,12 +149,12 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
       return;
     }
 
-    // Check if the domain is temporarily bypassed by the user
+    // Check if the domain is temporarily bypassed by the user in this session
     if (bypassList.includes(hostname)) {
       return;
     }
 
-    // Run local prediction checks with memory blacklist Set
+    // Run local machine learning + heuristics checks with memory blacklist
     const analysis = analyzeURL(url, threatBlacklistSet);
 
     const isDangerous = analysis.rating === 'DANGEROUS';
@@ -148,7 +166,17 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
       const blockedCount = (settings.statsBlocked || 0) + 1;
       chrome.storage.local.set({ statsBlocked: blockedCount });
 
-      // Redirect to the warning block page
+      // Record blocked threat to project backend telemetry asynchronously
+      if (autoLogScans) {
+        logScanTelemetry({
+          url,
+          rating: analysis.rating,
+          score: analysis.score,
+          warnings: analysis.warnings
+        }, serverUrl).catch(() => {});
+      }
+
+      // Redirect to the redesigned warning block page
       const warningUrl = chrome.runtime.getURL(
         `warning.html?url=${encodeURIComponent(url)}&score=${analysis.score}&rating=${analysis.rating}`
       );
@@ -156,6 +184,16 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
       chrome.tabs.update(details.tabId, { url: warningUrl });
     } else {
       incrementScannedCounter();
+
+      // If enabled, record scanned event to project backend telemetry
+      if (autoLogScans) {
+        logScanTelemetry({
+          url,
+          rating: analysis.rating,
+          score: analysis.score,
+          warnings: analysis.warnings
+        }, serverUrl).catch(() => {});
+      }
     }
   });
 });
@@ -192,26 +230,27 @@ async function updateTabBadge(tabId, url) {
 
     if (!shieldingActive) {
       chrome.action.setBadgeText({ tabId, text: 'OFF' });
-      chrome.action.setBadgeBackgroundColor({ tabId, color: '#475569' });
+      chrome.action.setBadgeBackgroundColor({ tabId, color: '#64748B' });
       return;
     }
 
     if (bypassList.includes(hostname)) {
       chrome.action.setBadgeText({ tabId, text: 'BP' });
-      chrome.action.setBadgeBackgroundColor({ tabId, color: '#8b5cf6' });
+      chrome.action.setBadgeBackgroundColor({ tabId, color: '#8B5CF6' });
       return;
     }
 
     const analysis = analyzeURL(url, threatBlacklistSet);
 
     if (analysis.rating === 'DANGEROUS') {
-      chrome.action.setBadgeText({ tabId, text: 'ERR' });
-      chrome.action.setBadgeBackgroundColor({ tabId, color: '#ef4444' });
+      chrome.action.setBadgeText({ tabId, text: '!' });
+      chrome.action.setBadgeBackgroundColor({ tabId, color: '#EF4444' });
     } else if (analysis.rating === 'SUSPICIOUS') {
-      chrome.action.setBadgeText({ tabId, text: 'WARN' });
-      chrome.action.setBadgeBackgroundColor({ tabId, color: '#f59e0b' });
+      chrome.action.setBadgeText({ tabId, text: '?' });
+      chrome.action.setBadgeBackgroundColor({ tabId, color: '#F59E0B' });
     } else {
-      chrome.action.setBadgeText({ tabId, text: '' });
+      chrome.action.setBadgeText({ tabId, text: 'OK' });
+      chrome.action.setBadgeBackgroundColor({ tabId, color: '#10B981' });
     }
   });
 }
@@ -233,7 +272,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 });
 
-// Listener for runtime messages (headers rules and rules syncing)
+// Listener for runtime messages (headers rules, server sync, deep scanning, incident reporting)
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'registerSandboxTab') {
     const tabId = message.tabId;
@@ -261,9 +300,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       addRules: [rule]
     }, () => {
       if (chrome.runtime.lastError) {
-        console.error('Error registering sandbox session rule:', chrome.runtime.lastError);
+        console.error('[AV-SAFE DNR] Error registering sandbox session rule:', chrome.runtime.lastError);
       } else {
-        console.log(`Registered sandbox session rule for tab: ${tabId}`);
+        console.log(`[AV-SAFE DNR] Registered sandbox session rule for tab: ${tabId}`);
       }
     });
   } else if (message.action === 'unregisterSandboxTab') {
@@ -276,6 +315,39 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse(result);
     });
     return true; // Keep message channel open for async response
+  } else if (message.action === 'checkServerConnection') {
+    testServerConnection(message.serverUrl).then((result) => {
+      sendResponse(result);
+    });
+    return true;
+  } else if (message.action === 'performDeepScan') {
+    performDeepScan(message.url, message.serverUrl).then((result) => {
+      sendResponse(result);
+    });
+    return true;
+  } else if (message.action === 'submitIncidentComplaint') {
+    submitIncidentComplaint(message.complaintData, message.serverUrl).then((result) => {
+      sendResponse(result);
+    });
+    return true;
+  } else if (message.action === 'fetchScanHistory') {
+    fetchScanHistory(message.serverUrl).then((history) => {
+      sendResponse(history);
+    });
+    return true;
+  } else if (message.action === 'openDashboard') {
+    getDashboardUrl(message.path || '/system', message.serverUrl).then((url) => {
+      chrome.tabs.create({ url });
+      sendResponse({ success: true, url });
+    });
+    return true;
+  } else if (message.action === 'triggerBadgeUpdate') {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs && tabs[0]) {
+        updateTabBadge(tabs[0].id, tabs[0].url);
+      }
+    });
+    sendResponse({ success: true });
   }
 });
 

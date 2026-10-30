@@ -1,4 +1,5 @@
 import { analyzeURL } from './phishingEngine.js';
+import { submitIncidentComplaint, getDashboardUrl } from './apiClient.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
@@ -9,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     blockedUrlElement.textContent = blockedUrlString;
   }
 
-  // Display domain name or full URL
+  // Parse hostname
   let hostname = blockedUrlString;
   try {
     hostname = new URL(blockedUrlString).hostname;
@@ -17,46 +18,43 @@ document.addEventListener('DOMContentLoaded', () => {
     hostname = blockedUrlString.split('/')[0];
   }
 
-  // Run the full analysis locally
+  // Run the full AI + Heuristic detection engine locally
   const analysis = analyzeURL(blockedUrlString);
 
-  // Update safety & risk ratings
-  const safety = analysis.score ?? 1;
-  const rating = analysis.rating || 'DANGEROUS';
+  // Safety Score & Rating
+  const safety = typeof analysis.score === 'number' ? analysis.score : (parseInt(params.get('score'), 10) || 1);
+  const rating = analysis.rating || params.get('rating') || 'DANGEROUS';
 
   const safetyScoreEl = document.getElementById('safety-score');
   if (safetyScoreEl) safetyScoreEl.textContent = `${safety}`;
 
   const scoreVerdictEl = document.getElementById('score-verdict');
-  if (scoreVerdictEl) scoreVerdictEl.textContent = rating;
+  if (scoreVerdictEl) {
+    scoreVerdictEl.textContent = rating === 'DANGEROUS' ? 'CRITICAL THREAT' : 'SUSPICIOUS LINK';
+  }
 
   const warningTitleEl = document.getElementById('warning-title');
   if (warningTitleEl) {
     if (rating === 'DANGEROUS') {
-      warningTitleEl.textContent = 'High-Risk Threat Blocked';
+      warningTitleEl.textContent = 'Malicious Threat Intercepted';
     } else if (rating === 'SUSPICIOUS') {
-      warningTitleEl.textContent = 'Suspicious Link Warning';
+      warningTitleEl.textContent = 'Suspicious Destination Warning';
     } else {
-      warningTitleEl.textContent = 'Scan Warning';
+      warningTitleEl.textContent = 'Security Policy Warning';
     }
   }
 
-  // Threat Reason body
+  // Threat Diagnosis summary
   const threatReasonBody = document.getElementById('threat-reason-body');
   if (threatReasonBody) {
     if (analysis.warnings && analysis.warnings.length > 0) {
       threatReasonBody.textContent = analysis.warnings.map(w => `${w.title}: ${w.desc}`).join(' ');
     } else {
-      threatReasonBody.textContent = 'Deceptive keywords: URL paths use security/urgency words to trick you.';
+      threatReasonBody.textContent = 'Deceptive heuristics triggered: Link exhibits patterns commonly associated with phishing traps, typosquatting, or credential harvesting.';
     }
   }
 
-  // Populating Advanced details
-  const diagStatus = document.getElementById('diag-status');
-  if (diagStatus) {
-    diagStatus.textContent = rating;
-  }
-
+  // Populate Technical Rules list
   const reasonsList = document.getElementById('reasons-list');
   if (reasonsList) {
     reasonsList.innerHTML = '';
@@ -68,153 +66,203 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     } else {
       const li = document.createElement('li');
-      li.textContent = 'Flagged by heuristic heuristics and machine learning threat model.';
+      li.textContent = 'Flagged by hybrid machine learning weights classifier and security heuristic rules.';
       reasonsList.appendChild(li);
     }
   }
 
-  // ML Probability
-  const mlPercent = ((analysis.mlProbability ?? 0.99) * 100).toFixed(2);
+  // ML Threat Probability bar
+  const mlProb = analysis.mlProbability ?? 0.99;
+  const mlPercent = (mlProb * 100).toFixed(1);
   const mlProbText = document.getElementById('ml-prob-text');
   if (mlProbText) mlProbText.textContent = `${mlPercent}%`;
 
   const fill = document.getElementById('ml-progress-fill');
   if (fill) {
-    fill.style.width = '0%';
     setTimeout(() => {
-      fill.style.width = `${mlPercent}%`;
+      fill.style.width = `${Math.min(100, Math.max(10, mlPercent))}%`;
     }, 150);
   }
 
-  // Copy URL with Toast feedback
+  // Copy URL action
   const btnCopyUrl = document.getElementById('btn-copy-url');
-  const iosToast = document.getElementById('ios-toast');
   if (btnCopyUrl) {
     btnCopyUrl.addEventListener('click', () => {
       navigator.clipboard.writeText(blockedUrlString).then(() => {
-        showToast('URL copied to clipboard');
+        showWarningToast('URL copied to clipboard');
       }).catch(() => {
-        showToast('URL copied');
+        showWarningToast('URL copied');
       });
     });
   }
 
-  function showToast(msg) {
-    if (!iosToast) return;
-    iosToast.textContent = msg;
-    iosToast.classList.add('show');
-    setTimeout(() => {
-      iosToast.classList.remove('show');
-    }, 2000);
-  }
-
-  // Advanced Options Accordion
+  // Advanced Options Accordion Toggle
   const toggleBtn = document.getElementById('btn-details-toggle');
   const detailsSec = document.getElementById('details-section');
   const chevron = document.getElementById('chevron-icon');
-  const btnProceed = document.getElementById('btn-proceed');
 
-  if (toggleBtn) {
+  if (toggleBtn && detailsSec) {
     toggleBtn.addEventListener('click', () => {
       const isHidden = detailsSec.classList.toggle('hidden');
-      chevron.classList.toggle('rotated', !isHidden);
+      if (chevron) chevron.classList.toggle('rotated', !isHidden);
       toggleBtn.setAttribute('aria-expanded', !isHidden);
-
-      // Reveal dangerous override button
-      if (btnProceed) {
-        btnProceed.classList.toggle('hidden', isHidden);
-      }
     });
   }
 
-  // Action: Back to safety
+  // Action: Return to Safety
   const btnBack = document.getElementById('btn-back');
   if (btnBack) {
     btnBack.addEventListener('click', () => {
       if (window.history.length > 1) {
         window.history.back();
       } else {
-        window.location.href = 'chrome://newtab';
+        window.location.href = 'https://google.com';
       }
     });
   }
 
-  // Action: Open in Sandbox
+  // Action: Open in Safe Sandbox
   const btnSandbox = document.getElementById('btn-sandbox');
   if (btnSandbox) {
     btnSandbox.addEventListener('click', () => {
-      if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getURL) {
-        const sandboxUrl = chrome.runtime.getURL(
-          `sandbox.html?url=${encodeURIComponent(blockedUrlString)}`
-        );
-        chrome.tabs.create({ url: sandboxUrl });
-      } else {
-        window.open(`sandbox.html?url=${encodeURIComponent(blockedUrlString)}`, '_blank');
-      }
+      const sandboxUrl = chrome.runtime.getURL(
+        `sandbox.html?url=${encodeURIComponent(blockedUrlString)}`
+      );
+      chrome.tabs.create({ url: sandboxUrl });
     });
   }
 
-  // Action: Report This Link modal
-  const btnReport = document.getElementById('btn-report');
-  const reportModal = document.getElementById('report-modal');
-  const btnCloseModal = document.getElementById('btn-close-modal');
-  const btnSubmitReport = document.getElementById('btn-submit-report');
-  const modalTargetUrl = document.getElementById('modal-target-url');
+  // Action: Open AV-SAFE Web Dashboard
+  const dashboardButtons = [
+    document.getElementById('btn-header-dashboard'),
+    document.getElementById('btn-open-dashboard-action')
+  ];
 
-  if (btnReport && reportModal) {
-    btnReport.addEventListener('click', () => {
-      if (modalTargetUrl) modalTargetUrl.textContent = `Target: ${blockedUrlString}`;
-      reportModal.classList.remove('hidden');
-    });
-
-    if (btnCloseModal) {
-      btnCloseModal.addEventListener('click', () => {
-        reportModal.classList.add('hidden');
+  dashboardButtons.forEach(btn => {
+    if (btn) {
+      btn.addEventListener('click', async () => {
+        const dashUrl = await getDashboardUrl('/system');
+        chrome.tabs.create({ url: dashUrl });
       });
     }
+  });
 
-    if (btnSubmitReport) {
-      btnSubmitReport.addEventListener('click', () => {
-        reportModal.classList.add('hidden');
-        showToast('Complaint report submitted');
-      });
-    }
-  }
+  // Action: Report Threat Modal
+  setupWarningReportModal(blockedUrlString, analysis);
 
-  // Action: Proceed anyway
+  // Action: Dangerous Override
+  const btnProceed = document.getElementById('btn-proceed');
   if (btnProceed) {
     btnProceed.addEventListener('click', () => {
       const confirmed = window.confirm(
-        'Dangerous Override: Are you sure you want to proceed to this suspicious site? It may compromise your device or data.'
+        'DANGEROUS OVERRIDE CONFIRMATION:\n\nAre you sure you want to proceed to this suspicious site? It was flagged as an active threat and may steal passwords or compromise your computer.'
       );
       if (!confirmed) return;
 
       const domainToBypass = hostname.toLowerCase();
-      if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-        chrome.storage.local.get(['bypassList'], (result) => {
-          const bypassList = result.bypassList || [];
-          if (!bypassList.includes(domainToBypass)) {
-            bypassList.push(domainToBypass);
-            chrome.storage.local.set({ bypassList }, () => {
-              window.location.href = blockedUrlString;
-            });
-          } else {
+      chrome.storage.local.get(['bypassList'], (result) => {
+        const bypassList = result.bypassList || [];
+        if (!bypassList.includes(domainToBypass)) {
+          bypassList.push(domainToBypass);
+          chrome.storage.local.set({ bypassList }, () => {
             window.location.href = blockedUrlString;
-          }
-        });
-      } else {
-        window.location.href = blockedUrlString;
-      }
+          });
+        } else {
+          window.location.href = blockedUrlString;
+        }
+      });
     });
   }
-
-  // Set real time in iOS status bar mockup
-  const timeEl = document.getElementById('status-time');
-  if (timeEl) {
-    const now = new Date();
-    let hours = now.getHours();
-    let minutes = now.getMinutes();
-    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-    timeEl.textContent = `${hours}:${formattedMinutes}`;
-  }
 });
+
+// Setup Incident Report Modal with live /api/complaints submission
+function setupWarningReportModal(targetUrl, analysis) {
+  const btnReport = document.getElementById('btn-report');
+  const reportModal = document.getElementById('report-modal');
+  const btnCloseModal = document.getElementById('btn-close-modal');
+  const btnModalCancel = document.getElementById('btn-modal-cancel');
+  const btnSubmitReport = document.getElementById('btn-submit-report');
+  const modalTargetUrl = document.getElementById('modal-target-url');
+  const selectCategory = document.getElementById('report-category');
+  const textareaComments = document.getElementById('report-comments');
+  const feedbackBox = document.getElementById('modal-feedback-box');
+
+  if (modalTargetUrl) modalTargetUrl.textContent = targetUrl;
+
+  const closeModal = () => {
+    reportModal.classList.add('hidden');
+    feedbackBox.classList.add('hidden');
+    feedbackBox.innerHTML = '';
+    btnSubmitReport.disabled = false;
+    btnSubmitReport.textContent = 'Submit Incident Report';
+  };
+
+  btnReport?.addEventListener('click', () => {
+    reportModal.classList.remove('hidden');
+  });
+
+  btnCloseModal?.addEventListener('click', closeModal);
+  btnModalCancel?.addEventListener('click', closeModal);
+
+  btnSubmitReport?.addEventListener('click', async () => {
+    btnSubmitReport.disabled = true;
+    btnSubmitReport.textContent = 'Submitting to SecOps...';
+
+    const category = selectCategory.value;
+    const description = textareaComments.value.trim() || 'Reported via AV-SAFE browser warning shield';
+
+    const reasons = (analysis.warnings || []).map(w => `${w.title}: ${w.desc}`);
+
+    const result = await submitIncidentComplaint({
+      url: targetUrl,
+      category,
+      description,
+      rating: analysis.rating || 'DANGEROUS',
+      score: analysis.score ?? 1,
+      detectionReasons: reasons,
+      source: 'EXTENSION'
+    });
+
+    btnSubmitReport.disabled = false;
+    btnSubmitReport.textContent = 'Submit Incident Report';
+
+    if (result.success) {
+      feedbackBox.classList.remove('hidden');
+      feedbackBox.innerHTML = `
+        <strong style="color:var(--color-safe); font-size:13px;">✓ Threat Incident Registered!</strong>
+        <span>Tracking Reference: <strong>${result.complaintId}</strong></span>
+        <span style="font-size:10.5px; color:var(--text-secondary); margin-top:3px;">
+          This threat report has been recorded in the SecOps triage queue for automated domain blacklisting.
+        </span>
+        <button id="btn-view-ticket" class="btn-action-primary" style="margin-top:8px; font-size:12px; padding:7px;">
+          Track Incident on Web Dashboard ↗
+        </button>
+      `;
+
+      document.getElementById('btn-view-ticket')?.addEventListener('click', async () => {
+        const ticketUrl = await getDashboardUrl(`/system?tab=complaints&id=${result.complaintId}`);
+        chrome.tabs.create({ url: ticketUrl });
+      });
+
+      showWarningToast(`Incident submitted: ${result.complaintId}`);
+    } else {
+      feedbackBox.classList.remove('hidden');
+      feedbackBox.innerHTML = `
+        <strong style="color:var(--color-danger);">Submission Failed</strong>
+        <span>${result.error || 'Check that AV-SAFE local server is active'}</span>
+      `;
+    }
+  });
+}
+
+function showWarningToast(msg) {
+  const toast = document.getElementById('warning-toast');
+  if (!toast) return;
+
+  toast.textContent = msg;
+  toast.classList.remove('hidden');
+
+  setTimeout(() => {
+    toast.classList.add('hidden');
+  }, 2200);
+}

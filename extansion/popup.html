@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AV-SAFE | Threat Shield</title>
+  <title>AV-SAFE Threat Shield</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
@@ -11,141 +11,406 @@
     <!-- Header -->
     <header class="header">
       <div class="brand">
-        <img src="ic_app_logo.png" class="brand-logo-img" alt="AV-SAFE Logo" />
-        <span class="brand-name">AV-<span class="brand-name-suffix">SAFE</span></span>
+        <img src="ic_app_logo.png" class="brand-logo-img" alt="AV-SAFE Shield Logo" />
+        <div class="brand-text">
+          <span class="brand-name">AV-<span class="brand-name-suffix">SAFE</span></span>
+          <span class="brand-tag">THREAT SHIELD</span>
+        </div>
       </div>
-      <div class="badge-status-container">
-        <span id="shield-active-badge" class="badge-status active">SHIELD ON</span>
+
+      <div class="header-actions">
+        <!-- Live Server Connection Pill -->
+        <button id="server-status-pill" class="server-status-pill checking" title="Check AV-SAFE Backend Server">
+          <span class="status-dot"></span>
+          <span id="server-status-label" class="status-label">Checking...</span>
+        </button>
+
+        <!-- Quick Web Dashboard Launcher -->
+        <button id="btn-header-dashboard" class="icon-btn" title="Open AV-SAFE Web Dashboard">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+        </button>
       </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="content">
-      <!-- Status Card -->
-      <section class="card status-card">
-        <div class="status-header">
-          <span class="section-title">Current Tab Security</span>
-          <span id="domain-text" class="tab-domain">Detecting...</span>
+    <!-- Navigation Tabs -->
+    <nav class="nav-segmented">
+      <button class="nav-tab active" data-tab="shield">
+        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+        <span>Shield</span>
+      </button>
+      <button class="nav-tab" data-tab="activity">
+        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+        <span>Activity</span>
+      </button>
+      <button class="nav-tab" data-tab="settings">
+        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <span>Settings</span>
+      </button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="content-container">
+
+      <!-- VIEW 1: SHIELD / CURRENT TAB SECURITY -->
+      <section id="view-shield" class="view-panel active">
+        <!-- Target URL Header Banner -->
+        <div class="target-card">
+          <div class="target-left">
+            <span id="target-protocol-badge" class="protocol-badge https">HTTPS</span>
+            <div class="target-url-info">
+              <span id="domain-text" class="target-domain">Detecting tab...</span>
+              <span id="url-subpath" class="target-path">/</span>
+            </div>
+          </div>
+          <button id="btn-copy-url" class="icon-btn-sm" title="Copy URL">
+            <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </button>
         </div>
 
-        <div class="gauge-container">
-          <svg class="progress-ring" width="120" height="120">
-            <circle class="progress-ring-bg" stroke="#EEF2F7" stroke-width="8" fill="transparent" r="50" cx="60" cy="60"/>
-            <circle id="progress-ring-fill" class="progress-ring-fill" stroke="var(--color-safe)" stroke-width="8" stroke-dasharray="314.159" stroke-dashoffset="314.159" stroke-linecap="round" fill="transparent" r="50" cx="60" cy="60"/>
-          </svg>
-          <div class="gauge-center">
-            <span id="score-text" class="score-value">--</span>
-            <span class="score-label">SAFE</span>
+        <!-- Security Gauge Card -->
+        <div class="card gauge-card">
+          <div class="gauge-centerpiece">
+            <svg class="progress-ring" width="124" height="124">
+              <circle class="progress-ring-bg" stroke="rgba(255,255,255,0.06)" stroke-width="8" fill="transparent" r="52" cx="62" cy="62"/>
+              <circle id="progress-ring-fill" class="progress-ring-fill" stroke="var(--color-safe)" stroke-width="8" stroke-dasharray="326.72" stroke-dashoffset="326.72" stroke-linecap="round" fill="transparent" r="52" cx="62" cy="62"/>
+            </svg>
+            <div class="gauge-inner">
+              <span id="score-text" class="score-number">--</span>
+              <span class="score-subtext">SAFETY SCORE</span>
+            </div>
+          </div>
+
+          <div class="verdict-container">
+            <span id="status-rating-badge" class="rating-badge safe">SAFE SITE</span>
+            <p id="quick-diagnosis" class="diagnosis-text">
+              Analyzing URL lexical patterns & threat databases...
+            </p>
+          </div>
+
+          <!-- Quick Action Bar -->
+          <div class="action-grid">
+            <button id="btn-deep-scan" class="action-tile" title="Run active DNS & SSL cloud scan">
+              <div class="action-tile-icon blue">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  <line x1="11" y1="8" x2="11" y2="14"></line>
+                  <line x1="8" y1="11" x2="14" y2="11"></line>
+                </svg>
+              </div>
+              <span id="deep-scan-btn-label">Deep Scan</span>
+            </button>
+
+            <button id="btn-open-sandbox" class="action-tile" title="Open isolated preview">
+              <div class="action-tile-icon cyan">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                  <line x1="2" y1="10" x2="22" y2="10"></line>
+                  <line x1="6" y1="21" x2="18" y2="21"></line>
+                  <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+              </div>
+              <span>Sandbox</span>
+            </button>
+
+            <button id="btn-open-report" class="action-tile" title="Report suspicious site to SecOps">
+              <div class="action-tile-icon red">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                  <line x1="4" y1="22" x2="4" y2="15"></line>
+                </svg>
+              </div>
+              <span>Report</span>
+            </button>
+
+            <button id="btn-view-dashboard" class="action-tile" title="View live SecOps metrics">
+              <div class="action-tile-icon purple">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 20V10"></path>
+                  <path d="M12 20V4"></path>
+                  <path d="M6 20v-6"></path>
+                </svg>
+              </div>
+              <span>Console</span>
+            </button>
           </div>
         </div>
 
-        <div id="status-badge-container" class="status-badge-container">
-          <span id="status-rating-badge" class="rating-badge safe">SAFE SITE</span>
+        <!-- Deep Scan Real-Time Inspection Card (Hidden by default, shown when Deep Scan runs) -->
+        <div id="deep-scan-card" class="card deep-scan-card hidden">
+          <div class="card-header">
+            <div class="header-title-row">
+              <span class="pulse-indicator"></span>
+              <span class="card-title">Live Server Network Probe</span>
+            </div>
+            <span id="deep-scan-status-badge" class="badge-tag">COMPLETE</span>
+          </div>
+
+          <div class="network-audit-grid">
+            <div class="audit-item">
+              <span class="audit-key">Resolved IP:</span>
+              <span id="deep-ip-val" class="audit-val">—</span>
+            </div>
+            <div class="audit-item">
+              <span class="audit-key">SSRF Guard:</span>
+              <span id="deep-ssrf-val" class="audit-val safe">VERIFIED</span>
+            </div>
+            <div class="audit-item">
+              <span class="audit-key">SSL Issuer:</span>
+              <span id="deep-ssl-issuer" class="audit-val">—</span>
+            </div>
+            <div class="audit-item">
+              <span class="audit-key">SSL Expiry:</span>
+              <span id="deep-ssl-expiry" class="audit-val">—</span>
+            </div>
+            <div class="audit-item">
+              <span class="audit-key">Login Forms:</span>
+              <span id="deep-page-login" class="audit-val">—</span>
+            </div>
+            <div class="audit-item">
+              <span class="audit-key">Form Target:</span>
+              <span id="deep-page-ext" class="audit-val">—</span>
+            </div>
+          </div>
         </div>
 
-        <div id="quick-diagnosis" class="quick-diagnosis text-muted">
-          Analyzing URL lexical properties...
+        <!-- Threat Indicators Card -->
+        <div id="warnings-card" class="card warnings-card hidden">
+          <div class="card-header">
+            <div class="header-title-row">
+              <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--color-danger)" stroke-width="2.2" fill="none">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <span class="card-title text-danger">Threat Indicators</span>
+            </div>
+            <span id="warnings-count" class="badge-count">0</span>
+          </div>
+          <ul id="popup-warnings-list" class="threat-reasons-list">
+            <!-- Populated dynamically -->
+          </ul>
         </div>
 
-        <button id="btn-open-sandbox" class="btn-clear text-secondary hidden" style="margin-top: 8px; display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; opacity:0.8;">
-          <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-            <line x1="2" y1="10" x2="22" y2="10"></line>
-            <line x1="6" y1="21" x2="18" y2="21"></line>
-            <line x1="12" y1="17" x2="12" y2="21"></line>
+        <!-- Safe Site Confidence Card (shown when SAFE) -->
+        <div id="safe-summary-card" class="card safe-card">
+          <div class="safe-header">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="var(--color-safe)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <span class="safe-title">Clean Threat Analysis</span>
+          </div>
+          <p class="safe-desc">
+            No typosquatting vectors, brand spoofing, or deceptive keyword anomalies detected for this host.
+          </p>
+        </div>
+      </section>
+
+      <!-- VIEW 2: ACTIVITY / TELEMETRY & SCAN HISTORY -->
+      <section id="view-activity" class="view-panel">
+        <!-- Telemetry Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-num" id="stat-scanned">0</span>
+            <span class="stat-label">Links Scanned</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num text-danger" id="stat-blocked">0</span>
+            <span class="stat-label">Threats Blocked</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num text-purple" id="stat-rules">0</span>
+            <span class="stat-label">Active Rules</span>
+          </div>
+        </div>
+
+        <!-- Launch Live Analytics Banner -->
+        <button id="btn-open-analytics-page" class="card-btn-banner">
+          <div class="banner-text">
+            <span class="banner-title">Live SecOps Threat Analytics</span>
+            <span class="banner-sub">View charts, geographical origins & telemetry</span>
+          </div>
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+            <polyline points="9 18 15 12 9 6"></polyline>
           </svg>
-          Preview in Safe Sandbox
         </button>
-      </section>
 
-      <!-- Warnings/Flags list (collapsible or dynamic list) -->
-      <section id="warnings-card" class="card warnings-card hidden">
-        <div class="card-header">
-          <span class="card-header-title text-danger">Threat Indicators</span>
-          <span id="warnings-count" class="badge-count">0</span>
-        </div>
-        <ul id="popup-warnings-list" class="popup-warnings-list">
-          <!-- Populated by JS -->
-        </ul>
-      </section>
-
-      <!-- Stats section -->
-      <section class="stats-row">
-        <div class="card stat-box">
-          <span class="stat-num" id="stat-scanned">0</span>
-          <span class="stat-label">Links Scanned</span>
-        </div>
-        <div class="card stat-box">
-          <span class="stat-num text-danger" id="stat-blocked">0</span>
-          <span class="stat-label">Threats Blocked</span>
-        </div>
-      </section>
-
-      <!-- Protection Toggles -->
-      <section class="card settings-card">
-        <span class="section-title">Shield Options</span>
-        
-        <div class="setting-row">
-          <div class="setting-info">
-            <span class="setting-title">Enable Real-Time Shielding</span>
-            <span class="setting-desc">Blocks phishing attempts automatically</span>
+        <!-- Live Scan History List -->
+        <div class="card history-card">
+          <div class="card-header">
+            <span class="card-title">Recent Scans (Server Log)</span>
+            <button id="btn-refresh-history" class="icon-btn-sm" title="Refresh from server">
+              <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+              </svg>
+            </button>
           </div>
-          <label class="switch">
-            <input type="checkbox" id="toggle-shielding" checked>
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <div class="setting-row">
-          <div class="setting-info">
-            <span class="setting-title">Block Suspicious Sites</span>
-            <span class="setting-desc">Extends blocks to moderate risk links</span>
-          </div>
-          <label class="switch">
-            <input type="checkbox" id="toggle-suspicious">
-            <span class="slider"></span>
-          </label>
+          <ul id="activity-history-list" class="activity-history-list">
+            <li class="history-loading">Fetching scan history from AV-SAFE backend...</li>
+          </ul>
         </div>
       </section>
 
-      <!-- Bypassed Sites Whitelist -->
-      <section id="whitelist-card" class="card whitelist-card hidden">
-        <div class="whitelist-header">
-          <span class="section-title">Whitelisted This Session</span>
-          <button id="btn-clear-whitelist" class="btn-clear">Clear All</button>
-        </div>
-        <ul id="whitelist-list" class="whitelist-list">
-          <!-- Populated by JS -->
-        </ul>
-      </section>
-
-      <!-- Threat Database Sync Card -->
-      <section class="card sync-card">
-        <div class="sync-header" style="display: flex; justify-content: space-between; align-items: center;">
-          <span class="section-title">Threat Intel Database</span>
-          <button id="btn-sync-intel" class="btn-clear" style="color: var(--color-primary); font-size: 10px; font-weight: 700; text-transform: uppercase;">Sync Rules</button>
-        </div>
-        <div class="sync-info-row">
-          <div class="sync-info-item">
-            <span id="sync-rules-count" class="sync-val">0</span>
-            <span class="sync-label">Local Rules</span>
+      <!-- VIEW 3: SETTINGS & CONTROLS -->
+      <section id="view-settings" class="view-panel">
+        <!-- Security Toggles -->
+        <div class="card settings-group">
+          <span class="card-title" style="margin-bottom: 6px;">Protection Controls</span>
+          
+          <div class="setting-item">
+            <div class="setting-labels">
+              <span class="setting-title">Real-Time Shield</span>
+              <span class="setting-desc">Intercepts phishing and malware navigation</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggle-shielding" checked>
+              <span class="toggle-slider"></span>
+            </label>
           </div>
-          <div class="sync-info-item">
-            <span id="sync-time-text" class="sync-val" style="font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; text-align: center;">Never</span>
-            <span class="sync-label">Last Updated</span>
+
+          <div class="setting-item">
+            <div class="setting-labels">
+              <span class="setting-title">Block Suspicious Sites</span>
+              <span class="setting-desc">Blocks moderate risk and unverified links</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggle-suspicious">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-labels">
+              <span class="setting-title">Auto-Sync Telemetry</span>
+              <span class="setting-desc">Sends scan events to project dashboard</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggle-autolog" checked>
+              <span class="toggle-slider"></span>
+            </label>
           </div>
         </div>
-        <div id="sync-status" class="sync-status text-muted" style="font-size: 10px; text-align: center;">
-          Local threat intelligence database loaded.
+
+        <!-- Project Server Endpoint Config -->
+        <div class="card settings-group">
+          <div class="card-header">
+            <span class="card-title">AV-SAFE Backend Endpoint</span>
+            <span id="endpoint-ping-badge" class="badge-tag">ONLINE</span>
+          </div>
+          <div class="endpoint-input-row">
+            <input type="text" id="input-server-url" class="input-dark" placeholder="http://localhost:3000" value="http://localhost:3000" />
+            <button id="btn-save-server-url" class="btn-primary-sm">Test & Save</button>
+          </div>
+          <p id="endpoint-status-text" class="setting-desc" style="margin-top: 6px;">
+            Endpoint for /api/history, /api/analyze & /api/complaints
+          </p>
+        </div>
+
+        <!-- Threat Database Sync -->
+        <div class="card settings-group">
+          <div class="card-header">
+            <span class="card-title">Threat Intel Database</span>
+            <button id="btn-sync-rules" class="btn-text-action">Sync Now</button>
+          </div>
+          <div class="sync-metrics">
+            <div class="sync-metric-col">
+              <span id="sync-rules-count" class="metric-val">0</span>
+              <span class="metric-lbl">Cached Rules</span>
+            </div>
+            <div class="sync-metric-col">
+              <span id="sync-last-time" class="metric-val text-sm">Never</span>
+              <span class="metric-lbl">Last Updated</span>
+            </div>
+          </div>
+          <div id="sync-feedback" class="setting-desc" style="margin-top: 6px; text-align: center;">
+            Syncs latest feeds from Phishing.Database.
+          </div>
+        </div>
+
+        <!-- Session Whitelist Card -->
+        <div id="whitelist-card" class="card settings-group hidden">
+          <div class="card-header">
+            <span class="card-title">Session Whitelist</span>
+            <button id="btn-clear-whitelist" class="btn-text-action text-danger">Clear All</button>
+          </div>
+          <ul id="whitelist-list" class="whitelist-list"></ul>
         </div>
       </section>
+
     </main>
 
     <!-- Footer -->
     <footer class="footer">
-      <span>Running locally & offline</span>
-      <span class="engine-ver">Engine v2.0</span>
+      <div class="footer-left">
+        <span class="engine-indicator">●</span>
+        <span>AV-SAFE Engine v2.0 (Hybrid ML)</span>
+      </div>
+      <button id="btn-footer-dashboard" class="footer-link">Dashboard ↗</button>
     </footer>
+
+    <!-- REPORT THREAT MODAL / SHEET -->
+    <div id="report-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="header-title-row">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="var(--color-danger)" stroke-width="2" fill="none">
+              <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+              <line x1="4" y1="22" x2="4" y2="15"></line>
+            </svg>
+            <h3 class="modal-title">Report Threat to AV-SAFE</h3>
+          </div>
+          <button id="btn-close-modal" class="btn-close-icon">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <label class="modal-label">Target URL</label>
+          <div class="target-url-box" id="modal-url-display">—</div>
+
+          <label class="modal-label" for="select-category">Threat Category</label>
+          <select id="select-category" class="input-dark select-dark">
+            <option value="PHISHING">Phishing / Credential Theft</option>
+            <option value="FAKE_LOGIN">Fake Login / Brand Impersonation</option>
+            <option value="MALWARE">Malware / Ransomware</option>
+            <option value="SCAM">Financial / Tech Support Scam</option>
+            <option value="SUSPICIOUS_REDIRECT">Suspicious Redirector</option>
+            <option value="OTHER">Other Malicious Activity</option>
+          </select>
+
+          <label class="modal-label" for="textarea-comments">Additional Details (Optional)</label>
+          <textarea id="textarea-comments" class="input-dark textarea-dark" rows="3" placeholder="Explain what makes this link suspicious..."></textarea>
+
+          <div id="report-result-box" class="report-result-box hidden">
+            <!-- Filled dynamically upon submission -->
+          </div>
+
+          <div class="modal-footer-actions">
+            <button id="btn-cancel-report" class="btn-secondary">Cancel</button>
+            <button id="btn-submit-report" class="btn-primary-danger">Submit Incident Report</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-message" class="toast hidden">URL copied to clipboard</div>
+
   </div>
 
   <script type="module" src="popup.js"></script>

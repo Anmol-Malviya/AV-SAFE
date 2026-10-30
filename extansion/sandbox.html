@@ -21,8 +21,17 @@
         <img src="ic_app_logo.png" alt="AV-SAFE" width="18" height="18" style="border-radius: 4px; display: block; flex-shrink: 0;" />
         AV-SAFE — Safe Preview Sandbox
       </div>
-      <div class="window-actions">
-        <!-- Close / Back action -->
+      <div class="header-right-actions">
+        <button id="btn-sandbox-report" class="sandbox-nav-btn danger" title="Report Threat to SecOps">
+          <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none">
+            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+            <line x1="4" y1="22" x2="4" y2="15"></line>
+          </svg>
+          Report Threat
+        </button>
+        <button id="btn-sandbox-dashboard" class="sandbox-nav-btn" title="Open Web Dashboard">
+          Web Dashboard ↗
+        </button>
         <button id="btn-close-sandbox" class="close-action-btn" title="Exit Sandbox">✕</button>
       </div>
     </header>
@@ -153,7 +162,7 @@
                     <line x1="12" y1="9" x2="12" y2="13"></line>
                     <line x1="12" y1="17" x2="12.01" y2="17"></line>
                   </svg>
-                  Scripts, cookies, and external resources are disabled in this sandboxed view.
+                  Scripts, cookies, and external resources are neutralized in this sandboxed preview.
                 </p>
                 <div class="sandbox-render-preview">
                   <!-- Render Placeholders loaded dynamically by JS -->
@@ -179,6 +188,33 @@
           </div>
         </div>
       </main>
+    </div>
+  </div>
+
+  <!-- Incident Reporting Modal for Sandbox -->
+  <div id="sandbox-report-modal" class="modal-overlay hidden" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.75); display:flex; align-items:center; justify-content:center; z-index:100;">
+    <div style="background:#0F172A; border:1px solid rgba(255,255,255,0.12); border-radius:12px; padding:20px; width:90%; max-width:440px; color:#F8FAFC; display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="font-size:14px; font-weight:700;">Report Threat Incident</h3>
+        <button id="btn-close-sandbox-report" style="background:transparent; border:none; color:#94A3B8; font-size:16px; cursor:pointer;">✕</button>
+      </div>
+      <div style="font-size:11px; font-family:var(--font-mono); color:#CBD5E1; background:rgba(0,0,0,0.3); padding:6px 10px; border-radius:6px; overflow:hidden; text-overflow:ellipsis;" id="sandbox-modal-url"></div>
+      <label style="font-size:10.5px; font-weight:600; color:#94A3B8; text-transform:uppercase;">Category</label>
+      <select id="sandbox-select-category" style="background:#070B14; border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:8px; color:#FFF; font-size:12px;">
+        <option value="PHISHING">Phishing / Credential Theft</option>
+        <option value="FAKE_LOGIN">Deceptive Login Form</option>
+        <option value="MALWARE">Malware / Ransomware</option>
+        <option value="SCAM">Financial Scam</option>
+        <option value="SUSPICIOUS_REDIRECT">Suspicious Redirector</option>
+        <option value="OTHER">Other Malicious Content</option>
+      </select>
+      <label style="font-size:10.5px; font-weight:600; color:#94A3B8; text-transform:uppercase;">Notes</label>
+      <textarea id="sandbox-modal-comments" rows="3" placeholder="Context from sandbox analysis..." style="background:#070B14; border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:8px; color:#FFF; font-size:12px;"></textarea>
+      <div id="sandbox-report-feedback" style="display:none; padding:8px; border-radius:6px; font-size:11px;"></div>
+      <div style="display:flex; gap:8px; margin-top:4px;">
+        <button id="btn-cancel-sandbox-report" style="flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#94A3B8; border-radius:6px; padding:8px; cursor:pointer;">Cancel</button>
+        <button id="btn-submit-sandbox-report" style="flex:2; background:#EF4444; border:none; color:#FFF; font-weight:700; border-radius:6px; padding:8px; cursor:pointer;">Submit Report</button>
+      </div>
     </div>
   </div>
 

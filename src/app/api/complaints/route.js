@@ -102,6 +102,7 @@ export async function POST(request) {
         url: targetUrl,
         rating: validation.data.detectionVerdict === 'DANGEROUS' ? 'DANGEROUS' : (validation.data.detectionVerdict === 'SAFE' ? 'SAFE' : 'SUSPICIOUS'),
         score: validation.data.safetyScore,
+        source: validation.data.source || 'EXTENSION',
         detectionReasons: validation.data.detectionReasons || [],
         date: new Date().toLocaleDateString(),
         createdAt: new Date()
