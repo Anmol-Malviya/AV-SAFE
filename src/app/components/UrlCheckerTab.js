@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Shield, 
@@ -28,8 +29,11 @@ import {
   Zap,
   ExternalLink,
   Copy,
-  CheckCheck
+  CheckCheck,
+  QrCode
 } from "lucide-react";
+
+const QrScanner = dynamic(() => import("./QrScanner"), { ssr: false });
 
 export default function UrlCheckerTab({
   urlInput,
@@ -44,10 +48,12 @@ export default function UrlCheckerTab({
   getRatingColorClass,
   setShowSandbox,
   setSandboxTab,
+  handleQrScanSuccess,
 }) {
   const [scanStepIndex, setScanStepIndex] = useState(0);
   const [localScanning, setLocalScanning] = useState(false);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
+  const [showQrModal, setShowQrModal] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState(false);
 
   const scanSteps = useMemo(
@@ -135,14 +141,24 @@ export default function UrlCheckerTab({
                 <Shield className="h-3.5 w-3.5" />
                 <span>AI Threat Engine v2.0</span>
               </div>
-              <button
-                type="button"
-                onClick={() => setShowHowItWorks(true)}
-                className="inline-flex items-center gap-1 text-xs font-medium text-[#1463FF] hover:underline cursor-pointer"
-              >
-                <Info className="h-3.5 w-3.5" />
-                <span>How it works?</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowQrModal(true)}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-[#1463FF] bg-[#EFF6FF] border border-[#DBEAFE] rounded-lg hover:bg-blue-100 transition-colors cursor-pointer"
+                >
+                  <QrCode className="h-3.5 w-3.5" />
+                  <span>Scan QR Code</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowHowItWorks(true)}
+                  className="inline-flex items-center gap-1 text-xs font-medium text-[#1463FF] hover:underline cursor-pointer"
+                >
+                  <Info className="h-3.5 w-3.5" />
+                  <span>How it works?</span>
+                </button>
+              </div>
             </div>
 
             {/* Heading & Subtitle */}
@@ -719,6 +735,47 @@ export default function UrlCheckerTab({
               >
                 Got it
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= MODAL: SCAN QR CODE ================= */}
+      {showQrModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in-50 duration-150">
+          <div className="w-full max-w-lg bg-white rounded-2xl border border-slate-200 shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-xl bg-[#EFF6FF] text-[#1463FF]">
+                  <QrCode className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-[#101D36]">Scan QR Code for Hidden URLs</h3>
+                  <p className="text-[11px] text-slate-400">Aim camera or upload a QR image to extract link</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowQrModal(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="py-2">
+              <QrScanner
+                onScanSuccess={(decodedText) => {
+                  setShowQrModal(false);
+                  if (handleQrScanSuccess) {
+                    handleQrScanSuccess(decodedText);
+                  } else {
+                    setUrlInput(decodedText);
+                    handleCheckUrl(decodedText);
+                  }
+                }}
+                onScanError={() => {}}
+              />
             </div>
           </div>
         </div>

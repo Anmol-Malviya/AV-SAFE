@@ -95,8 +95,8 @@ export default function Sidebar({ activeTab, setActiveTab, threatStats, navItems
         })}
       </nav>
 
-      {/* User Analyst Profile & Connection Status Footer */}
-      <div className="p-4 border-t border-slate-100 bg-[#F8FAFD]/60 space-y-3">
+      {/* User Analyst Profile Footer */}
+      <div className="p-4 border-t border-slate-100 bg-[#F8FAFD]/60">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0">
             <div className="h-8 w-8 rounded-full bg-[#1463FF]/10 border border-[#1463FF]/20 flex items-center justify-center text-xs font-bold text-[#1463FF] shrink-0">
@@ -120,24 +120,6 @@ export default function Sidebar({ activeTab, setActiveTab, threatStats, navItems
           >
             <SettingsIcon className="h-4 w-4" />
           </button>
-        </div>
-
-        {/* Defense Active Status Capsule */}
-        <div className="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-200/80 shadow-2xs">
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="relative flex h-2 w-2 shrink-0">
-              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isOnline ? "bg-[#10B981]" : "bg-[#F59E0B]"}`} />
-              <span className={`relative inline-flex rounded-full h-2 w-2 ${isOnline ? "bg-[#10B981]" : "bg-[#F59E0B]"}`} />
-            </span>
-            <span className="text-[10px] font-bold text-slate-700 truncate">
-              {isOnline ? "Defense Active" : "Local Mode (Offline)"}
-            </span>
-          </div>
-          {isOnline ? (
-            <Zap className="h-3.5 w-3.5 text-[#1463FF] shrink-0" />
-          ) : (
-            <WifiOff className="h-3.5 w-3.5 text-[#F59E0B] shrink-0" />
-          )}
         </div>
       </div>
     </aside>

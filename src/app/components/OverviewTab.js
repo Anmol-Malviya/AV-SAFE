@@ -6,17 +6,12 @@ import {
   ShieldCheck, 
   ShieldAlert, 
   Shield, 
-  Activity, 
-  Calendar,
   Sparkles,
   FlaskConical,
   Clock, 
-  Mail, 
   AlertTriangle,
   ChevronRight,
   ArrowRight,
-  QrCode,
-  Scan,
   Smartphone,
   Monitor
 } from "lucide-react";
@@ -55,34 +50,10 @@ export default function OverviewTab({
   setUrlInput, 
   handleCheckUrl 
 }) {
-  const [currentDate, setCurrentDate] = useState("");
-  const [currentTime, setCurrentTime] = useState("");
   const [nowTimestamp, setNowTimestamp] = useState(() => Date.now());
 
-  // Live Date/Time
   useEffect(() => {
-    const updateDateTime = () => {
-      const now = new Date();
-      setNowTimestamp(now.getTime());
-      setCurrentDate(
-        now.toLocaleDateString("en-US", {
-          weekday: "short",
-          day: "numeric",
-          month: "short",
-          year: "numeric"
-        })
-      );
-      setCurrentTime(
-        now.toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true
-        })
-      );
-    };
-
-    updateDateTime();
-    const interval = setInterval(updateDateTime, 30000);
+    const interval = setInterval(() => setNowTimestamp(Date.now()), 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -237,28 +208,22 @@ export default function OverviewTab({
             Security Overview
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Realtime centralized telemetry streaming from Android endpoints and Web scans.
+            Realtime telemetry streaming from Android endpoints and Web scans.
           </p>
         </div>
 
-        {/* Date & Time Widget */}
-        <div className="flex items-center gap-3 bg-white px-3.5 py-2.5 rounded-xl border border-[#E5ECF5] shadow-xs self-start sm:self-auto shrink-0">
-          <div className="p-2 bg-[#F3F7FF] text-[#1463FF] rounded-lg">
-            <Calendar className="h-4 w-4" />
-          </div>
-          <div className="text-right flex flex-col justify-center">
-            <span className="text-xs font-bold text-[#101D36] leading-tight">
-              {currentDate || "Live Date"}
-            </span>
-            <span className="text-[11px] text-slate-500 font-medium leading-tight mt-0.5">
-              {currentTime || "Live Time"}
-            </span>
-          </div>
-        </div>
+        <button
+          type="button"
+          onClick={() => setActiveTab && setActiveTab("url-scanner")}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#1463FF] hover:bg-[#0D52DD] text-white text-xs sm:text-sm font-semibold rounded-xl shadow-xs transition-all self-start sm:self-auto cursor-pointer"
+        >
+          <Link2 className="h-4 w-4" />
+          <span>New Link Scan</span>
+        </button>
       </div>
 
-      {/* 2. Grid: 4 Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* 2. Grid: 3 Clean Metric Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Card 1: Total Audited Links */}
         <div 
           onClick={() => setActiveTab && setActiveTab("history")}
@@ -333,32 +298,6 @@ export default function OverviewTab({
             </div>
           </div>
           <div className="h-8 w-8 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 group-hover:bg-[#FEF2F2] group-hover:text-[#EF4444] text-slate-400 transition-colors">
-            <ChevronRight className="h-4 w-4" />
-          </div>
-        </div>
-
-        {/* Card 4: Scan Engine Health */}
-        <div 
-          onClick={() => setActiveTab && setActiveTab("settings")}
-          className="group bg-white p-5 rounded-2xl border border-[#E5ECF5] shadow-xs flex items-center justify-between gap-4 hover:border-[#06B6D4]/40 hover:shadow-sm transition-all cursor-pointer"
-        >
-          <div className="flex items-center gap-3.5 min-w-0">
-            <div className="p-3 bg-[#ECFEFF] text-[#06B6D4] rounded-xl shrink-0 group-hover:scale-105 transition-transform">
-              <Activity className="h-5 w-5" />
-            </div>
-            <div className="min-w-0">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block leading-tight">
-                SCAN ENGINE HEALTH
-              </span>
-              <span className="text-2xl sm:text-[28px] font-extrabold text-[#101D36] block tracking-tight leading-none my-1.5">
-                Optimal
-              </span>
-              <span className="text-[11px] text-slate-400 block leading-tight">
-                Realtime Sync Active
-              </span>
-            </div>
-          </div>
-          <div className="h-8 w-8 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 group-hover:bg-[#ECFEFF] group-hover:text-[#06B6D4] text-slate-400 transition-colors">
             <ChevronRight className="h-4 w-4" />
           </div>
         </div>
@@ -565,42 +504,6 @@ export default function OverviewTab({
           </div>
         </div>
 
-      </div>
-
-      {/* 4. Bottom Row: Quick Actions */}
-      <div className="bg-gradient-to-r from-[#F0F5FF]/70 via-white to-[#F0F5FF]/50 p-5 sm:p-6 rounded-2xl border border-[#E5ECF5] shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
-        <div className="flex items-center gap-3.5">
-          <div className="p-3 bg-[#EFF6FF] text-[#1463FF] rounded-xl shrink-0 border border-[#DBEAFE]">
-            <Scan className="h-6 w-6" />
-          </div>
-          <div>
-            <h3 className="text-base sm:text-lg font-bold text-[#101D36] block leading-tight">
-              Ready to check for threats?
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1 leading-normal">
-              Scan a URL, email or QR code to detect potential risks across all endpoints.
-            </p>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
-          <button
-            type="button"
-            onClick={() => setActiveTab && setActiveTab("url-scanner")}
-            className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#1463FF] hover:bg-[#0D52DD] active:scale-98 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-xs transition-all cursor-pointer"
-          >
-            <Link2 className="h-4 w-4" />
-            <span>Scan URL</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab && setActiveTab("email-scanner")}
-            className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-50 active:scale-98 text-[#101D36] border border-[#E5ECF5] text-xs sm:text-sm font-semibold rounded-xl shadow-xs transition-all cursor-pointer"
-          >
-            <Mail className="h-4 w-4 text-slate-500" />
-            <span>Scan Email</span>
-          </button>
-        </div>
       </div>
     </div>
   );

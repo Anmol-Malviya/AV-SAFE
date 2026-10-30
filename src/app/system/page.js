@@ -51,17 +51,15 @@ export default function SystemPage() {
   const [emailScanResult, setEmailScanResult] = useState(null);
   const [emailScanLoading, setEmailScanLoading] = useState(false);
 
-  // Threat navigation items
+  // Threat navigation items - Consolidated & Cleaned
   const navItems = useMemo(
     () => [
       { id: "overview", icon: <LayoutDashboard size={18} />, label: "Overview" },
-      { id: "url-scanner", icon: <Globe size={18} />, label: "URL Scanner" },
+      { id: "url-scanner", icon: <Globe size={18} />, label: "Scanner & QR" },
       { id: "email-scanner", icon: <Mail size={18} />, label: "Email Scanner" },
       { id: "analytics", icon: <BarChart3 size={18} />, label: "Analytics" },
-      { id: "qr-scanner", icon: <QrCode size={18} />, label: "Scan QR" },
+      { id: "history", icon: <History size={18} />, label: "Live Logs" },
       { id: "complaints", icon: <ShieldAlert size={18} />, label: "Threat Reports" },
-      { id: "history", icon: <History size={18} />, label: "History" },
-      { id: "guide", icon: <GraduationCap size={18} />, label: "Security Guide" },
       { id: "settings", icon: <Settings size={18} />, label: "Settings" }
     ],
     []
@@ -418,6 +416,7 @@ export default function SystemPage() {
               getRatingColorClass={getRatingColorClass}
               setShowSandbox={setShowSandbox}
               setSandboxTab={setSandboxTab}
+              handleQrScanSuccess={handleQrScanSuccess}
             />
           )}
 
