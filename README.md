@@ -119,9 +119,21 @@ flowchart TD
 
 ## 📸 Platform Interface Showcase
 
+### 1. Unified Web SecOps Dashboard & Android Mobile Client
 <div align="center">
-  <img src="public/av-safe-hero-banner.jpg" alt="AV-SAFE Threat Defense Ecosystem" width="95%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.12);" />
-  <p align="center"><em>AV-SAFE Unified Platform — Real-Time Cloud SOC SecOps Dashboard & Android On-Device Link Protection Client</em></p>
+  <img src="public/av-safe-hero-banner.jpg" alt="AV-SAFE Threat Defense Ecosystem" width="95%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); margin-bottom: 8px;" />
+  <p align="center"><em>Unified SecOps Console & Android Link Protection Client</em></p>
+</div>
+
+<br />
+
+### 2. Browser Extension: Real-Time Threat Interception Page
+> **What appears when you click a suspicious or malicious link:**
+> When the AV-SAFE Browser Extension detects a malicious or deceptive website, it immediately blocks navigation and launches this full-screen Threat Interception Shield before any payload or login form can load.
+
+<div align="center">
+  <img src="public/extension-threat-interception.jpg" alt="AV-SAFE Browser Extension Threat Interception Page" width="95%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(239,68,68,0.15); margin-bottom: 8px;" />
+  <p align="center"><em>Active Threat Interception Shield — Displays the blocked destination, AI heuristic risk breakdown (Insecure HTTP, Brand Spoofing, Suspicious Keywords), Safety Score meter, and Safe Sandbox options.</em></p>
 </div>
 
 ## 🧠 Detection Engine Pipeline
