@@ -120,6 +120,41 @@
     </p>
   </div>
 
+  <!-- SECTION: BROWSER & ANDROID CLIENT INTERFACES -->
+  <div style="border-bottom: 1px solid #F1F5F9; padding-bottom: 12px; margin-bottom: 24px;">
+    <h2 style="margin: 0; font-size: 22px; font-weight: 800; color: #0F172A;">
+      ⚡ Real-Time Edge Interception Interfaces
+    </h2>
+    <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748B;">
+      Active defense UI in action across Chromium extensions and native Android intent routing.
+    </p>
+  </div>
+
+  <table width="100%" border="0" cellspacing="16" cellpadding="0" style="margin-bottom: 32px;">
+    <tr>
+      <td width="60%" valign="top" style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 14px; padding: 18px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+          <span style="font-size: 14px; font-weight: 700; color: #0F172A;">Browser Extension Threat Interception</span>
+          <span style="font-size: 10px; font-weight: 700; background: #FEE2E2; color: #991B1B; padding: 2px 8px; border-radius: 9999px;">CHROMIUM MV3</span>
+        </div>
+        <img src="public/extension-threat-interception.jpg" alt="Browser Extension Threat Interception" width="100%" style="border-radius: 8px; border: 1px solid #E2E8F0; margin-bottom: 10px;" />
+        <p style="font-size: 12px; color: #475569; line-height: 1.5; margin: 0;">
+          Light-theme browser warning interceptor displaying exact heuristic failure triggers, dynamic risk calculation meters, and single-click isolated sandbox launching.
+        </p>
+      </td>
+      <td width="40%" valign="top" align="center" style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 14px; padding: 18px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; width: 100%;">
+          <span style="font-size: 14px; font-weight: 700; color: #0F172A;">Android Link Shield</span>
+          <span style="font-size: 10px; font-weight: 700; background: #DCFCE7; color: #166534; padding: 2px 8px; border-radius: 9999px;">KOTLIN NATIVE</span>
+        </div>
+        <img src="public/android-app-link-protection.jpg" alt="Android App Link Protection Screen" width="230" style="border-radius: 16px; border: 1px solid #E2E8F0; margin-bottom: 10px; display: block;" />
+        <p style="font-size: 12px; color: #475569; line-height: 1.5; margin: 0; text-align: left;">
+          Native mobile alert with hardware warning sound feedback, deep link inspection, and direct SOC ticket submission.
+        </p>
+      </td>
+    </tr>
+  </table>
+
   <!-- SECTION: 4-PANEL THREAT DIAGNOSTICS SUITE -->
   <div style="border-bottom: 1px solid #F1F5F9; padding-bottom: 12px; margin-bottom: 24px;">
     <h2 style="margin: 0; font-size: 22px; font-weight: 800; color: #0F172A;">
