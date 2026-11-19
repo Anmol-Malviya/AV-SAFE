@@ -1,0 +1,173 @@
+# AV-SAFE Feature Configuration
+
+# Exact 24 URL-only runtime features required by AV-SAFE runtime engines (JS & Kotlin)
+runtime_features_24:
+  - url_length
+  - domain_length
+  - is_ip
+  - tld_length
+  - subdomain_count
+  - is_https
+  - letters
+  - letter_ratio
+  - digits
+  - digit_ratio
+  - special
+  - special_ratio
+  - equals_count
+  - qmark_count
+  - amp_count
+  - hyphen_count
+  - dots_count
+  - slash_count
+  - shannon_entropy
+  - sensitive_words_count
+  - is_shortened
+  - is_suspicious_tld
+  - is_typosquatting
+  - brand_abuse_triggered
+
+# Extended URL features available in PhiUSIIL
+phiusiil_url_features:
+  - URLLength
+  - DomainLength
+  - IsDomainIP
+  - TLDLength
+  - NoOfSubDomain
+  - IsHTTPS
+  - NoOfLettersInURL
+  - LetterRatioInURL
+  - NoOfDegitsInURL
+  - DegitRatioInURL
+  - NoOfEqualsInURL
+  - NoOfQMarkInURL
+  - NoOfAmpersandInURL
+  - NoOfOtherSpecialCharsInURL
+  - SpacialCharRatioInURL
+  - CharContinuationRate
+  - URLSimilarityIndex
+  - TLDLegitimateProb
+  - URLCharProb
+  - HasObfuscation
+  - NoOfObfuscatedChar
+  - ObfuscationRatio
+
+# Website-dependent features (Separated, not used in offline URL-only engine)
+website_dependent_features:
+  - LineOfCode
+  - LargestLineLength
+  - HasTitle
+  - DomainTitleMatchScore
+  - URLTitleMatchScore
+  - HasFavicon
+  - Robots
+  - IsResponsive
+  - NoOfURLRedirect
+  - NoOfSelfRedirect
+  - HasDescription
+  - NoOfPopup
+  - NoOfiFrame
+  - HasExternalFormSubmit
+  - HasSocialNet
+  - HasSubmitButton
+  - HasHiddenFields
+  - HasPasswordField
+  - Bank
+  - Pay
+  - Crypto
+  - HasCopyrightInfo
+  - NoOfImage
+  - NoOfCSS
+  - NoOfJS
+  - NoOfSelfRef
+  - NoOfEmptyRef
+  - NoOfExternalRef
+
+constants:
+  top_brands:
+    - google.com
+    - facebook.com
+    - apple.com
+    - microsoft.com
+    - amazon.com
+    - netflix.com
+    - paypal.com
+    - instagram.com
+    - twitter.com
+    - yahoo.com
+    - linkedin.com
+    - zoom.us
+    - chase.com
+    - bankofamerica.com
+    - wellsfargo.com
+    - citibank.com
+    - github.com
+    - gmail.com
+    - outlook.com
+    - coinbase.com
+    - binance.com
+    - metamask.io
+
+  shorteners:
+    - bit.ly
+    - tinyurl.com
+    - t.co
+    - goo.gl
+    - ow.ly
+    - is.gd
+    - buff.ly
+    - adf.ly
+    - bit.do
+    - mcaf.ee
+    - su.pr
+    - rebrand.ly
+
+  suspicious_tlds:
+    - zip
+    - mov
+    - fit
+    - top
+    - tk
+    - ml
+    - ga
+    - cf
+    - gq
+    - work
+    - click
+    - download
+    - racing
+    - stream
+    - win
+    - bid
+    - vip
+    - xyz
+    - ru
+    - cn
+    - su
+    - buzz
+    - date
+    - icu
+    - loan
+    - men
+    - xin
+
+  sensitive_words:
+    - confirm
+    - account
+    - banking
+    - secure
+    - login
+    - signin
+    - verify
+    - webscr
+    - ebayisapi
+    - update
+    - password
+    - credential
+    - wallet
+    - auth
+    - recover
+    - claim
+    - free
+    - gift
+    - award
