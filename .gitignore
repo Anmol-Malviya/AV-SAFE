@@ -68,6 +68,12 @@ backend/ml/datasets/processed/
 backend/ml/datasets/raw/
 backend/ml/models/checkpoints/
 backend/ml/models/trained/
+ml-service/datasets/*.csv
+ml-service/datasets/splits/
+ml-service/datasets/processed/
+ml-service/datasets/raw/
+ml-service/models/checkpoints/
+ml-service/models/trained/
 
 # OS and Editor Clutter
 .DS_Store
