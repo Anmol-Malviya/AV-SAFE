@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 270" width="100%" height="100%">
+  <defs>
+    <linearGradient id="pipeBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A" />
+      <stop offset="100%" stop-color="#1E293B" />
+    </linearGradient>
+
+    <style>
+      .packet-flow {
+        stroke-dasharray: 6, 8;
+        animation: flowPacket 1.2s linear infinite;
+      }
+      .pulse-node {
+        animation: pulseEffect 2s infinite ease-in-out;
+      }
+      @keyframes flowPacket {
+        from { stroke-dashoffset: 28; }
+        to { stroke-dashoffset: 0; }
+      }
+      @keyframes pulseEffect {
+        0%, 100% { opacity: 0.8; }
+        50% { opacity: 1; filter: drop-shadow(0 0 8px #38BDF8); }
+      }
+      text {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+    </style>
+  </defs>
+
+  <rect width="960" height="270" rx="16" fill="url(#pipeBg)" stroke="#334155" stroke-width="1.5" />
+
+  <text x="480" y="32" fill="#94A3B8" font-size="11" font-weight="800" text-anchor="middle" letter-spacing="1.5">
+    24-FEATURE INFERENCE ENGINE &amp; EXPLAINABLE VERDICT PIPELINE
+  </text>
+
+  <!-- Flow Connector Line -->
+  <line x1="80" y1="135" x2="880" y2="135" stroke="#334155" stroke-width="4" />
+  <line x1="80" y1="135" x2="880" y2="135" stroke="#38BDF8" stroke-width="3" class="packet-flow" />
+
+  <!-- Stage 1: URL Decomposition -->
+  <g transform="translate(30, 65)">
+    <rect width="135" height="140" rx="10" fill="#1E293B" stroke="#0284C7" stroke-width="1.5" />
+    <circle cx="67" cy="35" r="16" fill="#0369A1" />
+    <text x="67" y="40" fill="#FFFFFF" font-size="12" text-anchor="middle">✂️</text>
+    <text x="67" y="68" fill="#F8FAFC" font-size="11.5" font-weight="700" text-anchor="middle">Decomposition</text>
+    <text x="67" y="86" fill="#94A3B8" font-size="9.5" text-anchor="middle">Protocol, Subdomain</text>
+    <text x="67" y="100" fill="#94A3B8" font-size="9.5" text-anchor="middle">Domain, Path, Query</text>
+    <rect x="15" y="112" width="105" height="18" rx="4" fill="#0C4A6E" />
+    <text x="67" y="124" fill="#7DD3FC" font-size="9" text-anchor="middle">Canonicalization</text>
+  </g>
+
+  <!-- Stage 2: Shannon Entropy -->
+  <g transform="translate(185, 65)">
+    <rect width="135" height="140" rx="10" fill="#1E293B" stroke="#6366F1" stroke-width="1.5" />
+    <circle cx="67" cy="35" r="16" fill="#4338CA" />
+    <text x="67" y="40" fill="#FFFFFF" font-size="12" text-anchor="middle">📐</text>
+    <text x="67" y="68" fill="#F8FAFC" font-size="11.5" font-weight="700" text-anchor="middle">Entropy Calc</text>
+    <text x="67" y="86" fill="#94A3B8" font-size="9.5" text-anchor="middle">H = -∑ p log2(p)</text>
+    <text x="67" y="100" fill="#94A3B8" font-size="9.5" text-anchor="middle">DGA &amp; Randomness</text>
+    <rect x="15" y="112" width="105" height="18" rx="4" fill="#312E81" />
+    <text x="67" y="124" fill="#C7D2FE" font-size="9" text-anchor="middle">Random DGA Detect</text>
+  </g>
+
+  <!-- Stage 3: Homoglyphs & IDN -->
+  <g transform="translate(340, 65)">
+    <rect width="135" height="140" rx="10" fill="#1E293B" stroke="#8B5CF6" stroke-width="1.5" />
+    <circle cx="67" cy="35" r="16" fill="#6D28D9" />
+    <text x="67" y="40" fill="#FFFFFF" font-size="12" text-anchor="middle">🔤</text>
+    <text x="67" y="68" fill="#F8FAFC" font-size="11.5" font-weight="700" text-anchor="middle">Homoglyph Scan</text>
+    <text x="67" y="86" fill="#94A3B8" font-size="9.5" text-anchor="middle">Punycode (xn--)</text>
+    <text x="67" y="100" fill="#94A3B8" font-size="9.5" text-anchor="middle">Cyrillic &amp; Greek chars</text>
+    <rect x="15" y="112" width="105" height="18" rx="4" fill="#4C1D95" />
+    <text x="67" y="124" fill="#DDD6FE" font-size="9" text-anchor="middle">Spoof Resistance</text>
+  </g>
+
+  <!-- Stage 4: Brand Typosquat -->
+  <g transform="translate(495, 65)">
+    <rect width="135" height="140" rx="10" fill="#1E293B" stroke="#EC4899" stroke-width="1.5" />
+    <circle cx="67" cy="35" r="16" fill="#BE185D" />
+    <text x="67" y="40" fill="#FFFFFF" font-size="12" text-anchor="middle">🎯</text>
+    <text x="67" y="68" fill="#F8FAFC" font-size="11.5" font-weight="700" text-anchor="middle">Typosquat Match</text>
+    <text x="67" y="86" fill="#94A3B8" font-size="9.5" text-anchor="middle">Levenshtein Distance</text>
+    <text x="67" y="100" fill="#94A3B8" font-size="9.5" text-anchor="middle">Google, PayPal, Banks</text>
+    <rect x="15" y="112" width="105" height="18" rx="4" fill="#831843" />
+    <text x="67" y="124" fill="#FBCFE8" font-size="9" text-anchor="middle">Top 500 Targets</text>
+  </g>
+
+  <!-- Stage 5: ML Feature Vector -->
+  <g transform="translate(650, 65)">
+    <rect width="135" height="140" rx="10" fill="#1E293B" stroke="#F59E0B" stroke-width="1.5" />
+    <circle cx="67" cy="35" r="16" fill="#B45309" />
+    <text x="67" y="40" fill="#FFFFFF" font-size="12" text-anchor="middle">⚖️</text>
+    <text x="67" y="68" fill="#F8FAFC" font-size="11.5" font-weight="700" text-anchor="middle">24-Vector Weight</text>
+    <text x="67" y="86" fill="#94A3B8" font-size="9.5" text-anchor="middle">PhiUSIIL Benchmark</text>
+    <text x="67" y="100" fill="#94A3B8" font-size="9.5" text-anchor="middle">Statistical Synthesis</text>
+    <rect x="15" y="112" width="105" height="18" rx="4" fill="#78350F" />
+    <text x="67" y="124" fill="#FDE68A" font-size="9" text-anchor="middle">Offline Math Core</text>
+  </g>
+
+  <!-- Stage 6: Verdict & Enforcement -->
+  <g transform="translate(805, 60)">
+    <rect width="125" height="150" rx="10" fill="#1E293B" stroke="#10B981" stroke-width="2" class="pulse-node" />
+    <circle cx="62" cy="35" r="18" fill="#047857" />
+    <text x="62" y="41" fill="#FFFFFF" font-size="14" text-anchor="middle">🛡️</text>
+    <text x="62" y="70" fill="#F8FAFC" font-size="12" font-weight="800" text-anchor="middle">Verdict</text>
+    <rect x="12" y="82" width="101" height="18" rx="4" fill="#064E3B" />
+    <text x="62" y="94" fill="#6EE7B7" font-size="9" font-weight="700" text-anchor="middle">SAFE [80-100]</text>
+    <rect x="12" y="104" width="101" height="18" rx="4" fill="#78350F" />
+    <text x="62" y="116" fill="#FDE68A" font-size="9" font-weight="700" text-anchor="middle">WARN [45-79]</text>
+    <rect x="12" y="126" width="101" height="18" rx="4" fill="#7F1D1D" />
+    <text x="62" y="138" fill="#FCA5A5" font-size="9" font-weight="700" text-anchor="middle">BLOCK [0-44]</text>
+  </g>
+</svg>
+

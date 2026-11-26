@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AV-SAFE | System Architecture</title>
+<style>
+  :root {
+    --bg: #07111f;
+    --panel: #0c1b2d;
+    --panel2: #10243a;
+    --line: #27435f;
+    --text: #edf6ff;
+    --muted: #a7bfd6;
+    --cyan: #39d5ef;
+    --blue: #5797ff;
+    --purple: #ad8cff;
+    --green: #51dfae;
+    --orange: #ffb86b;
+    --red: #ff7188;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    color: var(--text);
+    background:
+      radial-gradient(circle at 15% 0%, rgba(57,213,239,.12), transparent 30%),
+      radial-gradient(circle at 90% 20%, rgba(87,151,255,.12), transparent 28%),
+      var(--bg);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  .page { max-width: 1500px; margin: auto; padding: 30px 22px 42px; }
+  header { text-align: center; margin-bottom: 28px; }
+  .eyebrow { color: var(--cyan); text-transform: uppercase; letter-spacing: .22em; font-size: 11px; font-weight: 800; }
+  h1 { margin: 9px 0 7px; font-size: clamp(30px, 4vw, 48px); letter-spacing: -.04em; }
+  h1 span { color: var(--cyan); }
+  .subtitle { color: var(--muted); margin: 0; font-size: 14px; }
+  .toolbar { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 20px 0 24px; }
+  button {
+    border: 1px solid #345571; background: #10243a; color: var(--text);
+    padding: 9px 14px; border-radius: 9px; font: inherit; font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: .2s ease;
+  }
+  button:hover, button.active { border-color: var(--cyan); color: var(--cyan); transform: translateY(-1px); }
+  .diagram { position: relative; }
+  .section {
+    position: relative; border: 1px solid var(--line); border-radius: 16px;
+    background: linear-gradient(135deg, rgba(16,36,58,.94), rgba(8,23,39,.96));
+    padding: 18px; margin-bottom: 18px; box-shadow: 0 14px 40px rgba(0,0,0,.16);
+  }
+  .section-heading { display: flex; align-items: center; gap: 11px; margin-bottom: 15px; }
+  .num {
+    display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px;
+    color: var(--cyan); background: rgba(57,213,239,.12); border: 1px solid rgba(57,213,239,.4);
+    font-size: 13px; font-weight: 900;
+  }
+  h2 { font-size: 16px; margin: 0; letter-spacing: -.01em; }
+  .section-sub { margin-left: auto; color: var(--muted); font-size: 11px; }
+  .grid { display: grid; gap: 12px; }
+  .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .grid-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .node {
+    min-width: 0; border: 1px solid #294660; border-radius: 12px; padding: 13px;
+    background: rgba(5,17,30,.72); transition: border-color .2s, transform .2s, opacity .2s;
+  }
+  .node:hover { border-color: var(--cyan); transform: translateY(-2px); }
+  .node h3 { margin: 0 0 7px; font-size: 12px; line-height: 1.35; }
+  .node p { color: var(--muted); font-size: 11px; line-height: 1.55; margin: 0; }
+  .node ul { color: var(--muted); margin: 7px 0 0; padding-left: 15px; font-size: 11px; line-height: 1.65; }
+  .tag { display: inline-block; border-radius: 5px; padding: 3px 6px; font-size: 9px; font-weight: 800; letter-spacing: .04em; margin-bottom: 8px; }
+  .cyan { color: var(--cyan); border-color: rgba(57,213,239,.45); }
+  .blue { color: var(--blue); border-color: rgba(87,151,255,.45); }
+  .purple { color: var(--purple); border-color: rgba(173,140,255,.45); }
+  .green { color: var(--green); border-color: rgba(81,223,174,.45); }
+  .orange { color: var(--orange); border-color: rgba(255,184,107,.45); }
+  .red { color: var(--red); border-color: rgba(255,113,136,.45); }
+  .tag.cyan { background: rgba(57,213,239,.1); }
+  .tag.blue { background: rgba(87,151,255,.1); }
+  .tag.purple { background: rgba(173,140,255,.1); }
+  .tag.green { background: rgba(81,223,174,.1); }
+  .tag.orange { background: rgba(255,184,107,.1); }
+  .tag.red { background: rgba(255,113,136,.1); }
+  .flow {
+    display: flex; align-items: center; justify-content: center; gap: 12px; color: var(--cyan);
+    padding: 5px 0 19px; font-size: 10px; text-transform: uppercase; letter-spacing: .12em; font-weight: 800;
+  }
+  .flow:before, .flow:after { content: ""; height: 1px; width: min(16%, 160px); background: linear-gradient(90deg, transparent, var(--cyan)); }
+  .flow:after { transform: scaleX(-1); }
+  .pipeline { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 10px; }
+  .step { position: relative; padding: 12px 10px; text-align: center; background: #0a1929; border: 1px solid #2b4a65; border-radius: 10px; }
+  .step:not(:last-child):after { content: "›"; position: absolute; right: -10px; top: 50%; transform: translate(50%,-50%); z-index: 2; color: var(--cyan); font-size: 22px; }
+  .step strong { display: block; font-size: 11px; margin-bottom: 4px; }
+  .step small { color: var(--muted); font-size: 10px; line-height: 1.4; display: block; }
+  .architecture-core { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .api-band { text-align: center; border: 1px solid rgba(87,151,255,.5); border-radius: 12px; padding: 13px; margin-bottom: 12px; background: rgba(87,151,255,.08); }
+  .api-band strong { color: var(--blue); font-size: 13px; }
+  .api-band p { color: var(--muted); font-size: 11px; margin: 5px 0 0; }
+  .endpoint-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; justify-content: center; }
+  .endpoint { border: 1px solid #2d4d6b; color: #c5d9ef; padding: 5px 7px; border-radius: 6px; font: 10px ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .infra { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 10px; }
+  .infra .node { text-align: center; }
+  .infra .node h3 { margin-bottom: 4px; }
+  .legend { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; color: var(--muted); font-size: 10px; margin-top: 18px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .footer { text-align: center; color: #718ba4; font-size: 10px; margin-top: 20px; }
+  .dimmed .node { opacity: .18; }
+  .dimmed .node.focus { opacity: 1; border-color: var(--cyan); box-shadow: 0 0 0 1px rgba(57,213,239,.2); }
+  .node[data-layer] { cursor: pointer; }
+  .hint { text-align: center; color: #7896b2; font-size: 10px; margin-top: 8px; }
+  @media (max-width: 950px) {
+    .grid-5, .infra { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .grid-4 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .pipeline { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .step:not(:last-child):after { display: none; }
+  }
+  @media (max-width: 650px) {
+    .page { padding: 22px 12px 30px; }
+    .section { padding: 13px; }
+    .grid-3, .grid-2, .grid-4, .grid-5, .infra, .architecture-core { grid-template-columns: 1fr; }
+    .pipeline { grid-template-columns: 1fr; }
+    .section-sub { display: none; }
+    .flow { padding-bottom: 12px; }
+    .node { padding: 12px; }
+  }
+  @media print {
+    body { background: white; color: #13263a; }
+    .page { max-width: none; padding: 10px; }
+    .section, .node, .step, .api-band { background: white; box-shadow: none; }
+    .node p, .node ul, .step small, .api-band p, .subtitle, .section-sub { color: #40566b; }
+    .toolbar, .hint { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="eyebrow">System design · security architecture</div>
+    <h1><span>AV-SAFE</span> Architecture</h1>
+    <p class="subtitle">AI-powered cyber threat detection &amp; protection platform · Detect. Analyze. Protect.</p>
+    <div class="toolbar">
+      <button id="showAll" class="active">Show full architecture</button>
+      <button data-filter="client">Client apps</button>
+      <button data-filter="detection">Detection engine</button>
+      <button data-filter="intelligence">Threat intelligence &amp; RAG</button>
+      <button data-filter="backend">Backend &amp; data</button>
+      <button onclick="window.print()">Print / Save PDF</button>
+    </div>
+  </header>
+
+  <main class="diagram" id="diagram">
+    <section class="section" data-section="client">
+      <div class="section-heading"><div class="num">01</div><h2>Client Applications</h2><span class="section-sub">User entry points</span></div>
+      <div class="grid grid-3">
+        <article class="node" data-layer="client"><span class="tag cyan">WEB PLATFORM</span><h3>AV-SAFE Web App</h3><p>Next.js · Progressive Web App</p><ul><li>URL / QR / email scanning</li><li>Scan history &amp; SecOps dashboard</li><li>Threat explanations and reports</li></ul></article>
+        <article class="node" data-layer="client"><span class="tag blue">BROWSER</span><h3>Chromium Extension</h3><p>Chrome / Edge compatible</p><ul><li>Navigation monitoring</li><li>Link interception before visit</li><li>Warning banner and safe override</li></ul></article>
+        <article class="node" data-layer="client"><span class="tag purple">MOBILE</span><h3>Android App</h3><p>Kotlin · Mobile client</p><ul><li>Share-to-scan workflow</li><li>QR and URL scanning</li><li>Push alerts and scan history</li></ul></article>
+      </div>
+    </section>
+
+    <div class="flow">HTTPS / REST API · scan request</div>
+
+    <section class="section" data-section="detection">
+      <div class="section-heading"><div class="num">02</div><h2>Local Detection Engine</h2><span class="section-sub">Fast first-pass risk analysis</span></div>
+      <div class="grid grid-4">
+        <article class="node" data-layer="detection"><span class="tag cyan">EXTRACT</span><h3>URL Feature Extraction</h3><p>Parse and normalize the URL; derive lexical, host and path signals.</p><ul><li>24 engineered features</li><li>Length, entropy, token patterns</li><li>Hostname and redirect indicators</li></ul></article>
+        <article class="node" data-layer="detection"><span class="tag blue">CLASSIFY</span><h3>ML Classifier</h3><p>Lightweight model inference using packaged, versioned model weights.</p><ul><li>Phishing / benign prediction</li><li>Probability or confidence score</li><li>Versioned model artifacts</li></ul></article>
+        <article class="node" data-layer="detection"><span class="tag orange">HEURISTICS</span><h3>Security Rules Layer</h3><p>Deterministic checks complement the model output.</p><ul><li>Typosquatting and brand spoofing</li><li>Suspicious TLD / URL patterns</li><li>Entropy and obfuscation signals</li></ul></article>
+        <article class="node" data-layer="detection"><span class="tag green">DECISION</span><h3>Risk Score Fusion</h3><p>Combine model, rules and intelligence signals into a human-readable result.</p><ul><li>Risk level and score</li><li>Explainable reason codes</li><li>Safe / suspicious / malicious</li></ul></article>
+      </div>
+    </section>
+
+    <div class="flow">Enrichment · context retrieval · explainable response</div>
+
+    <section class="section" data-section="intelligence">
+      <div class="section-heading"><div class="num">03</div><h2>Threat Intelligence &amp; RAG</h2><span class="section-sub">External knowledge + internal evidence</span></div>
+      <div class="grid grid-5">
+        <article class="node" data-layer="intelligence"><span class="tag orange">SOURCES</span><h3>Threat Data Sources</h3><p>PhishTank · URLhaus · CERT-In advisories · CVE / NVD · security research · internal KB</p></article>
+        <article class="node" data-layer="intelligence"><span class="tag cyan">INGESTION</span><h3>Fetch &amp; Normalize</h3><p>Scheduled sync, schema normalization, deduplication, validation, chunking and embedding.</p></article>
+        <article class="node" data-layer="intelligence"><span class="tag blue">RECORDS</span><h3>Threat Records</h3><p>MongoDB stores normalized indicators, source metadata, timestamps and scan evidence.</p></article>
+        <article class="node" data-layer="intelligence"><span class="tag purple">VECTOR SEARCH</span><h3>Qdrant Vector DB</h3><p>Embeddings for semantic retrieval across advisories, reports and knowledge documents.</p></article>
+        <article class="node" data-layer="intelligence"><span class="tag green">RAG</span><h3>Context &amp; Assistant</h3><p>Hybrid exact + semantic retrieval, reranking, context assembly and cited LLM explanations.</p></article>
+      </div>
+      <div class="pipeline" style="margin-top:13px">
+        <div class="step"><strong>1 · Collect</strong><small>Threat feeds and curated documents</small></div>
+        <div class="step"><strong>2 · Prepare</strong><small>Clean, validate, deduplicate and chunk</small></div>
+        <div class="step"><strong>3 · Index</strong><small>Store records and vector embeddings</small></div>
+        <div class="step"><strong>4 · Retrieve</strong><small>Exact + semantic search and rerank</small></div>
+        <div class="step"><strong>5 · Explain</strong><small>Grounded answer with evidence citations</small></div>
+      </div>
+    </section>
+
+    <div class="flow">Orchestration · persistence · continuous improvement</div>
+
+    <div class="architecture-core">
+      <section class="section" data-section="backend">
+        <div class="section-heading"><div class="num">04</div><h2>Backend API &amp; Orchestration</h2></div>
+        <div class="api-band"><strong>Next.js App Router · API Gateway</strong><p>Authentication · rate limiting · request validation · SSRF protections · response shaping</p></div>
+        <div class="endpoint-row">
+          <span class="endpoint">POST /api/analyze</span><span class="endpoint">GET /api/history</span>
+          <span class="endpoint">POST /api/complaints</span><span class="endpoint">/api/admin/*</span>
+          <span class="endpoint">POST /api/rag/query</span>
+        </div>
+        <div class="grid grid-2" style="margin-top:13px">
+          <article class="node" data-layer="backend"><h3>Scan Orchestrator</h3><p>Coordinates URL normalization, local model inference, heuristics and threat-intelligence lookups.</p></article>
+          <article class="node" data-layer="backend"><h3>Identity &amp; Access</h3><p>Session validation, role-based access for users and admins, request limits and audit events.</p></article>
+        </div>
+      </section>
+
+      <section class="section" data-section="backend">
+        <div class="section-heading"><div class="num">05</div><h2>Databases &amp; Storage</h2></div>
+        <div class="grid grid-2">
+          <article class="node" data-layer="backend"><span class="tag green">DOCUMENT STORE</span><h3>MongoDB Atlas / Local</h3><p>Users, scan history, threat indicators, complaints, source metadata and audit records.</p></article>
+          <article class="node" data-layer="backend"><span class="tag purple">VECTOR STORE</span><h3>Qdrant</h3><p>Vector embeddings, document chunks and semantic search indexes for RAG.</p></article>
+          <article class="node" data-layer="backend"><span class="tag blue">OPTIONAL</span><h3>Object Storage</h3><p>Optional storage for larger evidence artifacts, exported reports and model files.</p></article>
+          <article class="node" data-layer="backend"><span class="tag cyan">OBSERVABILITY</span><h3>Logs &amp; Metrics</h3><p>Structured logs, latency, error rates, scan outcomes and operational alerts.</p></article>
+        </div>
+      </section>
+    </div>
+
+    <section class="section" data-section="mlops">
+      <div class="section-heading"><div class="num">06</div><h2>ML Retraining &amp; Model Lifecycle</h2><span class="section-sub">Offline pipeline · controlled releases</span></div>
+      <div class="pipeline">
+        <div class="step"><strong>Curated Dataset</strong><small>Verified phishing and benign samples</small></div>
+        <div class="step"><strong>Feature Pipeline</strong><small>Consistent extraction and validation</small></div>
+        <div class="step"><strong>Train &amp; Evaluate</strong><small>Scikit-learn · metrics · holdout tests</small></div>
+        <div class="step"><strong>Registry &amp; Approval</strong><small>Version, compare, approve model</small></div>
+        <div class="step"><strong>Deploy Artifact</strong><small>Package, release and monitor model</small></div>
+      </div>
+      <p style="color:var(--muted);font-size:11px;margin:12px 0 0">Verified incidents and analyst feedback can feed the next curated training cycle. Do not automatically treat unreviewed user reports as ground truth.</p>
+    </section>
+
+    <section class="section">
+      <div class="section-heading"><div class="num">07</div><h2>Cross-Cutting Security &amp; Deployment</h2></div>
+      <div class="infra">
+        <article class="node"><span class="tag red">NETWORK</span><h3>SSRF &amp; URL Safety</h3><p>Block private IP ranges, unsafe schemes and dangerous redirects.</p></article>
+        <article class="node"><span class="tag cyan">TRANSPORT</span><h3>TLS &amp; Validation</h3><p>HTTPS, certificate checks and strict input validation.</p></article>
+        <article class="node"><span class="tag orange">ABUSE CONTROL</span><h3>Rate Limits</h3><p>Quotas, timeouts, payload limits and abuse monitoring.</p></article>
+        <article class="node"><span class="tag blue">OPERATIONS</span><h3>Audit &amp; Alerts</h3><p>Access logs, error monitoring and incident response signals.</p></article>
+        <article class="node"><span class="tag green">DEPLOYMENT</span><h3>Cloud / Local</h3><p>Vercel for web/API or a secured cloud / local server deployment.</p></article>
+      </div>
+    </section>
+  </main>
+  <div class="legend">
+    <span><i class="dot" style="background:var(--cyan)"></i> Client / ingestion</span>
+    <span><i class="dot" style="background:var(--blue)"></i> API / classification</span>
+    <span><i class="dot" style="background:var(--purple)"></i> Vector / RAG</span>
+    <span><i class="dot" style="background:var(--green)"></i> Decision / storage</span>
+    <span><i class="dot" style="background:var(--orange)"></i> Rules / intelligence</span>
+  </div>
+  <p class="hint">Tip: click a filter to highlight one architecture layer. Select “Show full architecture” to reset.</p>
+  <div class="footer">AV-SAFE · Reference architecture · Adapt components to your implemented stack and deployment constraints.</div>
+</div>
+<script>
+  const diagram = document.getElementById('diagram');
+  const buttons = document.querySelectorAll('[data-filter]');
+  const showAll = document.getElementById('showAll');
+
+  function clearFilter() {
+    diagram.classList.remove('dimmed');
+    document.querySelectorAll('.node.focus').forEach(n => n.classList.remove('focus'));
+    buttons.forEach(b => b.classList.remove('active'));
+    showAll.classList.add('active');
+  }
+
+  buttons.forEach(button => {
+    button.addEventListener('click', () => {
+      const layer = button.dataset.filter;
+      diagram.classList.add('dimmed');
+      document.querySelectorAll('.node.focus').forEach(n => n.classList.remove('focus'));
+      document.querySelectorAll(`[data-layer="${layer}"]`).forEach(n => n.classList.add('focus'));
+      buttons.forEach(b => b.classList.toggle('active', b === button));
+      showAll.classList.remove('active');
+    });
+  });
+  showAll.addEventListener('click', clearFilter);
+
+  // Clicking an individual node highlights that component and dims the rest.
+  document.querySelectorAll('.node[data-layer]').forEach(node => {
+    node.addEventListener('click', () => {
+      const layer = node.dataset.layer;
+      diagram.classList.add('dimmed');
+      document.querySelectorAll('.node.focus').forEach(n => n.classList.remove('focus'));
+      node.classList.add('focus');
+      buttons.forEach(b => b.classList.toggle('active', b.dataset.filter === layer));
+      showAll.classList.remove('active');
+    });
+  });
+</script>
+</body>
+</html>
