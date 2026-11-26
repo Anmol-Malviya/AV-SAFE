@@ -1,6 +1,5 @@
 import { Poppins, Inter, JetBrains_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
-import { dark } from "@clerk/themes";
 import "./globals.css";
 import PwaRegister from "./PwaRegister";
 
