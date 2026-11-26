@@ -7,8 +7,8 @@ import numpy as np
 
 from ml.utils.logger import setup_logger
 from ml.utils.config_loader import get_training_config
-from ml.inference.features.url_feature_extractor import FEATURE_NAMES_24
-from ml.inference.evaluation.evaluate import ModelEvaluator
+from ml.features.url_feature_extractor import FEATURE_NAMES_24
+from ml.evaluation.evaluate import ModelEvaluator
 
 logger = setup_logger("EvaluatePipeline")
 

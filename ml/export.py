@@ -6,7 +6,7 @@ from typing import Dict, Any
 
 from ml.utils.logger import setup_logger
 from ml.utils.config_loader import get_training_config
-from ml.inference.features.url_feature_extractor import FEATURE_NAMES_24
+from ml.features.url_feature_extractor import FEATURE_NAMES_24
 from ml.inference.export.export_json import JSONModelExporter
 from ml.inference.export.model_metadata import ModelMetadataGenerator
 

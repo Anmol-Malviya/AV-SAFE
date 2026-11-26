@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
-from ml.inference.features.url_feature_extractor import URLFeatureExtractor, FEATURE_NAMES_24
-from ml.inference.features.feature_validator import FeatureValidator
+from ml.features.url_feature_extractor import URLFeatureExtractor, FEATURE_NAMES_24
+from ml.features.feature_validator import FeatureValidator
 
 def test_feature_extractor_dimension_and_names():
     url = "https://secure-login.bank-update.xyz/account?ref=urgent"

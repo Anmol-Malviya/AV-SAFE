@@ -14,14 +14,14 @@ from ml.datasets.pipeline.dataset_loader import load_dataset
 from ml.datasets.pipeline.dataset_validator import DatasetValidator
 from ml.datasets.pipeline.preprocessing import DataPreprocessor
 from ml.datasets.pipeline.data_splitter import DataSplitter
-from ml.inference.features.url_feature_extractor import URLFeatureExtractor, FEATURE_NAMES_24
-from ml.inference.features.feature_validator import FeatureValidator
+from ml.features.url_feature_extractor import URLFeatureExtractor, FEATURE_NAMES_24
+from ml.features.feature_validator import FeatureValidator
 
 from ml.training.train_sgd import SGDTrainer
 from ml.training.train_random_forest import RandomForestTrainer
 from ml.training.train_xgboost import XGBoostTrainer
 from ml.training.train_lightgbm import LightGBMTrainer
-from ml.inference.evaluation.evaluate import ModelEvaluator
+from ml.evaluation.evaluate import ModelEvaluator
 from ml.training.model_selector import ModelSelector
 
 logger = setup_logger("TrainPipeline")

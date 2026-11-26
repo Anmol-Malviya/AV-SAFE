@@ -5,7 +5,7 @@ import numpy as np
 from sklearn.linear_model import SGDClassifier
 from sklearn.preprocessing import StandardScaler
 from ml.inference.export.export_json import JSONModelExporter
-from ml.inference.features.url_feature_extractor import FEATURE_NAMES_24
+from ml.features.url_feature_extractor import FEATURE_NAMES_24
 
 def test_json_export_schema(tmp_path):
     X = np.random.randn(50, 24)

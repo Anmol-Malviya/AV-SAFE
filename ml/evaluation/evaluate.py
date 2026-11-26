@@ -4,10 +4,10 @@ import json
 import numpy as np
 import pandas as pd
 from typing import Dict, Any, List
-from ml.inference.evaluation.metrics import MetricCalculator
-from ml.inference.evaluation.confusion_matrix import ConfusionMatrixPlotter
-from ml.inference.evaluation.roc_analysis import ROCAnalyzer
-from ml.inference.evaluation.error_analysis import ErrorAnalyzer
+from ml.evaluation.metrics import MetricCalculator
+from ml.evaluation.confusion_matrix import ConfusionMatrixPlotter
+from ml.evaluation.roc_analysis import ROCAnalyzer
+from ml.evaluation.error_analysis import ErrorAnalyzer
 from ml.utils.logger import setup_logger
 
 logger = setup_logger("Evaluator")

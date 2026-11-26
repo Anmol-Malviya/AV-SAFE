@@ -1,7 +1,7 @@
 from typing import List, Union
 import numpy as np
 import pandas as pd
-from ml.inference.features.url_feature_extractor import FEATURE_NAMES_24
+from ml.features.url_feature_extractor import FEATURE_NAMES_24
 from ml.utils.logger import setup_logger
 
 logger = setup_logger("FeatureValidator")

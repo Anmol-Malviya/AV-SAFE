@@ -3,7 +3,7 @@ import json
 import shutil
 import numpy as np
 from typing import Dict, Any, List
-from ml.inference.features.url_feature_extractor import FEATURE_NAMES_24
+from ml.features.url_feature_extractor import FEATURE_NAMES_24
 from ml.utils.logger import setup_logger
 
 logger = setup_logger("ExportJSON")

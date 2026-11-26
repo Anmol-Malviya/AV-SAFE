@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from ml.inference.evaluation.metrics import MetricCalculator
+from ml.evaluation.metrics import MetricCalculator
 
 def test_metric_calculator():
     y_true = np.array([0, 0, 1, 1, 1])
