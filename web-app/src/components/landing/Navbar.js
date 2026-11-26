@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Menu, X } from "lucide-react";
+import { ArrowRight, Menu, X, User } from "lucide-react";
+import { Show, UserButton } from "@clerk/nextjs";
 import { buttonHover, buttonTap } from "@/lib/animations";
 
 export default function Navbar() {
@@ -77,12 +78,24 @@ export default function Navbar() {
 
         {/* Desktop Action CTA */}
         <div className="hidden md:flex items-center gap-3">
+          <Show when="signed-out">
+            <Link
+              href="/sign-in"
+              className="inline-flex items-center gap-1 text-xs font-medium text-[#64748B] hover:text-[#101D36] transition-colors px-3 py-2"
+            >
+              <User className="h-3.5 w-3.5" />
+              Sign In
+            </Link>
+          </Show>
+          <Show when="signed-in">
+            <UserButton />
+          </Show>
           <motion.div whileHover={buttonHover} whileTap={buttonTap}>
             <Link
               href="/system"
               className="inline-flex items-center gap-1.5 rounded-full bg-[#0B1933] px-5 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-[#101D36] transition-colors"
             >
-              <span>Get Started</span>
+              <span>Dashboard</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </motion.div>

@@ -17,7 +17,8 @@ const ComplaintSchema = new mongoose.Schema(
       type: String,
       enum: ['AUTHENTICATED', 'GUEST'],
       default: 'GUEST',
-      required: true
+      required: true,
+      index: true
     },
     source: {
       type: String,
@@ -107,9 +108,9 @@ const ComplaintSchema = new mongoose.Schema(
   }
 );
 
-// Compound index for efficient dashboard querying
+// Compound indexes
 ComplaintSchema.index({ status: 1, createdAt: -1 });
 ComplaintSchema.index({ hostname: 1, createdAt: -1 });
+ComplaintSchema.index({ userId: 1, createdAt: -1 });
 
 export default mongoose.models.Complaint || mongoose.model('Complaint', ComplaintSchema);
-

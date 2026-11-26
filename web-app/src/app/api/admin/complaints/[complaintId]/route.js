@@ -1,19 +1,23 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Complaint from '@/lib/models/Complaint';
-import { verifyAdminAuth } from '@/lib/auth/requireAdmin';
-import { ALLOWED_STATUSES } from '@/lib/validation/complaint';
+import { requireRole } from '@/lib/auth/authMiddleware';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request, { params }) {
   try {
-    const auth = verifyAdminAuth(request);
+    const auth = await requireRole(request, 'ANALYST');
     if (!auth.authorized) {
-      return NextResponse.json({ error: auth.error }, { status: auth.status });
+      return NextResponse.json(
+        { error: auth.error || 'Analyst or Administrative privileges required' },
+        { status: auth.status || 403 }
+      );
     }
 
     const { complaintId } = await params;
     if (!complaintId) {
-      return NextResponse.json({ error: 'Missing complaintId' }, { status: 400 });
+      return NextResponse.json({ error: 'Complaint ID is required' }, { status: 400 });
     }
 
     await dbConnect();
@@ -24,55 +28,55 @@ export async function GET(request, { params }) {
 
     return NextResponse.json({ success: true, data: item });
   } catch (err) {
-    console.error('Error fetching complaint detail:', err);
+    console.error('Error fetching admin complaint details:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
 export async function PATCH(request, { params }) {
   try {
-    const auth = verifyAdminAuth(request);
+    const auth = await requireRole(request, 'ANALYST');
     if (!auth.authorized) {
-      return NextResponse.json({ error: auth.error }, { status: auth.status });
+      return NextResponse.json(
+        { error: auth.error || 'Analyst or Administrative privileges required' },
+        { status: auth.status || 403 }
+      );
     }
 
     const { complaintId } = await params;
     if (!complaintId) {
-      return NextResponse.json({ error: 'Missing complaintId' }, { status: 400 });
+      return NextResponse.json({ error: 'Complaint ID is required' }, { status: 400 });
     }
 
     let body;
     try {
       body = await request.json();
     } catch {
-      return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid JSON payload' }, { status: 400 });
     }
 
     const { status, adminNotes } = body;
-    const updateFields = {};
+    const updateData = {};
 
-    if (status !== undefined) {
-      if (!ALLOWED_STATUSES.includes(status)) {
-        return NextResponse.json({ error: `Invalid status. Allowed: ${ALLOWED_STATUSES.join(', ')}` }, { status: 400 });
+    if (status) {
+      if (!['REGISTERED', 'UNDER_REVIEW', 'RESOLVED', 'REJECTED'].includes(status)) {
+        return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
       }
-      updateFields.status = status;
+      updateData.status = status;
     }
 
-    if (adminNotes !== undefined) {
-      if (typeof adminNotes !== 'string') {
-        return NextResponse.json({ error: 'adminNotes must be a string' }, { status: 400 });
-      }
-      updateFields.adminNotes = adminNotes.trim().slice(0, 3000);
+    if (typeof adminNotes === 'string') {
+      updateData.adminNotes = adminNotes;
     }
 
-    if (Object.keys(updateFields).length === 0) {
+    if (Object.keys(updateData).length === 0) {
       return NextResponse.json({ error: 'No update fields provided' }, { status: 400 });
     }
 
     await dbConnect();
     const updated = await Complaint.findOneAndUpdate(
       { complaintId },
-      { $set: updateFields },
+      { $set: updateData },
       { new: true }
     ).lean();
 
@@ -80,10 +84,9 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ error: 'Complaint not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, data: updated, message: 'Updated successfully' });
+    return NextResponse.json({ success: true, data: updated });
   } catch (err) {
-    console.error('Error updating complaint detail:', err);
+    console.error('Error updating admin complaint:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-

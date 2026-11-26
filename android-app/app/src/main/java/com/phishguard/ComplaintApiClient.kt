@@ -13,8 +13,6 @@ import java.util.UUID
 
 object ComplaintApiClient {
 
-    // Production backend — Vercel deployment.
-    // Switch to "http://10.0.2.2:3000" for emulator or "http://192.168.0.136:3000" for LAN USB debugging.
     var baseUrl: String = "https://av-safe.vercel.app"
 
     data class ComplaintRequest(
@@ -41,6 +39,7 @@ object ComplaintApiClient {
 
     /**
      * Submits a confirmed complaint report asynchronously on a background worker thread.
+     * Automatically includes Clerk Authorization token if signed in.
      */
     fun submitComplaint(
         context: Context,
@@ -56,6 +55,13 @@ object ComplaintApiClient {
                 connection.requestMethod = "POST"
                 connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8")
                 connection.setRequestProperty("Accept", "application/json")
+
+                // If signed in, pass Clerk session token
+                val token = ClerkAuthManager.getSessionToken()
+                if (!token.isNullOrBlank()) {
+                    connection.setRequestProperty("Authorization", "Bearer $token")
+                }
+
                 connection.connectTimeout = 8000
                 connection.readTimeout = 8000
                 connection.doOutput = true
@@ -86,46 +92,24 @@ object ComplaintApiClient {
                 os.close()
 
                 val statusCode = connection.responseCode
-                val stream = if (statusCode in 200..299) {
-                    connection.inputStream
-                } else {
-                    connection.errorStream ?: connection.inputStream
-                }
-
+                val stream = if (statusCode in 200..299) connection.inputStream else connection.errorStream
                 val reader = BufferedReader(InputStreamReader(stream, StandardCharsets.UTF_8))
-                val sb = StringBuilder()
-                var line: String?
-                while (reader.readLine().also { line = it } != null) {
-                    sb.append(line)
-                }
-                reader.close()
+                val responseStr = reader.use { it.readText() }
 
-                val responseJson = try {
-                    JSONObject(sb.toString())
-                } catch (e: Exception) {
-                    JSONObject()
-                }
-
+                val json = JSONObject(responseStr)
                 if (statusCode in 200..299) {
-                    val complaintId = responseJson.optString("complaintId", "PG-RECORDED")
-                    val message = responseJson.optString("message", "Submitted successfully.")
-                    val result = ComplaintResponse(
-                        success = true,
-                        complaintId = complaintId,
-                        message = message,
-                        error = null
-                    )
-                    callback.onSuccess(result)
+                    val complaintId = json.optString("complaintId", null)
+                    val message = json.optString("message", "Complaint registered successfully.")
+                    callback.onSuccess(ComplaintResponse(true, complaintId, message, null))
                 } else {
-                    val errMsg = responseJson.optString("error", "HTTP error $statusCode")
-                    callback.onError(errMsg)
+                    val err = json.optString("error", "Failed to submit complaint (HTTP $statusCode)")
+                    callback.onError(err)
                 }
             } catch (e: Exception) {
-                callback.onError(e.message ?: "Network error connecting to PhishGuard SecOps")
+                callback.onError(e.message ?: "Failed to connect to complaint service")
             } finally {
                 connection?.disconnect()
             }
         }.start()
     }
 }
-

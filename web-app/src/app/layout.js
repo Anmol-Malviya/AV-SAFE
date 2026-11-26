@@ -1,4 +1,6 @@
 import { Poppins, Inter, JetBrains_Mono } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
 import "./globals.css";
 import PwaRegister from "./PwaRegister";
 
@@ -41,7 +43,6 @@ export default function RootLayout({ children }) {
       className={`${poppins.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <head>
-        {/* Kill stale service workers immediately to prevent reload loops */}
         <script dangerouslySetInnerHTML={{ __html: `
           if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(function(registrations) {
@@ -57,9 +58,28 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className="min-h-full flex flex-col">
-        <PwaRegister />
-        {children}
+      <body className="min-h-full flex flex-col bg-slate-950 text-slate-100">
+        <ClerkProvider
+          appearance={{
+            baseTheme: dark,
+            variables: {
+              colorPrimary: "#3b82f6",
+              colorBackground: "#0b0f19",
+              colorInputBackground: "#111827",
+              colorInputText: "#f8fafc",
+              colorText: "#f8fafc",
+              colorTextSecondary: "#94a3b8",
+              borderRadius: "0.5rem",
+            },
+            elements: {
+              card: "border border-slate-800 shadow-2xl bg-slate-900/90 backdrop-blur-xl",
+              navbar: "hidden",
+            }
+          }}
+        >
+          <PwaRegister />
+          {children}
+        </ClerkProvider>
       </body>
     </html>
   );

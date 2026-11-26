@@ -11,6 +11,8 @@
     "test": "node --test testing/**/*.js"
   },
   "dependencies": {
+    "@clerk/backend": "^3.33.1",
+    "@clerk/nextjs": "^7.10.10",
     "framer-motion": "^12.42.2",
     "html5-qrcode": "^2.3.8",
     "lucide-react": "^1.23.0",

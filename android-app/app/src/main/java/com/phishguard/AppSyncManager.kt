@@ -4,8 +4,6 @@ import android.content.Context
 import android.util.Log
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
@@ -26,7 +24,7 @@ object AppSyncManager {
         val detectionReasons: List<String> = emptyList()
     )
 
-    private fun postToEndpoint(targetBase: String, scan: ScanRecord): Boolean {
+    private fun postToEndpoint(targetBase: String, scan: ScanRecord, authToken: String? = null): Boolean {
         var connection: HttpURLConnection? = null
         return try {
             val endpoint = "$targetBase/api/history"
@@ -35,6 +33,12 @@ object AppSyncManager {
             connection.requestMethod = "POST"
             connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8")
             connection.setRequestProperty("Accept", "application/json")
+            
+            // Attach Clerk Authorization header if session exists
+            if (!authToken.isNullOrBlank()) {
+                connection.setRequestProperty("Authorization", "Bearer $authToken")
+            }
+
             connection.connectTimeout = 5000
             connection.readTimeout = 5000
             connection.doOutput = true
@@ -69,17 +73,18 @@ object AppSyncManager {
     /**
      * Sends the scan result directly to the centralized Web Dashboard (/api/history)
      * asynchronously in background so mobile performance is never affected.
-     * Tries primary production cloud server first, with graceful local fallback.
+     * Attaches active Clerk session token if user is signed in.
      */
     fun syncScanToDashboard(
         scan: ScanRecord,
         onComplete: ((Boolean) -> Unit)? = null
     ) {
         Thread {
-            var success = postToEndpoint(baseUrl, scan)
+            val token = ClerkAuthManager.getSessionToken()
+            var success = postToEndpoint(baseUrl, scan, token)
             if (!success && baseUrl != FALLBACK_URL) {
                 // Try fallback endpoint
-                success = postToEndpoint(FALLBACK_URL, scan)
+                success = postToEndpoint(FALLBACK_URL, scan, token)
             }
 
             if (success) {

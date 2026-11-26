@@ -18,6 +18,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Initialize Clerk Authentication Manager
+        ClerkAuthManager.init(this)
+
         val intentData: Uri? = intent.data
         val action: String? = intent.action
 

@@ -4,15 +4,14 @@ import Complaint from '@/lib/models/Complaint';
 import UrlScan from '@/lib/models/UrlScan';
 import { validateComplaintInput } from '@/lib/validation/complaint';
 import { checkRateLimit } from '@/lib/security/rateLimit';
+import { requireAuth, requireRole } from '@/lib/auth/authMiddleware';
 
-// Generates collision-resistant human readable ID e.g. "PG-2026-000123"
 function generateComplaintId() {
   const year = new Date().getFullYear();
   const randomPart = Math.floor(100000 + Math.random() * 900000);
   return `PG-${year}-${randomPart}`;
 }
 
-// Client IP extractor from headers
 function getClientIp(request) {
   const forwarded = request.headers.get('x-forwarded-for');
   if (forwarded) {
@@ -34,6 +33,9 @@ export async function POST(request) {
       );
     }
 
+    // Authenticate request (authenticated user or guest)
+    const auth = await requireAuth(request, { optional: true });
+
     let body;
     try {
       body = await request.json();
@@ -48,6 +50,10 @@ export async function POST(request) {
 
     await dbConnect();
 
+    // Derive ownership strictly on server-side: never trust frontend JSON for userId
+    const reporterType = auth.authenticated && auth.userId ? 'AUTHENTICATED' : 'GUEST';
+    const verifiedUserId = auth.authenticated && auth.userId ? auth.userId : null;
+
     // Idempotency check: If an idempotency key was provided, prevent duplicate creation
     if (validation.data.idempotencyKey) {
       const existing = await Complaint.findOne({ idempotencyKey: validation.data.idempotencyKey }).lean();
@@ -61,7 +67,7 @@ export async function POST(request) {
       }
     }
 
-    // Also deduplicate if same IP submits the exact same URL within 2 minutes
+    // Deduplicate if same IP submits the exact same URL within 2 minutes
     const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
     const recentDuplicate = await Complaint.findOne({
       clientIp,
@@ -79,7 +85,6 @@ export async function POST(request) {
     }
 
     let complaintId = generateComplaintId();
-    // Ensure uniqueness
     let attempts = 0;
     while (attempts < 5) {
       const collision = await Complaint.findOne({ complaintId }).lean();
@@ -91,14 +96,16 @@ export async function POST(request) {
     const newRecord = await Complaint.create({
       ...validation.data,
       complaintId,
-      clientIp
+      clientIp,
+      reporterType,
+      userId: verifiedUserId
     });
 
-    // Mirror complaint into UrlScan atomically so it reflects across scan history & overview
+    // Mirror complaint into UrlScan atomically with ownership
     try {
       const targetUrl = validation.data.normalizedUrl || validation.data.originalUrl;
       await UrlScan.findOneAndUpdate(
-        { url: targetUrl },
+        { url: targetUrl, userId: verifiedUserId },
         {
           $set: {
             url: targetUrl,
@@ -107,7 +114,9 @@ export async function POST(request) {
             source: validation.data.source || 'EXTENSION',
             detectionReasons: validation.data.detectionReasons || [],
             date: new Date().toLocaleDateString(),
-            createdAt: new Date()
+            createdAt: new Date(),
+            userId: verifiedUserId,
+            ownerUserId: verifiedUserId
           }
         },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -138,22 +147,39 @@ export async function GET(request) {
 
     await dbConnect();
 
-    // Public lookup for status of a specific complaint by complaintId only
+    // 1. Public lookup for status of a specific complaint by complaintId only
+    // Sanitized: strips clientIp, adminNotes, internal identifiers
     if (complaintId) {
-      const complaint = await Complaint.findOne({ complaintId }).select('-adminNotes -clientIp').lean();
+      const complaint = await Complaint.findOne({ complaintId })
+        .select('-adminNotes -clientIp -userId')
+        .lean();
       if (!complaint) {
         return NextResponse.json({ error: 'Complaint not found' }, { status: 404 });
       }
       return NextResponse.json({ success: true, data: complaint });
     }
 
-    // Guest reporting: collection list without admin auth is prohibited
-    return NextResponse.json(
-      {
-        error: 'Unauthorized. Use /api/admin/complaints with administrative credentials to query reports.'
-      },
-      { status: 401 }
-    );
+    // 2. Querying complaint lists requires authentication
+    const auth = await requireAuth(request, { optional: false });
+    if (!auth.authenticated) {
+      return NextResponse.json(
+        { error: 'Unauthorized. Authenticated session required to view complaints.' },
+        { status: 401 }
+      );
+    }
+
+    // Normal USER: can retrieve personal submitted complaints
+    // ANALYST / ADMIN / SUPER_ADMIN: can view all complaints via /api/admin/complaints
+    const userComplaints = await Complaint.find({ userId: auth.userId })
+      .select('-adminNotes -clientIp')
+      .sort({ createdAt: -1 })
+      .limit(50)
+      .lean();
+
+    return NextResponse.json({
+      success: true,
+      data: userComplaints
+    });
   } catch (err) {
     console.error('Error querying complaint:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

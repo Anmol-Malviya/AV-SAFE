@@ -3,6 +3,8 @@
  * Manages communication between the AV-SAFE Chrome Extension and the project/dashboard backend endpoints.
  */
 
+import { getAuthToken } from './clerkAuth.js';
+
 export const DEFAULT_SERVER_URL = 'http://localhost:3000';
 
 /**
@@ -54,9 +56,15 @@ export async function testServerConnection(customUrl) {
   const timeoutId = setTimeout(() => controller.abort(), 3000);
 
   try {
+    const token = await getAuthToken();
+    const headers = { 'Accept': 'application/json' };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const res = await fetch(`${base}/api/history`, {
       method: 'GET',
-      headers: { 'Accept': 'application/json' },
+      headers,
       signal: controller.signal
     });
     clearTimeout(timeoutId);
@@ -101,9 +109,15 @@ export async function logScanTelemetry(data, customUrl) {
   };
 
   try {
+    const token = await getAuthToken();
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const res = await fetch(`${base}/api/history`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify(payload),
       signal: controller.signal
     });
@@ -189,9 +203,15 @@ export async function submitIncidentComplaint(reportData, customUrl) {
   };
 
   try {
+    const token = await getAuthToken();
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const res = await fetch(`${base}/api/complaints`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify(payload),
       signal: controller.signal
     });
@@ -228,9 +248,15 @@ export async function fetchScanHistory(customUrl) {
   const timeoutId = setTimeout(() => controller.abort(), 3500);
 
   try {
+    const token = await getAuthToken();
+    const headers = { 'Accept': 'application/json' };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const res = await fetch(`${base}/api/history`, {
       method: 'GET',
-      headers: { 'Accept': 'application/json' },
+      headers,
       signal: controller.signal
     });
     clearTimeout(timeoutId);

@@ -2,19 +2,40 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import UrlScan from '@/lib/models/UrlScan';
 import { validateAndNormalizeUrl } from '@/lib/security/urlValidation';
-import { verifyAdminAuth } from '@/lib/auth/requireAdmin';
+import { requireAuth, requireAdmin } from '@/lib/auth/authMiddleware';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request) {
   try {
+    // 1. Authenticate the request
+    const auth = await requireAuth(request, { optional: true });
+
     await dbConnect();
-    const history = await UrlScan.find({})
+
+    let query = {};
+    if (auth.authenticated && auth.userId) {
+      // Authenticated user: read personal scan history isolated to their userId
+      // Analysts / Admins can inspect all by passing ?scope=all if permitted
+      const { searchParams } = new URL(request.url);
+      const scope = searchParams.get('scope');
+
+      if (scope === 'all' && (auth.role === 'ADMIN' || auth.role === 'SUPER_ADMIN' || auth.role === 'ANALYST')) {
+        query = {};
+      } else {
+        query = { userId: auth.userId };
+      }
+    } else {
+      // Anonymous / Guest caller: return only anonymous guest records (or empty) to prevent data leak
+      query = { userId: null };
+    }
+
+    const history = await UrlScan.find(query)
       .sort({ createdAt: -1 })
       .limit(100)
       .lean();
 
-    // Format response to match expected UI structure with real timestamps
+    // Format response to match expected UI structure
     const formatted = history.map((item) => ({
       _id: item._id?.toString(),
       url: item.url,
@@ -23,7 +44,8 @@ export async function GET() {
       source: item.source || "Web Dashboard",
       date: item.date || (item.createdAt ? new Date(item.createdAt).toLocaleDateString() : new Date().toLocaleDateString()),
       createdAt: item.createdAt,
-      detectionReasons: item.detectionReasons || []
+      detectionReasons: item.detectionReasons || [],
+      userId: item.userId || null
     }));
 
     return NextResponse.json(formatted);
@@ -35,6 +57,9 @@ export async function GET() {
 
 export async function POST(request) {
   try {
+    // 1. Authenticate request (authenticated or supported guest telemetry)
+    const auth = await requireAuth(request, { optional: true });
+
     let body;
     try {
       body = await request.json();
@@ -67,8 +92,17 @@ export async function POST(request) {
 
     await dbConnect();
 
+    // Isolated Upsert: User-owned scans are isolated per (userId, url)
+    // Never trust frontend-supplied userId; extract strictly from verified auth token
+    const effectiveUserId = auth.authenticated && auth.userId ? auth.userId : null;
+
+    const filter = {
+      url: validUrl.originalUrl,
+      userId: effectiveUserId
+    };
+
     const newScan = await UrlScan.findOneAndUpdate(
-      { url: validUrl.originalUrl },
+      filter,
       {
         $set: {
           url: validUrl.originalUrl,
@@ -77,29 +111,44 @@ export async function POST(request) {
           source: validSource,
           detectionReasons: Array.isArray(detectionReasons) ? detectionReasons : [],
           date: new Date().toLocaleDateString(),
-          createdAt: new Date()
+          createdAt: new Date(),
+          userId: effectiveUserId,
+          ownerUserId: effectiveUserId
         }
       },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
 
-    return NextResponse.json({ success: true, data: newScan });
+    return NextResponse.json({
+      _id: newScan._id?.toString(),
+      url: newScan.url,
+      rating: newScan.rating,
+      score: newScan.score,
+      source: newScan.source,
+      date: newScan.date,
+      detectionReasons: newScan.detectionReasons,
+      userId: newScan.userId
+    }, { status: 201 });
   } catch (err) {
-    console.error('Failed to save scan result to database:', err);
-    return NextResponse.json({ error: 'Failed to save scan result' }, { status: 500 });
+    console.error('Failed to save scan record to database:', err);
+    return NextResponse.json({ error: 'Failed to record scan' }, { status: 500 });
   }
 }
 
 export async function DELETE(request) {
   try {
-    const auth = verifyAdminAuth(request);
-    if (!auth.authorized) {
-      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    // Admin only operation
+    const adminCheck = await requireAdmin(request);
+    if (!adminCheck.authorized) {
+      return NextResponse.json(
+        { error: adminCheck.error || 'Administrative privileges required to purge scan records' },
+        { status: adminCheck.status || 403 }
+      );
     }
 
     await dbConnect();
     await UrlScan.deleteMany({});
-    return NextResponse.json({ success: true, message: 'Scan history cleared successfully from database' });
+    return NextResponse.json({ message: 'Scan history purged successfully by administrator' });
   } catch (err) {
     console.error('Failed to clear scan history:', err);
     return NextResponse.json({ error: 'Failed to clear scan history' }, { status: 500 });

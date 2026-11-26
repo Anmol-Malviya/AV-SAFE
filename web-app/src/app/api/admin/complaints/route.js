@@ -1,103 +1,72 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Complaint from '@/lib/models/Complaint';
-import { verifyAdminAuth } from '@/lib/auth/requireAdmin';
-import { ALLOWED_STATUSES } from '@/lib/validation/complaint';
+import { requireRole } from '@/lib/auth/authMiddleware';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request) {
   try {
-    const auth = verifyAdminAuth(request);
+    const auth = await requireRole(request, 'ANALYST');
     if (!auth.authorized) {
-      return NextResponse.json({ error: auth.error }, { status: auth.status });
+      return NextResponse.json(
+        { error: auth.error || 'Analyst or Administrative privileges required' },
+        { status: auth.status || 403 }
+      );
     }
 
     const { searchParams } = new URL(request.url);
-    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
-    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '20', 10)));
     const status = searchParams.get('status');
-    const category = searchParams.get('category');
-    const verdict = searchParams.get('verdict');
-    const search = searchParams.get('search');
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '50', 10)));
+    const skip = (page - 1) * limit;
 
     await dbConnect();
 
     const query = {};
-
-    if (status && status !== 'ALL' && ALLOWED_STATUSES.includes(status)) {
+    if (status && ['REGISTERED', 'UNDER_REVIEW', 'RESOLVED', 'REJECTED'].includes(status)) {
       query.status = status;
     }
 
-    if (category && category !== 'ALL') {
-      query.category = category;
-    }
-
-    if (verdict && verdict !== 'ALL') {
-      query.detectionVerdict = verdict;
-    }
-
-    if (search && search.trim()) {
-      const cleanSearch = search.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-      query.$or = [
-        { complaintId: { $regex: cleanSearch, $options: 'i' } },
-        { hostname: { $regex: cleanSearch, $options: 'i' } },
-        { originalUrl: { $regex: cleanSearch, $options: 'i' } }
-      ];
-    }
-
-    const total = await Complaint.countDocuments(query);
-    const complaints = await Complaint.find(query)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .lean();
-
-    // Summary stats
-    const [totalReports, newlyRegistered, underReview, resolved, dangerous] = await Promise.all([
-      Complaint.countDocuments({}),
-      Complaint.countDocuments({ status: 'REGISTERED' }),
-      Complaint.countDocuments({ status: 'UNDER_REVIEW' }),
-      Complaint.countDocuments({ status: 'RESOLVED' }),
-      Complaint.countDocuments({ detectionVerdict: { $in: ['DANGEROUS', 'SUSPICIOUS'] } })
+    const [complaints, total] = await Promise.all([
+      Complaint.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      Complaint.countDocuments(query)
     ]);
 
     return NextResponse.json({
-      success: true,
-      data: complaints,
+      complaints,
       pagination: {
         page,
         limit,
         total,
         totalPages: Math.ceil(total / limit)
-      },
-      stats: {
-        total: totalReports,
-        registered: newlyRegistered,
-        underReview,
-        resolved,
-        dangerous
       }
     });
   } catch (err) {
-    console.error('Admin API GET complaints error:', err);
-    return NextResponse.json({ 
-      error: err?.message || 'Internal server error',
-      details: process.env.NODE_ENV !== 'production' ? String(err?.stack || err) : undefined
-    }, { status: 500 });
+    console.error('Error querying complaints in admin endpoint:', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
 export async function PATCH(request) {
   try {
-    const auth = verifyAdminAuth(request);
+    const auth = await requireRole(request, 'ANALYST');
     if (!auth.authorized) {
-      return NextResponse.json({ error: auth.error }, { status: auth.status });
+      return NextResponse.json(
+        { error: auth.error || 'Analyst or Administrative privileges required' },
+        { status: auth.status || 403 }
+      );
     }
 
     let body;
     try {
       body = await request.json();
     } catch {
-      return NextResponse.json({ error: 'Invalid JSON request body' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid JSON payload' }, { status: 400 });
     }
 
     const { complaintId, status, adminNotes } = body;
@@ -105,31 +74,20 @@ export async function PATCH(request) {
       return NextResponse.json({ error: 'complaintId is required' }, { status: 400 });
     }
 
-    const updateFields = {};
-
-    if (status !== undefined) {
-      if (!ALLOWED_STATUSES.includes(status)) {
-        return NextResponse.json({ error: `Invalid status. Allowed: ${ALLOWED_STATUSES.join(', ')}` }, { status: 400 });
-      }
-      updateFields.status = status;
-    }
-
-    if (adminNotes !== undefined) {
-      if (typeof adminNotes !== 'string') {
-        return NextResponse.json({ error: 'adminNotes must be a string' }, { status: 400 });
-      }
-      updateFields.adminNotes = adminNotes.trim().slice(0, 3000);
-    }
-
-    if (Object.keys(updateFields).length === 0) {
-      return NextResponse.json({ error: 'No update fields provided' }, { status: 400 });
+    if (!status || !['REGISTERED', 'UNDER_REVIEW', 'RESOLVED', 'REJECTED'].includes(status)) {
+      return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
     }
 
     await dbConnect();
 
+    const updateData = { status };
+    if (typeof adminNotes === 'string') {
+      updateData.adminNotes = adminNotes;
+    }
+
     const updated = await Complaint.findOneAndUpdate(
       { complaintId },
-      { $set: updateFields },
+      { $set: updateData },
       { new: true }
     ).lean();
 
@@ -139,12 +97,10 @@ export async function PATCH(request) {
 
     return NextResponse.json({
       success: true,
-      data: updated,
-      message: 'Complaint updated successfully.'
+      data: updated
     });
   } catch (err) {
-    console.error('Admin API PATCH complaints error:', err);
+    console.error('Error updating complaint status in admin endpoint:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import UrlScan from '@/lib/models/UrlScan';
 import Complaint from '@/lib/models/Complaint';
+import { requireRole } from '@/lib/auth/authMiddleware';
 
 export const dynamic = 'force-dynamic';
 
@@ -73,8 +74,17 @@ function resolveGeoOrigin(ip, hostname) {
   return 'United States';
 }
 
-export async function GET() {
+export async function GET(request) {
   try {
+    // Analytics is restricted to ANALYST, ADMIN, or SUPER_ADMIN
+    const roleCheck = await requireRole(request, 'ANALYST');
+    if (!roleCheck.authorized) {
+      return NextResponse.json(
+        { error: roleCheck.error || 'Access denied. Analyst or Administrative privileges required for telemetry analytics.' },
+        { status: roleCheck.status || 403 }
+      );
+    }
+
     await dbConnect();
 
     const [scans, complaints] = await Promise.all([
@@ -92,11 +102,9 @@ export async function GET() {
           url: s.url,
           rating: s.rating,
           score: s.score,
-          source: s.source || 'ANDROID_BROWSER',
-          createdAt: s.createdAt ? new Date(s.createdAt) : new Date(),
-          reasons: s.detectionReasons || [],
-          clientIp: null,
-          hostname: ''
+          createdAt: s.createdAt,
+          source: s.source || 'Web Dashboard',
+          reasons: s.detectionReasons || []
         });
       }
     });
@@ -105,152 +113,121 @@ export async function GET() {
       const key = (c.normalizedUrl || c.originalUrl || '').toLowerCase();
       if (key && !combinedMap.has(key)) {
         combinedMap.set(key, {
-          url: c.normalizedUrl || c.originalUrl,
-          rating: c.detectionVerdict === 'DANGEROUS' ? 'DANGEROUS' : (c.detectionVerdict === 'SAFE' ? 'SAFE' : 'SUSPICIOUS'),
-          score: c.safetyScore ?? 50,
-          source: c.source || 'ANDROID_BROWSER',
-          createdAt: c.createdAt ? new Date(c.createdAt) : new Date(),
-          reasons: c.detectionReasons || [],
-          clientIp: c.clientIp || null,
-          hostname: c.hostname || ''
+          url: c.originalUrl,
+          rating: c.detectionVerdict,
+          score: c.safetyScore,
+          createdAt: c.createdAt,
+          source: c.source || 'Threat Report',
+          reasons: c.detectionReasons || []
         });
       }
     });
 
-    const items = Array.from(combinedMap.values());
-    const totalScans = items.length;
+    const allEvents = Array.from(combinedMap.values());
+    const totalScanned = allEvents.length;
+    const threatsBlocked = allEvents.filter((e) => e.rating === 'DANGEROUS').length;
+    const suspiciousCount = allEvents.filter((e) => e.rating === 'SUSPICIOUS').length;
+    const safeCount = allEvents.filter((e) => e.rating === 'SAFE').length;
 
-    // Platform distribution (Android vs Web)
-    const androidScans = items.filter((i) => i.source === 'ANDROID_BROWSER').length;
-    const webScans = items.filter((i) => i.source !== 'ANDROID_BROWSER').length;
-    const androidPercentage = totalScans > 0 ? Math.round((androidScans / totalScans) * 100) : 0;
+    // 1. Weekly Volume Trend (Last 7 days dynamic aggregation)
+    const now = new Date();
+    const daysArr = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      daysArr.push({
+        dateStr: d.toISOString().split('T')[0],
+        day: getDayName(d),
+        safe: 0,
+        phishing: 0,
+        suspicious: 0
+      });
+    }
 
-    // 1. Weekly Diagnostic Volumes (past 7 days Mon-Sun)
-    const orderedDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const trendMap = {};
-    orderedDays.forEach((d) => {
-      trendMap[d] = { day: d, Scans: 0, Threats: 0, Mobile: 0, Web: 0 };
-    });
-
-    items.forEach((item) => {
-      const dName = getDayName(item.createdAt);
-      if (trendMap[dName]) {
-        trendMap[dName].Scans += 1;
-        const isMobile = item.source === 'ANDROID_BROWSER' || (item.source && String(item.source).toLowerCase().includes('android'));
-        if (isMobile) {
-          trendMap[dName].Mobile += 1;
-        } else {
-          trendMap[dName].Web += 1;
-        }
-        if (item.rating === 'DANGEROUS' || item.rating === 'SUSPICIOUS') {
-          trendMap[dName].Threats += 1;
-        }
+    allEvents.forEach((ev) => {
+      if (!ev.createdAt) return;
+      const evDate = new Date(ev.createdAt).toISOString().split('T')[0];
+      const bucket = daysArr.find((b) => b.dateStr === evDate);
+      if (bucket) {
+        if (ev.rating === 'DANGEROUS') bucket.phishing++;
+        else if (ev.rating === 'SUSPICIOUS') bucket.suspicious++;
+        else bucket.safe++;
       }
     });
 
-    const trendsData = orderedDays.map((d) => trendMap[d]);
-
-    // 2. Threat Distributions
+    // 2. Threat Vector Breakdown
     const categoryCounts = {};
-    items.forEach((item) => {
-      const cat = classifyThreatCategory(item.url, item.rating, item.reasons);
-      categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+    allEvents.forEach((ev) => {
+      if (ev.rating === 'DANGEROUS' || ev.rating === 'SUSPICIOUS') {
+        const cat = classifyThreatCategory(ev.url, ev.rating, ev.reasons);
+        categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+      }
     });
 
     const categoryColors = {
-      'Brand Spoofing': '#DC2626',
-      'Typosquatting': '#D97706',
-      'Insecure (HTTP)': '#2563EB',
-      'IDN Homographs': '#06B6D4',
-      'Credential Harvesting': '#7C3AED',
-      'Phishing & Malicious': '#E11D48',
-      'Safe Verification': '#16A34A'
+      'Typosquatting': '#3b82f6',
+      'Credential Harvesting': '#f97316',
+      'Brand Spoofing': '#ef4444',
+      'Insecure (HTTP)': '#eab308',
+      'IDN Homographs': '#8b5cf6',
+      'Phishing & Malicious': '#ec4899'
     };
 
-    const categoryData = Object.entries(categoryCounts).map(([name, count]) => ({
+    const threatCategories = Object.entries(categoryCounts).map(([name, value]) => ({
       name,
-      value: totalScans > 0 ? Math.round((count / totalScans) * 100) : 0,
-      count,
-      color: categoryColors[name] || '#64748B'
-    })).sort((a, b) => b.count - a.count);
+      value,
+      color: categoryColors[name] || '#64748b'
+    }));
 
-    // 3. Geographical Threat Vectors
-    const countryCounts = {};
-    items.forEach((item) => {
-      const country = resolveGeoOrigin(item.clientIp, item.hostname || item.url);
-      countryCounts[country] = (countryCounts[country] || 0) + 1;
-    });
-
-    const countryData = Object.entries(countryCounts).map(([country, count]) => ({
-      country,
-      count,
-      percentage: totalScans > 0 ? Math.round((count / totalScans) * 100) : 0
-    })).sort((a, b) => b.count - a.count);
-
-    // 4. Most Targeted Brands
+    // 3. Brand Abuse Intelligence
     const brandCounts = {};
-    items.forEach((item) => {
-      const brand = detectTargetBrand(item.url, item.reasons);
+    allEvents.forEach((ev) => {
+      const brand = detectTargetBrand(ev.url, ev.reasons);
       if (brand) {
         brandCounts[brand] = (brandCounts[brand] || 0) + 1;
       }
     });
 
-    let brandData = Object.entries(brandCounts).map(([name, value]) => ({
-      name,
-      value
-    })).sort((a, b) => b.value - a.value);
+    const targetBrands = Object.entries(brandCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([name, attacks]) => ({
+        name,
+        attacks,
+        share: Math.round((attacks / (totalScanned || 1)) * 100)
+      }));
 
-    // If no brands identified yet, provide empty array rather than fake brands
-    if (brandData.length === 0 && totalScans > 0) {
-      brandData = [{ name: 'None Detected', value: 0 }];
-    }
+    // 4. Geographic Threat Origins (derived from real telemetry IP and domain TLD)
+    const geoCounts = {};
+    complaints.forEach((c) => {
+      const origin = resolveGeoOrigin(c.clientIp, c.hostname);
+      geoCounts[origin] = (geoCounts[origin] || 0) + 1;
+    });
 
-    // 5. Accuracy metrics & Precision
-    const safeCount = items.filter((i) => i.rating === 'SAFE').length;
-    const suspiciousCount = items.filter((i) => i.rating === 'SUSPICIOUS').length;
-    const dangerousCount = items.filter((i) => i.rating === 'DANGEROUS').length;
-    const threatsCount = suspiciousCount + dangerousCount;
-
-    const totalScores = items.reduce((sum, i) => sum + (i.score ?? 50), 0);
-    const averageScore = totalScans > 0 ? Math.round(totalScores / totalScans) : 100;
-
-    // Realistic calculation from database classification
-    const precision = totalScans > 0 ? Number((((threatsCount + safeCount * 0.98) / totalScans) * 100).toFixed(1)) : 99.4;
-    const recall = totalScans > 0 ? Number((((threatsCount) / Math.max(1, threatsCount)) * 98.8).toFixed(1)) : 98.7;
-    const f1 = Number(((2 * (precision * recall)) / (precision + recall)).toFixed(1));
-
-    const radialData = [
-      { name: 'Precision', value: Math.min(100, precision), fill: '#16A34A' },
-      { name: 'Recall', value: Math.min(100, recall), fill: '#2563EB' },
-      { name: 'F1 Score', value: Math.min(100, f1), fill: '#06B6D4' }
-    ];
+    const totalGeo = Object.values(geoCounts).reduce((a, b) => a + b, 0) || 1;
+    const geoOrigins = Object.entries(geoCounts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([country, attacks]) => ({
+        country,
+        attacks,
+        percentage: Math.round((attacks / totalGeo) * 100)
+      }));
 
     return NextResponse.json({
-      success: true,
       summary: {
-        totalScans,
-        safeCount,
+        totalScanned,
+        threatsBlocked,
         suspiciousCount,
-        dangerousCount,
-        threatsCount,
-        averageScore,
-        androidScans,
-        webScans,
-        androidPercentage
+        safeCount,
+        blockRate: totalScanned > 0 ? ((threatsBlocked / totalScanned) * 100).toFixed(1) : '0.0'
       },
-      trendsData,
-      categoryData,
-      countryData,
-      brandData,
-      radialData,
-      lastUpdated: new Date().toISOString()
+      weeklyTrend: daysArr.map(({ day, safe, phishing, suspicious }) => ({ day, safe, phishing, suspicious })),
+      threatCategories,
+      targetBrands,
+      geoOrigins
     });
   } catch (err) {
-    console.error('Failed to compute analytics from database:', err);
-    return NextResponse.json(
-      { error: 'Failed to fetch analytics from database', details: err.message },
-      { status: 500 }
-    );
+    console.error('Error generating telemetry analytics:', err);
+    return NextResponse.json({ error: 'Failed to generate analytics data' }, { status: 500 });
   }
 }

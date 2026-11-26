@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect, useMemo } from "react";
+import { UserButton, Show } from "@clerk/nextjs";
+import Link from "next/link";
 import { 
   Zap, 
   WifiOff, 
@@ -15,7 +17,8 @@ import {
   Trash2, 
   X,
   ExternalLink,
-  RotateCw
+  RotateCw,
+  User
 } from "lucide-react";
 
 export default function Header({ isOnline = true, setActiveTab, onSearch, scanHistory = [] }) {
@@ -405,15 +408,27 @@ export default function Header({ isOnline = true, setActiveTab, onSearch, scanHi
           )}
         </div>
 
-        {/* User avatar circle "N" */}
-        <button
-          type="button"
-          onClick={() => setActiveTab && setActiveTab("settings")}
-          title="SecOps Analyst Profile"
-          className="h-8.5 w-8.5 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-xs font-extrabold text-[#0B1933] hover:ring-2 hover:ring-[#1463FF]/30 transition-all cursor-pointer shrink-0"
-        >
-          N
-        </button>
+        {/* User Identity / Profile Menu via Clerk */}
+        <Show when="signed-in">
+          <div className="flex items-center shrink-0">
+            <UserButton 
+              appearance={{
+                elements: {
+                  avatarBox: "h-8.5 w-8.5 border border-slate-200 shadow-sm rounded-full",
+                }
+              }}
+            />
+          </div>
+        </Show>
+        <Show when="signed-out">
+          <Link
+            href="/sign-in"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
+          >
+            <User className="w-3.5 h-3.5" />
+            Sign In
+          </Link>
+        </Show>
       </div>
     </header>
   );

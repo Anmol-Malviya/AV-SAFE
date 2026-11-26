@@ -10,6 +10,12 @@ import {
   getDashboardUrl,
   DEFAULT_SERVER_URL
 } from './apiClient.js';
+import {
+  getAuthToken,
+  getAuthUser,
+  signInClerk,
+  clearAuthSession
+} from './clerkAuth.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // SVG circular progress ring settings
@@ -50,6 +56,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 8. Setup Quick URL Scanner
   setupCustomScanner();
+
+  // 9. Setup Clerk Authentication State & UI
+  setupClerkAuth();
 });
 
 // Segmented Navigation Tab Switcher
@@ -974,6 +983,86 @@ function setupCustomScanner() {
           }
         }
       }, 250);
+    });
+  }
+}
+
+// Clerk Authentication UI Handler
+async function setupClerkAuth() {
+  const badge = document.getElementById('clerk-auth-badge');
+  const guestView = document.getElementById('clerk-guest-view');
+  const signedinView = document.getElementById('clerk-signedin-view');
+  const emailInput = document.getElementById('clerk-input-email');
+  const passwordInput = document.getElementById('clerk-input-password');
+  const btnSignIn = document.getElementById('btn-clerk-signin');
+  const btnSignOut = document.getElementById('btn-clerk-signout');
+  const userDisplay = document.getElementById('clerk-user-display');
+  const emailDisplay = document.getElementById('clerk-email-display');
+  const errorMsg = document.getElementById('clerk-error-msg');
+
+  async function renderState() {
+    const user = await getAuthUser();
+    const token = await getAuthToken();
+
+    if (token && user.userId) {
+      if (badge) {
+        badge.textContent = 'AUTHENTICATED';
+        badge.className = 'badge-tag';
+        badge.style.color = '#38bdf8';
+      }
+      if (guestView) guestView.classList.add('hidden');
+      if (signedinView) signedinView.classList.remove('hidden');
+      if (userDisplay) userDisplay.textContent = user.name || 'SecOps Analyst';
+      if (emailDisplay) emailDisplay.textContent = user.email || user.userId;
+    } else {
+      if (badge) {
+        badge.textContent = 'GUEST MODE';
+        badge.className = 'badge-tag';
+        badge.style.color = '';
+      }
+      if (guestView) guestView.classList.remove('hidden');
+      if (signedinView) signedinView.classList.add('hidden');
+    }
+  }
+
+  await renderState();
+
+  if (btnSignIn) {
+    btnSignIn.addEventListener('click', async () => {
+      const email = emailInput?.value?.trim();
+      const pwd = passwordInput?.value;
+
+      if (!email || !pwd) {
+        if (errorMsg) {
+          errorMsg.textContent = 'Email and password required.';
+          errorMsg.classList.remove('hidden');
+        }
+        return;
+      }
+
+      btnSignIn.textContent = 'Signing in...';
+      btnSignIn.disabled = true;
+      if (errorMsg) errorMsg.classList.add('hidden');
+
+      const res = await signInClerk(email, pwd);
+      btnSignIn.disabled = false;
+      btnSignIn.textContent = 'Sign In with Clerk';
+
+      if (res.success) {
+        await renderState();
+      } else {
+        if (errorMsg) {
+          errorMsg.textContent = res.error || 'Authentication failed';
+          errorMsg.classList.remove('hidden');
+        }
+      }
+    });
+  }
+
+  if (btnSignOut) {
+    btnSignOut.addEventListener('click', async () => {
+      await clearAuthSession();
+      await renderState();
     });
   }
 }

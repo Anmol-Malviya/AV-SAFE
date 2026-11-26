@@ -442,6 +442,34 @@
           </div>
         </div>
 
+        <!-- Clerk Identity / Account Section -->
+        <div class="card settings-group" id="clerk-account-group">
+          <div class="card-header">
+            <span class="card-title">SecOps Clerk Identity</span>
+            <span id="clerk-auth-badge" class="badge-tag">GUEST MODE</span>
+          </div>
+          <div id="clerk-guest-view">
+            <p class="setting-desc" style="margin-bottom: 8px;">
+              Sign in with your centralized AV-SAFE Clerk account to link and isolate your scan telemetry.
+            </p>
+            <div style="display: flex; gap: 6px; flex-direction: column;">
+              <input type="email" id="clerk-input-email" class="input-dark" placeholder="analyst@domain.com" />
+              <input type="password" id="clerk-input-password" class="input-dark" placeholder="••••••••" />
+              <button id="btn-clerk-signin" class="btn-primary-sm" style="width: 100%; margin-top: 4px;">Sign In with Clerk</button>
+            </div>
+            <div id="clerk-error-msg" class="setting-desc text-danger hidden" style="margin-top: 6px; color: #ef4444;"></div>
+          </div>
+          <div id="clerk-signedin-view" class="hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <div>
+                <div id="clerk-user-display" class="font-bold" style="font-size: 13px; color: #f8fafc;">User</div>
+                <div id="clerk-email-display" class="setting-desc" style="font-size: 11px;">user@example.com</div>
+              </div>
+              <button id="btn-clerk-signout" class="btn-text-action text-danger">Sign Out</button>
+            </div>
+          </div>
+        </div>
+
         <!-- Session Whitelist Card -->
         <div id="whitelist-card" class="card settings-group hidden">
           <div class="card-header">

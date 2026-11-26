@@ -5,6 +5,7 @@
   "description": "AV-SAFE real-time, privacy-focused offline phishing protection powered by machine learning and heuristic analysis.",
   "permissions": [
     "storage",
+    "cookies",
     "tabs",
     "webNavigation",
     "declarativeNetRequest",
@@ -12,7 +13,9 @@
   ],
   "host_permissions": [
     "http://*/*",
-    "https://*/*"
+    "https://*/*",
+    "https://*.clerk.accounts.dev/*",
+    "https://*.clerk.com/*"
   ],
   "background": {
     "service_worker": "background.js",

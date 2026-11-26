@@ -1,5 +1,7 @@
 # Dependencies
 /node_modules
+web-app/node_modules/
+**/node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -20,9 +22,12 @@ web-app/.next/
 web-app/out/
 /build
 
-# Environment Variables
+# Environment Variables & Secrets
 .env*
 !.env.example
+*.pem
+*.key
+*.cert
 
 # Vercel & Deployments
 .vercel
@@ -39,6 +44,8 @@ next-env.d.ts
 /android-app/.idea/caches/
 /android-app/.idea/deploymentTargetSelector.xml
 /android-app/.idea/runConfigurations.xml
+*.apk
+*.aab
 
 # Python Virtual Environments & Bytecode
 __pycache__/
@@ -64,6 +71,7 @@ backend/ml/models/trained/
 
 # OS and Editor Clutter
 .DS_Store
+*/.DS_Store
 *.swp
 *.swo
 .vscode/
