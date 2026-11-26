@@ -1,4 +1,4 @@
-import modelWeights from '../../ml/weights/phishing_model_weights.json';
+import modelWeights from '../ml/weights/phishing_model_weights.json' with { type: 'json' };
 
 // Levenshtein distance to check typosquatting (memoized for high performance)
 const levenshteinCache = {};

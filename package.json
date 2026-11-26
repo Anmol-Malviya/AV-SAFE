@@ -2,11 +2,13 @@
   "name": "av-safe",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "npm --prefix apps/web run dev",
-    "build": "npm --prefix apps/web run build",
-    "start": "npm --prefix apps/web run start",
-    "lint": "npm --prefix apps/web run lint"
+    "dev": "npm --prefix web-app run dev",
+    "build": "npm --prefix web-app run build",
+    "start": "npm --prefix web-app run start",
+    "lint": "npm --prefix web-app run lint",
+    "test": "node --test testing/**/*.js"
   },
   "dependencies": {
     "framer-motion": "^12.42.2",
