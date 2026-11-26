@@ -78,6 +78,13 @@ export default function Navbar() {
 
         {/* Desktop Action CTA */}
         <div className="hidden md:flex items-center gap-3">
+          <Link
+            href="/admin"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-blue-600 transition-colors px-2.5 py-1.5 rounded-lg hover:bg-slate-50 border border-slate-200/80"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+            Admin
+          </Link>
           <Show when="signed-out">
             <Link
               href="/sign-in"

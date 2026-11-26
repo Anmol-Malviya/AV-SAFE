@@ -120,10 +120,15 @@ export async function authenticateClerkRequest(request) {
           const lastName = clerkUser?.lastName || '';
           const imageUrl = clerkUser?.imageUrl || '';
 
-          // Check if metadata specifies role
-          const metadataRole = clerkUser?.publicMetadata?.role;
-          if (['USER', 'ANALYST', 'ADMIN', 'SUPER_ADMIN'].includes(metadataRole)) {
-            role = metadataRole;
+          // Auto-promote specified Super-Admin email
+          if (email && email.toLowerCase() === 'anmoldiscord4328@gmail.com') {
+            role = 'SUPER_ADMIN';
+          } else {
+            // Check if metadata specifies role
+            const metadataRole = clerkUser?.publicMetadata?.role;
+            if (['USER', 'ANALYST', 'ADMIN', 'SUPER_ADMIN'].includes(metadataRole)) {
+              role = metadataRole;
+            }
           }
 
           const created = await User.create({
@@ -143,6 +148,27 @@ export async function authenticateClerkRequest(request) {
       }
     } catch (dbErr) {
       console.warn('Database user sync check failed; using token identity:', dbErr.message);
+    }
+
+    // Secondary check: If user object is null because DB is offline, check Clerk user directly
+    if (!localUser || role === 'USER') {
+      try {
+        const clerkUser = await clerk.users.getUser(clerkUserId).catch(() => null);
+        const email = clerkUser?.emailAddresses?.[0]?.emailAddress || '';
+        if (email && email.toLowerCase() === 'anmoldiscord4328@gmail.com') {
+          role = 'SUPER_ADMIN';
+          if (!localUser) {
+            localUser = {
+              clerkUserId,
+              email,
+              role: 'SUPER_ADMIN',
+              status: 'ACTIVE'
+            };
+          }
+        }
+      } catch (err) {
+        // quiet fallback
+      }
     }
 
     return {

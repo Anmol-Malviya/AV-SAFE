@@ -164,3 +164,23 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Hide Clerk branding, development badges and footer watermark */
+.cl-internal-b3fm6y,
+.cl-footerAction__signIn,
+.cl-footerAction__signUp,
+.cl-developmentModeBadge,
+.cl-watermark,
+.cl-internal-10ky91s,
+.cl-internal-1dauvpw,
+[data-localization-key="developmentMode"],
+div:has(> a[href*="clerk.com"]),
+a[href*="clerk.com"] {
+  display: none !important;
+}
+
+/* Clean Apple styling for Clerk inputs & button elements */
+.cl-card {
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05), 0 20px 40px -15px rgba(0, 0, 0, 0.03) !important;
+}
+

@@ -1,23 +1,14 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-// Public routes that do not require authentication:
-// - Landing pages and public info: /, /about, /privacy, /terms
-// - Public auth routes: /sign-in(.*), /sign-up(.*)
-// - Public APIs: /api/analyze (guest scanning), /api/complaints (public complaint creation & sanitized lookup)
-// - Static assets and favicons
-const isPublicRoute = createRouteMatcher([
-  '/',
-  '/about',
-  '/privacy',
-  '/terms',
-  '/sign-in(.*)',
-  '/sign-up(.*)',
-  '/api/analyze',
-  '/api/complaints(.*)'
+// Match protected routes (page routes like /system/profile or /system when authenticated)
+// Note: API routes enforce their own granular authentication via authMiddleware/requireAuth/requireRole
+// so that API clients (Mobile, Extension, Fetch) always receive clean JSON responses instead of HTML redirects.
+const isProtectedRoute = createRouteMatcher([
+  '/system/profile(.*)',
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
-  if (!isPublicRoute(req)) {
+  if (isProtectedRoute(req)) {
     await auth.protect();
   }
 });
