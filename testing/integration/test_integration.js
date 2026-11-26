@@ -12,7 +12,7 @@ const scanResult = analyzeURL(testUrl);
 assert.ok(scanResult.score !== undefined, 'Scan result must contain score');
 assert.ok(scanResult.rating !== undefined, 'Scan result must contain rating');
 assert.ok(scanResult.features !== undefined, 'Scan result must contain features');
-assert.ok(Array.isArray(scanResult.detectionReasons), 'Must contain detection reasons');
+assert.ok(Array.isArray(scanResult.warnings), 'Must contain warnings array');
 assert.ok(scanResult.score < 50, 'Threat URL should receive low safety score');
 assert.strictEqual(scanResult.rating, 'DANGEROUS', 'Spoofed domain must receive DANGEROUS rating');
 

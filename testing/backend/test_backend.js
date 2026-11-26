@@ -23,8 +23,11 @@ const validUrlRes = validateAndNormalizeUrl('https://example.com/login');
 assert.strictEqual(validUrlRes.valid, true);
 assert.strictEqual(validUrlRes.hostname, 'example.com');
 
-const invalidUrlRes = validateAndNormalizeUrl('not-a-url');
-assert.strictEqual(invalidUrlRes.valid, false);
+const invalidUrlRes = validateAndNormalizeUrl('javascript:alert(1)');
+assert.strictEqual(invalidUrlRes.valid, false, 'javascript protocol must be rejected');
+
+const localhostRes = validateAndNormalizeUrl('http://localhost:3000');
+assert.strictEqual(localhostRes.valid, false, 'localhost must be rejected');
 
 // 2. Rate limiter
 const ip = '10.0.0.99';
@@ -42,6 +45,7 @@ const validComplaint = validateComplaintInput({
   category: 'PHISHING',
   detectionVerdict: 'DANGEROUS',
   safetyScore: 12,
+  confirmed: true,
   userConfirmedAt: new Date().toISOString()
 });
 assert.strictEqual(validComplaint.valid, true);
