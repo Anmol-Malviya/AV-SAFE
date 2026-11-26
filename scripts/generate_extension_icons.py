@@ -10,7 +10,7 @@ def main():
         subprocess.check_call([sys.executable, "-m", "pip", "install", "pillow"])
         from PIL import Image, ImageDraw
 
-    output_dir = "./extansion"
+    output_dir = "./apps/extension"
     os.makedirs(output_dir, exist_ok=True)
 
     sizes = [16, 48, 128]

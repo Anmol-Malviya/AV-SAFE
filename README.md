@@ -15,9 +15,9 @@
 [![React](https://img.shields.io/badge/React-19-0284C7?style=flat-square&logo=react&logoColor=white)](https://react.dev/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-v4-0F766E?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-15803D?style=flat-square&logo=mongodb&logoColor=white)](https://mongodb.com/)
-[![Chrome Extension](https://img.shields.io/badge/Chrome_MV3-Extension-1D4ED8?style=flat-square&logo=googlechrome&logoColor=white)](./extansion)
-[![Android](https://img.shields.io/badge/Android-Kotlin-16A34A?style=flat-square&logo=android&logoColor=white)](./android-app)
-[![Python](https://img.shields.io/badge/Python-3.12-3B82F6?style=flat-square&logo=python&logoColor=white)](./mlservice)
+[![Chrome Extension](https://img.shields.io/badge/Chrome_MV3-Extension-1D4ED8?style=flat-square&logo=googlechrome&logoColor=white)](./apps/extension)
+[![Android](https://img.shields.io/badge/Android-Kotlin-16A34A?style=flat-square&logo=android&logoColor=white)](./apps/android)
+[![Python](https://img.shields.io/badge/Python-3.12-3B82F6?style=flat-square&logo=python&logoColor=white)](./ml)
 [![License](https://img.shields.io/badge/License-MIT-6B7280?style=flat-square)](./LICENSE)
 
 <br/>
@@ -32,9 +32,19 @@
 
 ## About the Project
 
-AV-SAFE is a cross-platform, real-time phishing URL detection system built as a minor academic project. It combines a machine learning model trained on **235,795 real phishing and legitimate URLs** with client-side inference engines embedded natively in a web application, Chrome browser extension, and an Android mobile app.
+**AV-SAFE** is an enterprise-grade, cross-platform, real-time phishing detection and prevention platform. AV-SAFE combines deterministic URL and domain heuristics with browser, web, and Android security workflows. The repository includes an optional machine-learning training and evaluation pipeline. Generated model artifacts and trained weights are intentionally excluded from version control.
 
-No external API calls are required at runtime. The ML model runs fully offline, achieving **< 10 ms detection latency**.
+---
+
+## Key Features
+
+- **Multi-Platform Edge Protection**:
+  - **Web Platform (PWA)**: Next.js 16 App Router interface for URL scanning, QR code inspection, and SecOps triage.
+  - **Chromium MV3 Extension**: Intercepts web navigation in real time before page rendering.
+  - **Native Android Interceptor**: Deep-link intent gatekeeper with on-device safety scoring and threat sandboxing.
+- **Rule-Based URL Analysis**: Deterministic URL, domain, brand-spoofing and heuristic checks. The optional ML training pipeline remains available locally.
+- **Deep Network Inspection**: Server-side asynchronous DNS resolution, TLS certificate validation, and anti-SSRF DOM inspection.
+- **Incident Reporting & SecOps Triage**: Idempotent threat logging, IP rate limiting, and administrative review workflows backed by MongoDB Atlas.
 
 ---
 
@@ -42,228 +52,156 @@ No external API calls are required at runtime. The ML model runs fully offline, 
 
 <div align="center">
 
-<img src="animated_threat_engine.svg" alt="AV-SAFE End-to-End Animated System Architecture" width="100%" />
+<img src="assets/diagrams/animated_threat_engine.svg" alt="AV-SAFE End-to-End Animated System Architecture" width="100%" />
 
 <br/><br/>
 
-<img src="animated_pipeline.svg" alt="Animated 6-Stage Threat Detection Pipeline" width="100%" />
+<img src="assets/diagrams/animated_pipeline.svg" alt="Animated 6-Stage Threat Detection Pipeline" width="100%" />
 
 </div>
 
 ---
 
-## Platform Coverage
-
-<div align="center">
-
-<img src="public/hero-devices-clean.png" alt="AV-SAFE Multi-Device Threat Ecosystem" width="90%" />
-
-<br/><br/>
-
-| Feature | Web App | Chrome Extension | Android App |
-| :--- | :---: | :---: | :---: |
-| Phishing URL Scanner | ✅ | ✅ | ✅ |
-| Offline ML Detection | ✅ | ✅ | ✅ |
-| QR Code Phishing Scanner | — | — | ✅ |
-| Intent Gatekeeper | — | — | ✅ |
-| Real-time Threat Feed | ✅ | ✅ | — |
-| SOC Dashboard | ✅ | — | — |
-
-</div>
-
----
-
-## Machine Learning Engine
-
-The detection core is a **Logistic Regression (SGD)** model trained end-to-end on the **PhiUSIIL Phishing URL Dataset** via the `mlservice/` training pipeline included in this repository.
-
-### Dataset Summary
-
-| Property | Value |
-| :--- | :--- |
-| Dataset | PhiUSIIL Phishing URL (Website) Dataset |
-| Total Records | 235,795 URLs |
-| After Deduplication | 235,370 URLs |
-| Legitimate URLs | 134,510 (57.15%) |
-| Phishing URLs | 100,860 (42.85%) |
-| Unique Domains | 220,086 |
-| Split Strategy | Domain-Grouped (zero leakage) |
-| Train / Val / Test | 70% / 15% / 15% |
-
-### Feature Engineering
-
-The model uses **24 URL-only runtime signals** extracted entirely offline (no network access needed):
-
-```
-url_length          domain_length       is_ip               tld_length
-subdomain_count     is_https            letters             letter_ratio
-digits              digit_ratio         special             special_ratio
-equals_count        qmark_count         amp_count           hyphen_count
-dots_count          slash_count         shannon_entropy     sensitive_words_count
-is_shortened        is_suspicious_tld   is_typosquatting    brand_abuse_triggered
-```
-
----
-
-## Model Benchmark Results
-
-Evaluated on **35,150 unseen-domain URLs** (domains never seen during training):
-
-| Model | Accuracy | Precision | Recall | F1-Score | ROC-AUC | FPR | Latency |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **LightGBM** ⭐ Top Overall | **99.72%** | 99.89% | **99.44%** | **99.66%** | **0.9989** | 0.08% | 0.003 ms |
-| **XGBoost** | 99.71% | **99.91%** | 99.41% | **99.66%** | **0.9990** | **0.06%** | 0.001 ms |
-| **Random Forest** | 99.66% | 99.89% | 99.32% | 99.60% | 0.9990 | 0.08% | 0.002 ms |
-| **SGD Classifier** 🚀 Deployed | 99.43% | **99.91%** | 98.75% | 99.33% | 0.9981 | **0.06%** | **< 0.001 ms** |
-
-> All results measured on **35,150 URLs from domains never seen during training** (domain-grouped split — zero data leakage guaranteed).
-
-### Key Accuracy Highlights
-
-- **Best Overall Accuracy:** LightGBM at **99.72%** — catches 14,818 out of 14,902 phishing URLs
-- **Best False Positive Rate:** SGD & XGBoost at **0.06%** — only 13 legitimate sites wrongly flagged out of 20,248
-- **Best ROC-AUC:** XGBoost & Random Forest at **0.9990** — near-perfect phishing vs. legitimate discrimination
-- **Deployed Production Model (SGD):** 99.43% accuracy, 13 false positives, 187 missed phishing URLs
-- **Inference Speed:** SGD scores any URL in **< 0.001 ms** — suitable for real-time mobile and browser use
-
-> **SGD Classifier** was selected for production deployment because its linear dot-product inference (`z = bias + Σ (x - μ)/σ · w`) is natively computed inside `phishingEngine.js` and `PhishingEngine.kt` with zero external dependencies.
-
----
-
-## Confusion Matrices (Unseen-Domain Test Set)
-
-### SGD Classifier — Deployed to Production
-
-```
-                  Predicted: Safe    Predicted: Phishing
-Actual: Safe         20,235  ✅              13  ⚠️
-Actual: Phishing        187  ❌          14,715  ✅
-```
-
-### LightGBM — Top Overall Accuracy
-
-```
-                  Predicted: Safe    Predicted: Phishing
-Actual: Safe         20,232  ✅              16  ⚠️
-Actual: Phishing         84  ❌          14,818  ✅
-```
-
-### XGBoost
-
-```
-                  Predicted: Safe    Predicted: Phishing
-Actual: Safe         20,235  ✅              13  ⚠️
-Actual: Phishing         88  ❌          14,814  ✅
-```
-
-### Random Forest
-
-```
-                  Predicted: Safe    Predicted: Phishing
-Actual: Safe         20,231  ✅              17  ⚠️
-Actual: Phishing        102  ❌          14,800  ✅
-```
-
-> ✅ Correctly classified &nbsp;|&nbsp; ⚠️ False Positive (safe flagged) &nbsp;|&nbsp; ❌ False Negative (phishing missed)
-
----
-
-## Screenshots
-
-<div align="center">
-
-| SOC Dashboard | Threat Analytics |
-| :---: | :---: |
-| <img src="public/secops-soc-dashboard.jpg" width="100%" /> | <img src="public/threat-dashboard.png" width="100%" /> |
-
-<br/>
-
-| Chrome Extension Interception | Android Link Shield |
-| :---: | :---: |
-| <img src="public/extension-threat-interception.jpg" width="100%" /> | <img src="public/android-app-link-protection.jpg" width="260" /> |
-
-<br/>
-
-<img src="animated_android_shield.svg" alt="Animated Android Intent Gatekeeper" width="100%" />
-
-</div>
-
----
-
-## Running the ML Training Pipeline
-
-The full ML training service lives inside `mlservice/`:
-
-```bash
-cd mlservice
-source .venv/bin/activate
-
-# 1. Analyze dataset
-python train.py --analyze-only
-
-# 2. Train all 4 models
-python train.py --all
-
-# 3. Compare benchmarks
-python compare_models.py
-
-# 4. Export + deploy JSON weights to production
-python export.py --deploy
-```
-
-ML reports, charts, ROC curves, PR curves, feature importance plots, and confusion matrix heatmaps are saved to `mlservice/reports/`.
-
----
-
-## Quickstart — Web Application
-
-```bash
-# Clone
-git clone https://github.com/Anmol-Malviya/AV-SAFE.git
-cd AV-SAFE
-
-# Install dependencies
-npm install
-
-# Run locally
-npm run dev
-```
-
----
-
-## Project Structure
+## Repository Structure
 
 ```text
 AV-SAFE/
-├── src/                        # Next.js web application
-│   ├── app/                    # Pages, API routes
-│   └── lib/
-│       ├── phishingEngine.js   # Offline ML inference engine (JavaScript)
-│       └── phishing_model_weights.json   # Trained model weights (24 features)
-├── extansion/                  # Chrome MV3 extension with embedded engine
-├── android-app/                # Android Kotlin app with PhishingEngine.kt
-├── mlservice/                  # ML training pipeline (Python 3.12)
-│   ├── config/                 # training_config.yaml, feature_config.yaml
-│   ├── src/                    # Data, features, training, evaluation, export
-│   ├── models/trained/         # SGD, RF, XGBoost, LightGBM artifacts
-│   ├── reports/                # Confusion matrices, ROC/PR curves, charts
-│   └── train.py                # CLI entry point
-└── dataset/
-    └── PhiUSIIL_Phishing_URL_Dataset.csv   # 235,795 URL training dataset
+├── apps/
+│   ├── web/                 # Next.js web application documentation and references
+│   ├── android/             # Native Android Kotlin application (com.phishguard)
+│   └── extension/           # Chromium Manifest V3 browser security extension
+│
+├── backend/
+│   ├── api/                 # API route definitions and endpoint reference
+│   ├── models/              # Mongoose data models (Complaint, UrlScan)
+│   ├── services/            # Core business logic (phishingEngine)
+│   ├── middleware/          # Security controls (anti-SSRF, rate limiting, admin auth)
+│   ├── validators/          # Payload validation logic
+│   └── config/              # MongoDB connection pool management
+│
+├── ml/
+│   ├── models/              # Local trained model artifacts (ignored by Git)
+│   ├── weights/             # Local-only exported inference weights (ignored by Git)
+│   ├── training/            # Training scripts and hyperparameter tuning
+│   ├── datasets/            # Dataset pipelines, loaders, and splits
+│   ├── inference/           # Feature extractors and evaluation modules
+│   ├── utils/               # Logger, config loader, reproducibility utils
+│   ├── config/              # training_config.yaml, feature_config.yaml
+│   └── tests/               # Pytest test suite for ML pipelines
+│
+├── scripts/                 # Automation utilities (weights sync, icon generator, build helpers)
+├── docs/                    # Technical documentation
+│   ├── architecture/        # High-level architecture and C4 diagrams
+│   ├── api/                 # REST API specification and schema documentation
+│   ├── development/         # Local developer environment setup
+│   ├── deployment/          # Production deployment runbooks
+│   └── ml/                  # Model training reports and evaluations
+│
+├── assets/                  # Shared media, diagrams, branding, and screenshots
+│   ├── diagrams/            # Architecture diagrams (SVG)
+│   ├── branding/            # Founder portraits and visual brand identity
+│   └── screenshots/         # Dashboard previews
+│
+├── config/                  # Shared project configuration
+├── src/                     # Next.js App Router application
+│   ├── app/                 # UI pages, tabs, and route handlers
+│   └── lib/                 # Modular re-export bridges to @backend/* and @ml/*
+│
+├── .env.example             # Template environment configuration
+├── .gitignore               # Strict exclusion rules for builds, caches, and datasets
+├── README.md                # Project documentation root
+├── jsconfig.json            # Path alias configuration (@/*, @backend/*, @ml/*)
+└── package.json             # Root Next.js and frontend workspace configuration
 ```
 
 ---
 
-## Tech Stack
+## Technology Stack
 
-| Layer | Technology |
+| Architectural Layer | Technology |
 | :--- | :--- |
-| Frontend | Next.js 16, React 19, TailwindCSS v4 |
-| Backend / API | Next.js API Routes, MongoDB Atlas |
-| ML Training | Python 3.12, Scikit-learn, XGBoost, LightGBM |
-| Browser Extension | Chrome MV3, Vanilla JS |
-| Mobile | Android (Kotlin), Intent Gatekeeper |
-| ML Inference | Zero-dependency linear arithmetic (JS + Kotlin) |
+| **Frontend Platform** | Next.js 16 (Turbopack), React 19, Tailwind CSS v4, Framer Motion |
+| **Backend & API** | Next.js Server Route Handlers, Node.js (Async DNS/TLS sockets), Mongoose 9 |
+| **Database** | MongoDB Atlas / Local MongoDB with connection caching |
+| **Mobile Application** | Native Android (Kotlin), Intent Gatekeeper, Android ART Runtime |
+| **Browser Extension** | Chromium Manifest V3 (Chrome, Brave, Edge), Service Worker |
+| **Machine Learning** | Python 3.12, Scikit-learn, XGBoost, LightGBM, Pandas, PyArrow |
+| **URL Analysis** | Deterministic heuristic scoring; optional local ML experimentation |
+
+---
+
+## Getting Started
+
+### 1. Environment Setup
+
+Copy `.env.example` to `.env.local`:
+```bash
+cp .env.example .env.local
+```
+Fill in your MongoDB connection string and secret keys.
+
+### 2. Web Application & Backend
+
+```bash
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+
+# Run linting and production build
+npm run lint
+npm run build
+```
+
+The web dashboard is accessible at `http://localhost:3000`.
+
+### 3. Machine Learning Pipeline
+
+```bash
+cd ml
+
+# Create virtual environment with uv
+uv venv .venv --python python3
+source .venv/bin/activate
+
+# Install requirements
+uv pip install -r requirements.txt pytest pyyaml
+
+# Run ML unit tests
+pytest -q tests
+
+# Run training or model evaluation
+python train.py
+python evaluate.py
+```
+
+### 4. Chromium Extension
+
+1. Open `chrome://extensions/` in Chrome or Brave.
+2. Enable **Developer mode**.
+3. Click **Load unpacked** and select `apps/extension/`.
+
+### 5. Native Android Application
+
+```bash
+# Build debug APK
+cd apps/android
+./gradlew assembleDebug
+
+# Windows automated script
+scripts\build-apk.bat
+```
+
+---
+
+## Documentation Links
+
+- [System Architecture](docs/architecture/ARCHITECTURE.md)
+- [Backend & API Specification](docs/api/BACKEND_SPECIFICATION.md)
+- [Development Setup](docs/development/DEVELOPMENT.md)
+- [Deployment Guide](docs/deployment/DEPLOYMENT.md)
+- [ML Training Report](docs/ml/reports/MODEL_TRAINING_REPORT.md)
 
 ---
 
@@ -271,7 +209,7 @@ AV-SAFE/
 
 <div align="center">
 
-| <img src="team_founder_anmol.jpg" width="120" height="120" style="border-radius:50%;" /> | <img src="team_founder_tanay.jpg" width="120" height="120" style="border-radius:50%;" /> | <img src="team_founder_hritik.jpg" width="120" height="120" style="border-radius:50%;" /> |
+| <img src="assets/branding/team_founder_anmol.jpg" width="120" height="120" style="border-radius:50%;" /> | <img src="assets/branding/team_founder_tanay.jpg" width="120" height="120" style="border-radius:50%;" /> | <img src="assets/branding/team_founder_hritik.jpg" width="120" height="120" style="border-radius:50%;" /> |
 | :---: | :---: | :---: |
 | **Anmol Malviya** | **Tanay Agrawal** | **Hritik Jaiswal** |
 | AI / Threat Intelligence Lead | Full-Stack Systems Lead | Security / Mobile Lead |
