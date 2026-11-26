@@ -15,7 +15,8 @@
     },
     "ml-service": {
       "root": "ml-service",
-      "runtime": "python"
+      "runtime": "python",
+      "entrypoint": "api/index.py"
     }
   },
   "rewrites": [
