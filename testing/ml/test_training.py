@@ -1,9 +1,9 @@
 import numpy as np
 import pytest
-from backend.ml.training.train_sgd import SGDTrainer
-from backend.ml.training.train_random_forest import RandomForestTrainer
-from backend.ml.training.train_xgboost import XGBoostTrainer
-from backend.ml.training.train_lightgbm import LightGBMTrainer
+from training.train_sgd import SGDTrainer
+from training.train_random_forest import RandomForestTrainer
+from training.train_xgboost import XGBoostTrainer
+from training.train_lightgbm import LightGBMTrainer
 
 @pytest.fixture
 def dummy_data():

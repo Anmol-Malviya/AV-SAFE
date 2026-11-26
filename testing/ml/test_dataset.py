@@ -1,9 +1,9 @@
 import os
 import pytest
 import pandas as pd
-from backend.ml.datasets.pipeline.dataset_loader import load_dataset
-from backend.ml.datasets.pipeline.dataset_validator import DatasetValidator
-from backend.ml.utils.config_loader import get_training_config
+from datasets.pipeline.dataset_loader import load_dataset
+from datasets.pipeline.dataset_validator import DatasetValidator
+from utils.config_loader import get_training_config
 
 def test_dataset_loading_and_schema():
     cfg = get_training_config()
