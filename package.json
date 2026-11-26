@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "npm --prefix web-app run dev",
-    "build": "npm --prefix web-app run build",
+    "build": "npm --prefix web-app run build && cp -r web-app/.next .next && cp -r web-app/public public 2>/dev/null || true",
     "start": "npm --prefix web-app run start",
     "lint": "npm --prefix web-app run lint",
     "test": "node --test testing/**/*.js"
