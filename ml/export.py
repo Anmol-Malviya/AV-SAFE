@@ -19,7 +19,7 @@ logger = setup_logger("ExportPipeline")
 
 def main():
     parser = argparse.ArgumentParser(description="AV-SAFE Export Pipeline")
-    parser.add_argument("--deploy", action="store_true", help="Deploy exported weights directly to src/lib/phishing_model_weights.json")
+    parser.add_argument("--deploy", action="store_true", help="Deploy exported weights directly to apps/web/src/lib/phishing_model_weights.json")
     parser.add_argument("--force", action="store_true", help="Force overwrite production without prompt")
     args = parser.parse_args()
 

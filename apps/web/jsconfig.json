@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@backend/*": ["../../backend/*"],
+      "@ml/*": ["../../ml/*"]
+    }
+  }
+}

@@ -7,9 +7,11 @@ import re
 with open('ml/weights/phishing_model_weights.json', 'r', encoding='utf-8') as f:
     model_json = json.load(f)
 
-# Keep src/lib copy synchronized
-with open('src/lib/phishing_model_weights.json', 'w', encoding='utf-8') as f:
+# Keep apps/web copy synchronized
+web_weights_path = 'apps/web/src/lib/phishing_model_weights.json'
+with open(web_weights_path, 'w', encoding='utf-8') as f:
     json.dump(model_json, f, indent=2)
+print(f'Updated Web Application weights: {web_weights_path}')
 
 # 1. Update Chrome Extension (apps/extension/phishingEngine.js)
 ext_path = 'apps/extension/phishingEngine.js'
