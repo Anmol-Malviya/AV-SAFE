@@ -8,7 +8,6 @@ import TestimonialsSection from "@/components/landing/TestimonialsSection";
 import FAQSection from "@/components/landing/FAQSection";
 import MobileAppCTA from "@/components/landing/MobileAppCTA";
 import Footer from "@/components/landing/Footer";
-
 export default function Home() {
   return (
     <div className="min-h-screen bg-white text-[#101D36] selection:bg-[#1463FF]/20 selection:text-[#1463FF]">

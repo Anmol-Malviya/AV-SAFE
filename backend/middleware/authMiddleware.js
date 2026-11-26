@@ -1,5 +1,7 @@
 import { authenticateClerkRequest } from '../services/clerkAuthService.js';
 import { verifyAdminAuth as verifyLegacyAdminKey } from './requireAdmin.js';
+import { hasPermission, SUPER_ADMIN_EMAIL } from '../security/permissions.js';
+import { recordAuditEvent } from '../services/auditService.js';
 
 export const ROLE_HIERARCHY = {
   GUEST: 0,
@@ -35,10 +37,9 @@ export async function requireAuth(request, { optional = false } = {}) {
 
 /**
  * Authorizes requests requiring a specific minimum role.
- * Supports emergency machine-to-machine admin key via fallback if configured.
  */
 export async function requireRole(request, minimumRole = 'USER') {
-  // 1. Fast-track check: Machine-to-machine / SecOps Admin key
+  // 1. Machine-to-machine / SecOps Admin key
   const legacyAdmin = verifyLegacyAdminKey(request);
   if (legacyAdmin.authenticated && legacyAdmin.authorized) {
     return {
@@ -53,12 +54,12 @@ export async function requireRole(request, minimumRole = 'USER') {
     };
   }
 
-  // 2. Next check Clerk authentication
+  // 2. Clerk authentication
   const auth = await authenticateClerkRequest(request);
 
   if (auth.authenticated) {
     // If the authenticated user is the designated super admin email, grant full SUPER_ADMIN access immediately
-    if (auth.user?.email?.toLowerCase() === 'anmoldiscord4328@gmail.com') {
+    if (auth.user?.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) {
       return {
         ...auth,
         role: 'SUPER_ADMIN',
@@ -75,6 +76,17 @@ export async function requireRole(request, minimumRole = 'USER') {
         authorized: true
       };
     }
+
+    recordAuditEvent({
+      actorId: auth.userId,
+      actorEmail: auth.user?.email || '',
+      actorRole: auth.role,
+      action: 'AUTHORIZATION_DENIED',
+      resourceType: 'API_ENDPOINT',
+      result: 'DENIED',
+      severity: 'WARNING',
+      details: { requiredRole: minimumRole, userRole: auth.role }
+    }).catch(() => {});
 
     return {
       authenticated: true,
@@ -97,8 +109,44 @@ export async function requireRole(request, minimumRole = 'USER') {
 }
 
 /**
+ * Enforce specific permission for the endpoint
+ */
+export async function requirePermission(request, permission) {
+  const auth = await requireRole(request, 'USER');
+  if (!auth.authorized && !auth.authenticated) return auth;
+
+  const role = auth.role || 'GUEST';
+  if (hasPermission(role, permission)) {
+    return {
+      ...auth,
+      authorized: true
+    };
+  }
+
+  recordAuditEvent({
+    actorId: auth.userId || 'anonymous',
+    actorEmail: auth.user?.email || '',
+    actorRole: role,
+    action: 'PERMISSION_DENIED',
+    resourceType: 'PERMISSION',
+    resourceId: permission,
+    result: 'DENIED',
+    severity: 'WARNING',
+    details: { requiredPermission: permission, userRole: role }
+  }).catch(() => {});
+
+  return {
+    ...auth,
+    authorized: false,
+    error: `Forbidden: Missing required permission [${permission}]`,
+    status: 403
+  };
+}
+
+/**
  * Strict Admin guard: requires at least ADMIN role or valid M2M admin token.
  */
 export async function requireAdmin(request) {
   return requireRole(request, 'ADMIN');
 }
+
