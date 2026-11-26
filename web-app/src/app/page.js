@@ -4,7 +4,6 @@ import FeaturesSection from "@/components/landing/FeaturesSection";
 import HowItWorksSection from "@/components/landing/HowItWorksSection";
 import ThreatDashboard from "@/components/landing/ThreatDashboard";
 import Statistics from "@/components/landing/Statistics";
-import TestimonialsSection from "@/components/landing/TestimonialsSection";
 import FAQSection from "@/components/landing/FAQSection";
 import MobileAppCTA from "@/components/landing/MobileAppCTA";
 import Footer from "@/components/landing/Footer";
@@ -29,9 +28,6 @@ export default function Home() {
 
         {/* Platform Statistics */}
         <Statistics />
-
-        {/* Customer Testimonials */}
-        <TestimonialsSection />
 
         {/* FAQ Section */}
         <FAQSection />
