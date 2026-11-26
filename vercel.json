@@ -2,21 +2,9 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "services": {
     "web-app": {
-      "root": "web-app",
+      "root": ".",
       "framework": "nextjs",
-      "bindings": [
-        {
-          "type": "service",
-          "service": "ml-service",
-          "format": "url",
-          "env": "ML_SERVICE_URL"
-        }
-      ]
-    },
-    "ml-service": {
-      "root": "ml-service",
-      "runtime": "python",
-      "entrypoint": "api/index.py"
+      "buildCommand": "npm run build"
     }
   },
   "rewrites": [
