@@ -325,6 +325,7 @@ export default function Hero() {
                   alt="SecureOS SOC Dashboard on Laptop with Mobile Link Protection Companion App"
                   fill
                   priority
+                  unoptimized
                   sizes="(max-width: 1024px) 100vw, 760px"
                   className="object-contain object-center pointer-events-none select-none"
                 />
