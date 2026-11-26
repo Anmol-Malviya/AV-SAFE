@@ -89,8 +89,8 @@ flowchart TD
 
     %% SUB-SYSTEM 2: DETECTION ENGINE
     subgraph SubsystemEngine["Subsystem 2: Hybrid Detection Core (Cross-Platform)"]
-        EngineJS["JavaScript Core (src/lib/phishingEngine.js)"]
-        EngineWeights[("Weights & Scaling\n(src/lib/phishing_model_weights.json)\n24 Features, Means, Stds, Weights, Bias")]
+        EngineJS["JavaScript Core (backend/services/phishingEngine.js)"]
+        EngineWeights[("Weights & Scaling\n(ml/weights/phishing_model_weights.json)\n24 Features, Means, Stds, Weights, Bias")]
         EngineKotlin["Kotlin Native Port\n(android-app/.../PhishingEngine.kt)"]
         EngineExtension["Extension Engine\n(extansion/phishingEngine.js\n+ Active Feed Set Check)"]
     end
@@ -117,7 +117,7 @@ flowchart TD
         ScriptTrain["scripts/train_merged_model.py\n• Downloads PhishTank, URLhaus, Tranco\n• Trains SGD / Logistic Regression\n• Patches JSON & Kotlin files"]
         ScriptDownload["scripts/download_dataset.py\n(Kagglehub PhiUSIIL dataset)"]
         ScriptQR["scripts/generate_qr.py\n(Generates simulated test QR)"]
-        ModelMongoose["Mongoose Schemas (src/lib/models/)\n• UrlScan.js (Scan history)\n• Complaint.js (Incident reports)"]
+        ModelMongoose["Mongoose Schemas (backend/models/)\n• UrlScan.js (Scan history)\n• Complaint.js (Incident reports)"]
         DatabaseEngine[("MongoDB Database Cluster")]
     end
 

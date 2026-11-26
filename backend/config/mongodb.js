@@ -8,13 +8,8 @@ try {
   console.warn('Warning: Failed to set custom DNS servers in Node:', e);
 }
 
-// Direct connection string to bypass Windows querySrv DNS issues
-const DIRECT_MONGODB_URI = 'mongodb://gaming182006:tanay1826@cluster0-shard-00-00.g7yen.mongodb.net:27017,cluster0-shard-00-01.g7yen.mongodb.net:27017,cluster0-shard-00-02.g7yen.mongodb.net:27017/phishguard?ssl=true&authSource=admin&retryWrites=true&w=majority';
-const MONGODB_URI = process.env.MONGODB_URI?.includes('mongodb+srv') ? DIRECT_MONGODB_URI : (process.env.MONGODB_URI || DIRECT_MONGODB_URI);
-
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable');
-}
+// Direct connection string fallback should be provided via environment variable MONGODB_DIRECT_URI or MONGODB_URI
+const MONGODB_URI = process.env.MONGODB_URI || process.env.MONGODB_DIRECT_URI;
 
 let cached = global.mongoose;
 
@@ -25,6 +20,11 @@ if (!cached) {
 async function dbConnect() {
   if (cached.conn) {
     return cached.conn;
+  }
+
+  if (!MONGODB_URI) {
+    console.warn('Warning: MONGODB_URI is not defined. Database operations will be disabled.');
+    return null;
   }
 
   if (!cached.promise) {

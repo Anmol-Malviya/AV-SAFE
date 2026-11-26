@@ -40,9 +40,9 @@ The backend is built natively within **Next.js 16 (App Router)** as asynchronous
 
 ## 3. Database Architecture & Data Models
 
-Database models reside in [`src/lib/models/`](file:///c:/Users/gamin/OneDrive/Desktop/AV-SAFE/src/lib/models/) and utilize Mongoose ODM schemas.
+Database models reside in `backend/models/` and utilize Mongoose ODM schemas.
 
-### 3.1. Database Connection Management (`src/lib/mongodb.js`)
+### 3.1. Database Connection Management (`backend/config/mongodb.js`)
 
 To guarantee fast serverless execution and prevent socket exhaustion during Next.js Hot Module Replacement (HMR):
 * **Custom DNS Servers**: Uses `dns.setServers(['8.8.8.8', '1.1.1.1'])` to guarantee reliable resolution of MongoDB Atlas SRV connection strings in local environments.
@@ -51,7 +51,7 @@ To guarantee fast serverless execution and prevent socket exhaustion during Next
 
 ---
 
-### 3.2. Data Model: `UrlScan` (`src/lib/models/UrlScan.js`)
+### 3.2. Data Model: `UrlScan` (`backend/models/UrlScan.js`)
 
 Stores historical telemetry of evaluated URLs from the web console.
 
@@ -78,7 +78,7 @@ const UrlScanSchema = new mongoose.Schema({
 
 ---
 
-### 3.3. Data Model: `Complaint` (`src/lib/models/Complaint.js`)
+### 3.3. Data Model: `Complaint` (`backend/models/Complaint.js`)
 
 Stores user-submitted threat reports and flagged links from Android, Web, and the Browser Extension.
 
@@ -561,7 +561,7 @@ flowchart TD
     SSRFCheck -- No --> BusinessLogic
 ```
 
-### 5.1. Comprehensive Anti-SSRF Defense Engine (`src/lib/security/urlValidation.js`)
+### 5.1. Comprehensive Anti-SSRF Defense Engine (`backend/middleware/urlValidation.js`)
 
 Before any server-side socket or HTTP request is initiated in `/api/analyze`, the hostname is resolved to its underlying IP addresses and filtered through `isPrivateOrReservedIP()`:
 
