@@ -2,11 +2,28 @@ import json
 import re
 import os
 
-repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+# repo_root is AV-SAFE root
+repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-weights_source = os.path.join(repo_root, 'backend', 'ml', 'weights', 'phishing_model_weights.json')
+# Prefer ml-service/weights, fall back to backend/ml/weights
+ml_service_weights = os.path.join(repo_root, 'ml-service', 'weights', 'phishing_model_weights.json')
+backend_weights = os.path.join(repo_root, 'backend', 'ml', 'weights', 'phishing_model_weights.json')
+
+if os.path.exists(ml_service_weights):
+    weights_source = ml_service_weights
+elif os.path.exists(backend_weights):
+    weights_source = backend_weights
+else:
+    raise FileNotFoundError(f"No trained weights found at {ml_service_weights} or {backend_weights}")
+
 with open(weights_source, 'r', encoding='utf-8') as f:
     model_json = json.load(f)
+
+# Sync to backend/ml/weights
+os.makedirs(os.path.dirname(backend_weights), exist_ok=True)
+with open(backend_weights, 'w', encoding='utf-8') as f:
+    json.dump(model_json, f, indent=2)
+print(f'Updated Backend weights: {backend_weights}')
 
 # 1. Update web-app copy
 web_weights_path = os.path.join(repo_root, 'web-app', 'src', 'lib', 'phishing_model_weights.json')
