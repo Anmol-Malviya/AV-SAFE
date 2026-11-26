@@ -17,11 +17,11 @@ export default function Sidebar({ activeTab, setActiveTab, threatStats, navItems
     <aside className="hidden lg:flex flex-col w-[260px] bg-white text-slate-800 h-full border-r border-slate-200 shrink-0 select-none">
       {/* Brand Header */}
       <div className="flex items-center justify-between px-5 h-[68px] border-b border-slate-100">
-        <Link href="/" className="flex items-center gap-2.5 min-w-0 group" title="AV-SAFE Home">
+        <Link href="/" className="flex items-center gap-2.5 min-w-0 group" title="SecureOS Home">
           <div className="relative h-10 w-auto flex items-center shrink-0">
             <Image
               src="/logo.png"
-              alt="AV-SAFE Logo"
+              alt="SecureOS Logo"
               width={48}
               height={36}
               className="h-9 w-auto object-contain mix-blend-multiply transition-transform group-hover:scale-105"
@@ -30,7 +30,7 @@ export default function Sidebar({ activeTab, setActiveTab, threatStats, navItems
           </div>
           <div className="flex flex-col min-w-0">
             <span className="font-heading font-extrabold text-base tracking-wide text-slate-900 leading-tight">
-              AV-SAFE
+              SecureOS
             </span>
             <span className="text-[10px] text-[#1463FF] font-bold uppercase tracking-widest leading-none mt-0.5">
               Threat Shield

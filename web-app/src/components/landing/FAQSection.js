@@ -6,19 +6,19 @@ import FAQAccordion from "./FAQAccordion";
 export default function FAQSection() {
   const faqItems = [
     {
-      question: "What is AV-SAFE and how does it work?",
+      question: "What is SecureOS and how does it work?",
       answer:
-        "AV-SAFE is an AI-powered phishing and threat detection system. It extracts 25 structural signals from URLs and email headers—evaluating entropy, brand lookalikes, SSL status, and DNS records in real time to neutralize threats.",
+        "SecureOS is an AI-powered phishing and threat detection system. It extracts 25 structural signals from URLs and email headers—evaluating entropy, brand lookalikes, SSL status, and DNS records in real time to neutralize threats.",
     },
     {
-      question: "Is AV-SAFE free to use?",
+      question: "Is SecureOS free to use?",
       answer:
-        "Yes, AV-SAFE offers free instant URL and email scanning for individuals and developers, with enterprise-grade dedicated monitoring consoles available for security teams.",
+        "Yes, SecureOS offers free instant URL and email scanning for individuals and developers, with enterprise-grade dedicated monitoring consoles available for security teams.",
     },
     {
-      question: "Can I use AV-SAFE on mobile devices?",
+      question: "Can I use SecureOS on mobile devices?",
       answer:
-        "Yes! AV-SAFE is available as an Android application with offline QR scanning and link inspection, plus full responsive web support on any smartphone browser.",
+        "Yes! SecureOS is available as an Android application with offline QR scanning and link inspection, plus full responsive web support on any smartphone browser.",
     },
     {
       question: "How accurate is the threat detection?",
@@ -47,7 +47,7 @@ export default function FAQSection() {
               Frequently Asked Questions
             </h2>
             <p className="mt-3.5 text-sm sm:text-base text-[#64748B] leading-relaxed max-w-sm">
-              Everything you need to know about AV-SAFE.
+              Everything you need to know about SecureOS.
             </p>
           </motion.div>
 

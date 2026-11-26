@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
-  title: "Sign Up | AV-SAFE Threat Intelligence",
+  title: "Sign Up | SecureOS Threat Intelligence",
   description: "Create an account to protect your devices with centralized phishing intelligence.",
 };
 

@@ -262,7 +262,7 @@ export default function Hero() {
                 <span>View Architecture</span>
               </a>
               <a
-                href="/AV-SAFE.apk"
+                href="/SecureOS.apk"
                 download
                 className="inline-flex items-center gap-2 rounded-full bg-white hover:bg-slate-50 border border-[#CBD5E1] text-[#0B1933] text-xs sm:text-sm font-semibold px-4 py-2.5 transition-all shadow-sm"
               >
@@ -322,7 +322,7 @@ export default function Hero() {
               <div className="relative aspect-[1.32/1] w-full drop-shadow-[0_24px_45px_rgba(15,23,42,0.16)] transition-transform duration-500 hover:scale-[1.01]">
                 <Image
                   src="/hero-devices-clean.png"
-                  alt="AV-SAFE SOC Dashboard on Laptop with Mobile Link Protection Companion App"
+                  alt="SecureOS SOC Dashboard on Laptop with Mobile Link Protection Companion App"
                   fill
                   priority
                   sizes="(max-width: 1024px) 100vw, 760px"

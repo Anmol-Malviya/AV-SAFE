@@ -3,8 +3,8 @@ import Link from "next/link";
 import { ArrowLeft, Shield } from "lucide-react";
 
 export const metadata = {
-  title: "Profile & Identity | AV-SAFE",
-  description: "Manage your AV-SAFE user identity and security credentials.",
+  title: "Profile & Identity | SecureOS",
+  description: "Manage your SecureOS user identity and security credentials.",
 };
 
 export default function ProfilePage() {

@@ -3,8 +3,8 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
-  title: "Sign In | AV-SAFE Threat Intelligence",
-  description: "Secure login to access your AV-SAFE dashboard and security scan telemetry.",
+  title: "Sign In | SecureOS Threat Intelligence",
+  description: "Secure login to access your SecureOS dashboard and security scan telemetry.",
 };
 
 export default function SignInPage() {

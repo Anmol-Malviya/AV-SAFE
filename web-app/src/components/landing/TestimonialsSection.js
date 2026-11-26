@@ -85,7 +85,7 @@ export default function TestimonialsSection() {
             Architected by Security & AI Pioneers
           </h2>
           <p className="mt-3.5 text-sm sm:text-base text-[#64748B] leading-relaxed">
-            The minds engineering AV-SAFE&apos;s zero-latency threat engine, real-time client protections, and decentralized phishing defense network.
+            The minds engineering SecureOS&apos;s zero-latency threat engine, real-time client protections, and decentralized phishing defense network.
           </p>
         </motion.div>
 

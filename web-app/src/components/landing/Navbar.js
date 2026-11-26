@@ -49,7 +49,7 @@ export default function Navbar() {
           >
             <Image
               src="/logo.png"
-              alt="AV-SAFE Logo"
+              alt="SecureOS Logo"
               width={44}
               height={32}
               className="h-8 w-auto object-contain rounded-xl mix-blend-multiply"
@@ -57,7 +57,7 @@ export default function Navbar() {
             />
           </motion.div>
           <span className="text-lg font-bold tracking-tight text-[#101D36]">
-            AV-SAFE
+            SecureOS
           </span>
         </Link>
 

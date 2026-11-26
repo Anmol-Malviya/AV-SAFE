@@ -190,7 +190,7 @@ export default function EmailAnalyzerTab({
   const handleDownloadReport = () => {
     if (!emailScanResult) return;
     const reportText = `=====================================================
-AV-SAFE THREAT SHIELD - EMAIL AUTHENTICATION REPORT
+SecureOS THREAT SHIELD - EMAIL AUTHENTICATION REPORT
 Generated: ${new Date().toLocaleString()}
 =====================================================
 
@@ -223,14 +223,14 @@ ${(emailScanResult.safeIndicators && emailScanResult.safeIndicators.length > 0)
   : "None."}
 
 =====================================================
-AV-SAFE Security Defense System
+SecureOS Security Defense System
 =====================================================`;
 
     const blob = new Blob([reportText], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `AV-SAFE-Email-Audit-${Date.now()}.txt`;
+    a.download = `SecureOS-Email-Audit-${Date.now()}.txt`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -238,7 +238,7 @@ AV-SAFE Security Defense System
   // Copy report summary to clipboard
   const handleCopySummary = () => {
     if (!emailScanResult) return;
-    const summary = `AV-SAFE Email Security Verdict: ${emailScanResult.rating} (${emailScanResult.score}/100)\nFrom: ${emailScanResult.from}\nSPF: ${emailScanResult.spfStatus} | DKIM: ${emailScanResult.dkimStatus} | DMARC: ${emailScanResult.dmarcStatus}`;
+    const summary = `SecureOS Email Security Verdict: ${emailScanResult.rating} (${emailScanResult.score}/100)\nFrom: ${emailScanResult.from}\nSPF: ${emailScanResult.spfStatus} | DKIM: ${emailScanResult.dkimStatus} | DMARC: ${emailScanResult.dmarcStatus}`;
     navigator.clipboard.writeText(summary);
     setCopiedText(true);
     setTimeout(() => setCopiedText(false), 2000);

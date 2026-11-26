@@ -34,19 +34,19 @@ export default function MobileAppCTA() {
             </div>
 
             <h2 className="text-3xl sm:text-4xl lg:text-[46px] font-extrabold tracking-tight text-[#101D36] leading-[1.12]">
-              Carry AV-SAFE <br />
+              Carry SecureOS <br />
               <span className="text-[#1463FF]">In Your Pocket</span>
             </h2>
 
             <p className="mt-4 text-sm sm:text-base text-[#64748B] leading-relaxed max-w-lg">
-              Scan QR codes, check links, and get instant threat alerts with the AV-SAFE mobile app. Stay protected anytime, anywhere.
+              Scan QR codes, check links, and get instant threat alerts with the SecureOS mobile app. Stay protected anytime, anywhere.
             </p>
 
             {/* Direct Download Button */}
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <motion.a
-                href="/AV-SAFE.apk"
-                download="AV-SAFE.apk"
+                href="/SecureOS.apk"
+                download="SecureOS.apk"
                 whileHover={buttonHover}
                 whileTap={buttonTap}
                 className="inline-flex items-center gap-3 rounded-xl bg-[#0B1933] hover:bg-[#1463FF] text-white px-6 py-3.5 transition-all duration-200 shadow-lg shadow-blue-900/20 group cursor-pointer"
@@ -56,7 +56,7 @@ export default function MobileAppCTA() {
                 </div>
                 <div className="text-left">
                   <span className="block text-[10px] uppercase tracking-wider text-blue-200 font-semibold">DIRECT APK DOWNLOAD</span>
-                  <span className="block text-sm font-bold leading-tight text-white">Download AV-SAFE App (.apk)</span>
+                  <span className="block text-sm font-bold leading-tight text-white">Download SecureOS App (.apk)</span>
                 </div>
               </motion.a>
             </div>
@@ -92,12 +92,12 @@ export default function MobileAppCTA() {
                   <div className="flex items-center justify-center gap-2 mb-6">
                     <Image
                       src="/logo.png"
-                      alt="AV-SAFE Logo"
+                      alt="SecureOS Logo"
                       width={32}
                       height={24}
                       className="h-6 w-auto object-contain mix-blend-multiply"
                     />
-                    <span className="font-bold text-sm tracking-tight text-[#101D36]">AV-SAFE</span>
+                    <span className="font-bold text-sm tracking-tight text-[#101D36]">SecureOS</span>
                   </div>
 
                   {/* 3 Menu Cards */}

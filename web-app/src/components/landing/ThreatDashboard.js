@@ -55,7 +55,7 @@ export default function ThreatDashboard() {
 
             {/* Paragraph */}
             <p className="mt-4 text-sm sm:text-base text-[#64748B] leading-relaxed max-w-lg">
-              AV-SAFE uses advanced AI and real-time threat intelligence to catch phishing links, malicious websites and email threats — so you can browse, work and communicate without worry.
+              SecureOS uses advanced AI and real-time threat intelligence to catch phishing links, malicious websites and email threats — so you can browse, work and communicate without worry.
             </p>
 
             {/* 4 Green Check Benefits */}
@@ -101,7 +101,7 @@ export default function ThreatDashboard() {
                   href="/system"
                   className="inline-flex items-center gap-2 rounded-full bg-[#0B1933] px-6 py-3.5 text-xs sm:text-sm font-semibold text-white shadow-md hover:bg-[#101D36] transition-colors"
                 >
-                  <span>Try AV-SAFE Now</span>
+                  <span>Try SecureOS Now</span>
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </motion.div>

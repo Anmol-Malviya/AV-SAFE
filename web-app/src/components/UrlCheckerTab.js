@@ -846,8 +846,8 @@ export default function UrlCheckerTab({
               {/* Download APK Button */}
               <div className="mt-5">
                 <a
-                  href="/AV-SAFE.apk"
-                  download="AV-SAFE.apk"
+                  href="/SecureOS.apk"
+                  download="SecureOS.apk"
                   className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#1463FF] hover:bg-[#0D52DD] active:scale-[0.99] px-5 text-xs font-semibold text-white transition-all cursor-pointer shadow-sm shadow-[#1463FF]/30"
                 >
                   <Download className="h-4 w-4" />
@@ -863,7 +863,7 @@ export default function UrlCheckerTab({
             <div className="hidden sm:flex relative items-center justify-center w-44 h-48 shrink-0">
               <Image
                 src="/android_phone_illustration.png"
-                alt="AV-SAFE Android Protection Client"
+                alt="SecureOS Android Protection Client"
                 width={320}
                 height={400}
                 className="w-full h-full object-contain filter drop-shadow-[0_10px_20px_rgba(0,194,255,0.2)]"

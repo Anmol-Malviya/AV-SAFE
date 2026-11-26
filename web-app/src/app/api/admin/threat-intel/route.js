@@ -13,7 +13,7 @@ const MOCK_INTEL = [
     listType: "BLACKLIST",
     confidenceScore: 98,
     severity: "CRITICAL",
-    source: "AV-SAFE ML Pipeline",
+    source: "SecureOS ML Pipeline",
     isActive: true,
     createdAt: new Date().toISOString()
   },

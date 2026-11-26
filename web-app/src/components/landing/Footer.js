@@ -19,13 +19,13 @@ export default function Footer() {
             <Link href="/" className="flex items-center gap-2">
               <Image
                 src="/logo.png"
-                alt="AV-SAFE Logo"
+                alt="SecureOS Logo"
                 width={38}
                 height={28}
                 className="h-7 w-auto object-contain mix-blend-multiply"
               />
               <span className="text-base font-bold tracking-tight text-[#101D36]">
-                AV-SAFE
+                SecureOS
               </span>
             </Link>
             <span className="hidden sm:inline-block text-[#CBD5E1]">|</span>
@@ -69,7 +69,7 @@ export default function Footer() {
                 </svg>
               </Link>
             </div>
-            <span>© 2026 AV-SAFE. All rights reserved.</span>
+            <span>© 2026 SecureOS. All rights reserved.</span>
           </div>
 
         </div>

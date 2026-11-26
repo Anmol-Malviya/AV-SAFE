@@ -398,7 +398,7 @@ export default function AdminSecOpsPage() {
           </div>
           <h1 className="text-lg font-semibold text-slate-900 mb-1.5">Restricted SecOps Console</h1>
           <p className="text-xs text-slate-500 mb-6 leading-relaxed">
-            AV-SAFE Security Operations triage and kernel telemetry portal. Clearance verification required.
+            SecureOS Security Operations triage and kernel telemetry portal. Clearance verification required.
           </p>
           <Link
             href="/sign-in?redirect_url=/admin"
@@ -592,7 +592,7 @@ export default function AdminSecOpsPage() {
             <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white font-semibold text-xs shadow-sm">
               AV
             </div>
-            <span className="font-semibold text-sm text-slate-900 tracking-tight">AV-SAFE SecOps</span>
+            <span className="font-semibold text-sm text-slate-900 tracking-tight">SecureOS SecOps</span>
           </Link>
           <span className="text-slate-300">/</span>
           <span className="text-xs text-slate-500 font-medium">Enterprise Control Plane</span>
@@ -675,7 +675,7 @@ export default function AdminSecOpsPage() {
           </div>
 
           <div className="pt-3 border-t border-slate-100 text-[10px] text-slate-400 flex items-center justify-between px-1">
-            <span>AV-SAFE Enterprise</span>
+            <span>SecureOS Enterprise</span>
             <span className="font-mono">v2.4 SecOps</span>
           </div>
         </aside>
@@ -1102,7 +1102,7 @@ export default function AdminSecOpsPage() {
                     {users.map((u) => (
                       <tr key={u._id} className="hover:bg-slate-50/60 transition-colors">
                         <td className="py-3 px-4">
-                          <span className="font-medium text-slate-900 block">{u.firstName || u.lastName ? `${u.firstName} ${u.lastName}` : "AV-SAFE User"}</span>
+                          <span className="font-medium text-slate-900 block">{u.firstName || u.lastName ? `${u.firstName} ${u.lastName}` : "SecureOS User"}</span>
                           <span className="font-mono text-[11px] text-slate-400">{u.email}</span>
                         </td>
                         <td className="py-3 px-4 font-mono font-semibold text-slate-700">{u.role}</td>
