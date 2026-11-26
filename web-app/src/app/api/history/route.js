@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import UrlScan from '@/lib/models/UrlScan';
 import { validateAndNormalizeUrl } from '@/lib/security/urlValidation';
+import { verifyAdminAuth } from '@/lib/auth/requireAdmin';
 
 export const dynamic = 'force-dynamic';
 
@@ -66,18 +67,21 @@ export async function POST(request) {
 
     await dbConnect();
 
-    // Safely delete previous duplicate scan for this URL so latest status is at top
-    await UrlScan.deleteMany({ url: validUrl.originalUrl });
-
-    const newScan = await UrlScan.create({
-      url: validUrl.originalUrl,
-      rating: validRating,
-      score: validScore,
-      source: validSource,
-      detectionReasons: Array.isArray(detectionReasons) ? detectionReasons : [],
-      date: new Date().toLocaleDateString(),
-      createdAt: new Date()
-    });
+    const newScan = await UrlScan.findOneAndUpdate(
+      { url: validUrl.originalUrl },
+      {
+        $set: {
+          url: validUrl.originalUrl,
+          rating: validRating,
+          score: validScore,
+          source: validSource,
+          detectionReasons: Array.isArray(detectionReasons) ? detectionReasons : [],
+          date: new Date().toLocaleDateString(),
+          createdAt: new Date()
+        }
+      },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
 
     return NextResponse.json({ success: true, data: newScan });
   } catch (err) {
@@ -86,8 +90,13 @@ export async function POST(request) {
   }
 }
 
-export async function DELETE() {
+export async function DELETE(request) {
   try {
+    const auth = verifyAdminAuth(request);
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
+
     await dbConnect();
     await UrlScan.deleteMany({});
     return NextResponse.json({ success: true, message: 'Scan history cleared successfully from database' });

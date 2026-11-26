@@ -1,6 +1,6 @@
 import dbConnect from '../config/mongodb.js';
 import UrlScan from '../models/UrlScan.js';
-import Complaint from '../models/Complaint';
+import Complaint from '../models/Complaint.js';
 
 export async function getAnalyticsSummary() {
   await dbConnect();

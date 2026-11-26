@@ -2,6 +2,16 @@ import { NextResponse } from 'next/server';
 import dns from 'dns';
 import https from 'https';
 import { validateAndNormalizeUrl, isPrivateOrReservedIP } from '@/lib/security/urlValidation';
+import { checkRateLimit } from '@/lib/security/rateLimit';
+
+// Client IP extractor from headers
+function getClientIp(request) {
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) {
+    return forwarded.split(',')[0].trim();
+  }
+  return request.headers.get('x-real-ip') || '127.0.0.1';
+}
 
 // Helper to resolve DNS hostname with SSRF validation
 function resolveDNS(hostname) {
@@ -172,6 +182,15 @@ async function fetchAndAnalyzeHTML(validatedUrl, targetIp) {
 
 export async function POST(request) {
   try {
+    const clientIp = getClientIp(request);
+    const limit = checkRateLimit(`analyze_${clientIp}`, 60, 60000);
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many analysis requests. Please try again later.' },
+        { status: 429 }
+      );
+    }
+
     let body;
     try {
       body = await request.json();

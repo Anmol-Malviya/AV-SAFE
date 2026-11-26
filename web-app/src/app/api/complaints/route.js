@@ -94,19 +94,24 @@ export async function POST(request) {
       clientIp
     });
 
-    // Mirror complaint into UrlScan so it reflects across scan history & overview
+    // Mirror complaint into UrlScan atomically so it reflects across scan history & overview
     try {
       const targetUrl = validation.data.normalizedUrl || validation.data.originalUrl;
-      await UrlScan.deleteMany({ url: targetUrl });
-      await UrlScan.create({
-        url: targetUrl,
-        rating: validation.data.detectionVerdict === 'DANGEROUS' ? 'DANGEROUS' : (validation.data.detectionVerdict === 'SAFE' ? 'SAFE' : 'SUSPICIOUS'),
-        score: validation.data.safetyScore,
-        source: validation.data.source || 'EXTENSION',
-        detectionReasons: validation.data.detectionReasons || [],
-        date: new Date().toLocaleDateString(),
-        createdAt: new Date()
-      });
+      await UrlScan.findOneAndUpdate(
+        { url: targetUrl },
+        {
+          $set: {
+            url: targetUrl,
+            rating: validation.data.detectionVerdict === 'DANGEROUS' ? 'DANGEROUS' : (validation.data.detectionVerdict === 'SAFE' ? 'SAFE' : 'SUSPICIOUS'),
+            score: validation.data.safetyScore,
+            source: validation.data.source || 'EXTENSION',
+            detectionReasons: validation.data.detectionReasons || [],
+            date: new Date().toLocaleDateString(),
+            createdAt: new Date()
+          }
+        },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      );
     } catch (mirrorErr) {
       console.warn('Could not mirror complaint to UrlScan:', mirrorErr);
     }

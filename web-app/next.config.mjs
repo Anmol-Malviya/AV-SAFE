@@ -27,11 +27,12 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/api/:path*',
+        // Public API endpoints used by mobile app and browser extension
+        source: '/api/:path((?!admin).*)',
         headers: [
           { key: 'Access-Control-Allow-Origin', value: '*' },
-          { key: 'Access-Control-Allow-Methods', value: 'GET, POST, PUT, DELETE, PATCH, OPTIONS' },
-          { key: 'Access-Control-Allow-Headers', value: 'X-Requested-With, Content-Type, Authorization, x-admin-key' },
+          { key: 'Access-Control-Allow-Methods', value: 'GET, POST, OPTIONS' },
+          { key: 'Access-Control-Allow-Headers', value: 'X-Requested-With, Content-Type' },
         ],
       },
     ];
