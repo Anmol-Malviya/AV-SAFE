@@ -4,8 +4,8 @@ import pytest
 import numpy as np
 from sklearn.linear_model import SGDClassifier
 from sklearn.preprocessing import StandardScaler
-from backend.ml.inference.export.export_json import JSONModelExporter
-from backend.ml.features.url_feature_extractor import FEATURE_NAMES_24
+from inference.export.export_json import JSONModelExporter
+from features.url_feature_extractor import FEATURE_NAMES_24
 
 def test_json_export_schema(tmp_path):
     X = np.random.randn(50, 24)
