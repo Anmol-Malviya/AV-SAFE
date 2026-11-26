@@ -4,7 +4,7 @@ version: "2.0.0"
 random_seed: 42
 
 dataset:
-  raw_path: "datasets/PhiUSIIL_Phishing_URL_Dataset.csv"
+  raw_path: "datasets/raw/PhiUSIIL_Phishing_URL_Dataset.csv"
   processed_path: "datasets/processed/phishing_dataset_processed.parquet"
   processed_csv_path: "datasets/processed/phishing_dataset_processed.csv"
   splits_dir: "datasets/splits"

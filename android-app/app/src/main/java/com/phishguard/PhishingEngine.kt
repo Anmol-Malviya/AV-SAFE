@@ -366,32 +366,32 @@ object PhishingEngine {
         )
 
         val weights = mapOf(
-            "url_length" to 0.785254,
-            "domain_length" to 1.434985,
-            "is_ip" to 0.026338,
-            "tld_length" to 0.022923,
-            "subdomain_count" to -1.023996,
-            "is_https" to -4.899049,
-            "letters" to 0.55621,
-            "letter_ratio" to -0.594024,
-            "digits" to 0.569274,
-            "digit_ratio" to 0.970735,
-            "special" to 1.984294,
+            "url_length" to 0.782958,
+            "domain_length" to 1.436487,
+            "is_ip" to 0.026199,
+            "tld_length" to 0.022917,
+            "subdomain_count" to -1.024721,
+            "is_https" to -4.898948,
+            "letters" to 0.552914,
+            "letter_ratio" to -0.593917,
+            "digits" to 0.569242,
+            "digit_ratio" to 0.970621,
+            "special" to 1.984393,
             "special_ratio" to -0.587676,
-            "equals_count" to 0.052084,
-            "qmark_count" to 0.184683,
-            "amp_count" to 0.039284,
-            "hyphen_count" to 0.75371,
-            "dots_count" to -0.1436,
-            "slash_count" to 7.853185,
-            "shannon_entropy" to -1.190564,
+            "equals_count" to 0.051921,
+            "qmark_count" to 0.184703,
+            "amp_count" to 0.039079,
+            "hyphen_count" to 0.75356,
+            "dots_count" to -0.142613,
+            "slash_count" to 7.853322,
+            "shannon_entropy" to -1.190577,
             "sensitive_words_count" to 0.482106,
-            "is_shortened" to 0.140714,
+            "is_shortened" to 0.14066,
             "is_suspicious_tld" to 0.777402,
-            "is_typosquatting" to -0.005948,
-            "brand_abuse_triggered" to 0.268951
+            "is_typosquatting" to -0.005947,
+            "brand_abuse_triggered" to 0.26895
         )
-        val bias = 3.217347
+        val bias = 3.21666
 
         // Predict Z-score
         var z = bias

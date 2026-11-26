@@ -1,0 +1,168 @@
+{
+  "sgd": {
+    "accuracy": 0.9943100995732574,
+    "precision": 0.9991173275393808,
+    "recall": 0.98745134881224,
+    "f1_score": 0.9932500843739454,
+    "false_positive_rate": 0.0006420387198735677,
+    "false_negative_rate": 0.012548651187760032,
+    "confusion_matrix": {
+      "true_negative": 20235,
+      "false_positive": 13,
+      "false_negative": 187,
+      "true_positive": 14715
+    },
+    "roc_auc": 0.9980849216461284,
+    "pr_auc": 0.998357996960809,
+    "inference_latency_ms": 1.38738833316158e-05,
+    "error_analysis": {
+      "total_errors": 200,
+      "false_positives_count": 13,
+      "false_negatives_count": 187,
+      "false_positive_samples": [
+        {
+          "url": "https://www.else-lasker-schueler-gesellschaft.de",
+          "true_label": 0,
+          "predicted_label": 1,
+          "predicted_proba": 0.7628880293583181,
+          "error_type": "False Positive (Legitimate classified as Phishing)"
+        },
+        {
+          "url": "https://www.culturaspopulareseindigenas.gob.mx",
+          "true_label": 0,
+          "predicted_label": 1,
+          "predicted_proba": 0.5350873539400157,
+          "error_type": "False Positive (Legitimate classified as Phishing)"
+        },
+        {
+          "url": "https://www.180360.com",
+          "true_label": 0,
+          "predicted_label": 1,
+          "predicted_proba": 0.7620797248692106,
+          "error_type": "False Positive (Legitimate classified as Phishing)"
+        },
+        {
+          "url": "https://www.saint-barth-saint-martin.gouv.fr",
+          "true_label": 0,
+          "predicted_label": 1,
+          "predicted_proba": 0.7769827299426761,
+          "error_type": "False Positive (Legitimate classified as Phishing)"
+        },
+        {
+          "url": "https://www.golfe-saint-tropez-information.com",
+          "true_label": 0,
+          "predicted_label": 1,
+          "predicted_proba": 0.5104099125958145,
+          "error_type": "False Positive (Legitimate classified as Phishing)"
+        },
+        {
+          "url": "https://www.weboldal-webaruhaz-keszites-budapest.com",
+          "true_label": 0,
+          "predicted_label": 1,
+          "predicted_proba": 0.7419953737838881,
+          "error_type": "False Positive (Legitimate classified as Phishing)"
+        },
+        {
+          "url": "https://www.h2020.net",
+          "true_label": 0,
+          "predicted_label": 1,
+          "predicted_proba": 0.6053097989911824,
+          "error_type": "False Positive (Legitimate classified as Phishing)"
+        },
+        {
+          "url": "https://www.free-power-point-templates.com",
+          "true_label": 0,
+          "predicted_label": 1,
+          "predicted_proba": 0.7201193161682253,
+          "error_type": "False Positive (Legitimate classified as Phishing)"
+        },
+        {
+          "url": "https://www.first-americans.spb.ru",
+          "true_label": 0,
+          "predicted_label": 1,
+          "predicted_proba": 0.8278838952824097,
+          "error_type": "False Positive (Legitimate classified as Phishing)"
+        },
+        {
+          "url": "https://www.1848.nl",
+          "true_label": 0,
+          "predicted_label": 1,
+          "predicted_proba": 0.5773938255592637,
+          "error_type": "False Positive (Legitimate classified as Phishing)"
+        }
+      ],
+      "false_negative_samples": [
+        {
+          "url": "https://www.support-lcioud-maps.info",
+          "true_label": 1,
+          "predicted_label": 0,
+          "predicted_proba": 0.06681360045499163,
+          "error_type": "False Negative (Phishing missed)"
+        },
+        {
+          "url": "https://zurbrioerf.com",
+          "true_label": 1,
+          "predicted_label": 0,
+          "predicted_proba": 0.012898497314022903,
+          "error_type": "False Negative (Phishing missed)"
+        },
+        {
+          "url": "https://chuckylab.com",
+          "true_label": 1,
+          "predicted_label": 0,
+          "predicted_proba": 0.0082972058393488,
+          "error_type": "False Negative (Phishing missed)"
+        },
+        {
+          "url": "https://asrfb.467dtq.repl.co",
+          "true_label": 1,
+          "predicted_label": 0,
+          "predicted_proba": 0.09053890919626445,
+          "error_type": "False Negative (Phishing missed)"
+        },
+        {
+          "url": "https://www.wsec06empresagalicioffice.com",
+          "true_label": 1,
+          "predicted_label": 0,
+          "predicted_proba": 0.10131667032307669,
+          "error_type": "False Negative (Phishing missed)"
+        },
+        {
+          "url": "https://www.sharestion.com",
+          "true_label": 1,
+          "predicted_label": 0,
+          "predicted_proba": 0.0036365714450309504,
+          "error_type": "False Negative (Phishing missed)"
+        },
+        {
+          "url": "https://www.tomarchiobibite.it",
+          "true_label": 1,
+          "predicted_label": 0,
+          "predicted_proba": 0.007955010488268074,
+          "error_type": "False Negative (Phishing missed)"
+        },
+        {
+          "url": "https://www.bendigo-verification.com",
+          "true_label": 1,
+          "predicted_label": 0,
+          "predicted_proba": 0.029190697312621278,
+          "error_type": "False Negative (Phishing missed)"
+        },
+        {
+          "url": "https://link.tngo.top",
+          "true_label": 1,
+          "predicted_label": 0,
+          "predicted_proba": 0.19729954845518893,
+          "error_type": "False Negative (Phishing missed)"
+        },
+        {
+          "url": "https://cardboardartcollege.com",
+          "true_label": 1,
+          "predicted_label": 0,
+          "predicted_proba": 0.05046105496049492,
+          "error_type": "False Negative (Phishing missed)"
+        }
+      ]
+    }
+  }
+}
