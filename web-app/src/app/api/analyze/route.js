@@ -226,7 +226,27 @@ export async function POST(request) {
       );
     }
 
-    // Run SSL and Page analysis safely
+    // Run SSL and Page analysis safely, plus ML microservice inference if available
+    let mlServiceResult = null;
+    const mlServiceBase = process.env.ML_SERVICE_URL;
+    if (mlServiceBase) {
+      try {
+        const mlUrl = new URL('/', mlServiceBase);
+        const mlRes = await fetch(mlUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url: normalizedUrl }),
+          signal: AbortSignal.timeout(3000)
+        });
+        if (mlRes.ok) {
+          mlServiceResult = await mlRes.json();
+        }
+      } catch (err) {
+        // Fallback to local heuristic without blocking analyze route
+        mlServiceResult = { error: 'ML service unreachable', details: err.message };
+      }
+    }
+
     const [sslResult, pageAnalysis] = await Promise.all([
       getSSLCertDetails(hostname, dnsResult.ip),
       fetchAndAnalyzeHTML(normalizedUrl, dnsResult.ip)
@@ -236,7 +256,8 @@ export async function POST(request) {
       hostname,
       dns: dnsResult,
       ssl: sslResult,
-      page: pageAnalysis
+      page: pageAnalysis,
+      mlService: mlServiceResult
     });
   } catch (err) {
     console.error('Error in deep scan API:', err);
