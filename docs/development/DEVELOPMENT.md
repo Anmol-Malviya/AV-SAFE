@@ -31,7 +31,7 @@ pytest -q tests
 ### 3. Chromium Extension
 1. Open Chrome/Chromium and navigate to `chrome://extensions/`.
 2. Enable **Developer mode** (top-right toggle).
-3. Click **Load unpacked** and select the `apps/extension` folder.
+3. Click **Load unpacked** and select the `extension` folder.
 
 ### 4. Native Android Application
 To build and install via USB debugging:
@@ -40,6 +40,6 @@ To build and install via USB debugging:
 scripts\build-and-install-usb.bat
 
 # Or using Gradle directly:
-cd apps/android
+cd android-app
 ./gradlew assembleDebug
 ```

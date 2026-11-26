@@ -1,225 +1,171 @@
-<!-- AV-SAFE — Advanced Phishing Detection System — Minor Project README -->
+# AV-SAFE — Threat Intelligence & Adaptive Phishing Defense System
 
-<div align="center">
-
-<br/>
-
-# AV-SAFE
-### Advanced Phishing Detection System
-
-**Minor Project — B.Tech CSE | 2026**
-
-<br/>
-
-[![Next.js](https://img.shields.io/badge/Next.js-16.2-000000?style=flat-square&logo=next.js)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19-0284C7?style=flat-square&logo=react&logoColor=white)](https://react.dev/)
-[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-v4-0F766E?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.2.10-black?style=flat-square&logo=next.js)](./web-app)
+[![React](https://img.shields.io/badge/React-19.2.4-61DAFB?style=flat-square&logo=react&logoColor=black)](./web-app)
+[![Chromium Extension](https://img.shields.io/badge/Chrome_MV3-Extension-1D4ED8?style=flat-square&logo=googlechrome&logoColor=white)](./extension)
+[![Android](https://img.shields.io/badge/Android-Kotlin-16A34A?style=flat-square&logo=android&logoColor=white)](./android-app)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-15803D?style=flat-square&logo=mongodb&logoColor=white)](https://mongodb.com/)
-[![Chrome Extension](https://img.shields.io/badge/Chrome_MV3-Extension-1D4ED8?style=flat-square&logo=googlechrome&logoColor=white)](./apps/extension)
-[![Android](https://img.shields.io/badge/Android-Kotlin-16A34A?style=flat-square&logo=android&logoColor=white)](./apps/android)
-[![Python](https://img.shields.io/badge/Python-3.12-3B82F6?style=flat-square&logo=python&logoColor=white)](./ml)
-[![License](https://img.shields.io/badge/License-MIT-6B7280?style=flat-square)](./LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](./LICENSE)
 
-<br/>
-
-<img src="public/av-safe-hero-banner.jpg" alt="AV-SAFE — Advanced Phishing Detection System" width="100%" />
-
-<br/><br/>
-
-</div>
+AV-SAFE is an enterprise-grade multi-platform cybersecurity platform that protects users against phishing scams, brand spoofing, malicious QR codes, and evasive social engineering attacks in real time.
 
 ---
 
-## About the Project
-
-**AV-SAFE** is an enterprise-grade, cross-platform, real-time phishing detection and prevention platform. It combines a machine learning model trained on **235,795 real phishing and legitimate URLs** with deterministic heuristic rules and client-side inference engines embedded natively across a modern Web application, a Chromium extension, and an Android mobile application.
-
-No external cloud API calls are required for real-time edge classification. The ML model runs fully offline, achieving **< 10 ms detection latency**.
-
----
-
-## Key Features
-
-- **Multi-Platform Edge Protection**:
-  - **Web Platform (PWA)**: Next.js 16 App Router interface for URL scanning, QR code inspection, and SecOps triage.
-  - **Chromium MV3 Extension**: Intercepts web navigation in real time before page rendering.
-  - **Native Android Interceptor**: Deep-link intent gatekeeper with on-device safety scoring and threat sandboxing.
-- **Offline ML Inference Engine**: Zero-dependency linear arithmetic evaluator running identical 24-feature models in JavaScript and Kotlin.
-- **Deep Network Inspection**: Server-side asynchronous DNS resolution, TLS certificate validation, and anti-SSRF DOM inspection.
-- **Incident Reporting & SecOps Triage**: Idempotent threat logging, IP rate limiting, and administrative review workflows backed by MongoDB Atlas.
-
----
-
-## System Architecture
-
-<div align="center">
-
-<img src="assets/diagrams/animated_threat_engine.svg" alt="AV-SAFE End-to-End Animated System Architecture" width="100%" />
-
-<br/><br/>
-
-<img src="assets/diagrams/animated_pipeline.svg" alt="Animated 6-Stage Threat Detection Pipeline" width="100%" />
-
-</div>
-
----
-
-## Repository Structure
+## 1. System Architecture
 
 ```text
 AV-SAFE/
-├── apps/
-│   ├── web/                 # Next.js web application documentation and references
-│   ├── android/             # Native Android Kotlin application (com.phishguard)
-│   └── extension/           # Chromium Manifest V3 browser security extension
 │
-├── backend/
-│   ├── api/                 # API route definitions and endpoint reference
-│   ├── models/              # Mongoose data models (Complaint, UrlScan)
-│   ├── services/            # Core business logic (phishingEngine)
-│   ├── middleware/          # Security controls (anti-SSRF, rate limiting, admin auth)
-│   ├── validators/          # Payload validation logic
-│   └── config/              # MongoDB connection pool management
-│
-├── ml/
-│   ├── models/              # Trained models (LightGBM, XGBoost, Random Forest, SGD)
-│   ├── weights/             # Production inference weights (phishing_model_weights.json)
-│   ├── training/            # Training scripts and hyperparameter tuning
-│   ├── datasets/            # Dataset pipelines, loaders, and splits
-│   ├── inference/           # Feature extractors and evaluation modules
-│   ├── utils/               # Logger, config loader, reproducibility utils
-│   ├── config/              # training_config.yaml, feature_config.yaml
-│   └── tests/               # Pytest test suite for ML pipelines
-│
-├── scripts/                 # Automation utilities (weights sync, icon generator, build helpers)
-├── docs/                    # Technical documentation
-│   ├── architecture/        # High-level architecture and C4 diagrams
-│   ├── api/                 # REST API specification and schema documentation
-│   ├── development/         # Local developer environment setup
-│   ├── deployment/          # Production deployment runbooks
-│   └── ml/                  # Model training reports and evaluations
-│
-├── assets/                  # Shared media, diagrams, branding, and screenshots
-│   ├── diagrams/            # Architecture diagrams (SVG)
-│   ├── branding/            # Founder portraits and visual brand identity
-│   └── screenshots/         # Dashboard previews
-│
-├── config/                  # Shared project configuration
-├── src/                     # Next.js App Router application
-│   ├── app/                 # UI pages, tabs, and route handlers
-│   └── lib/                 # Modular re-export bridges to @backend/* and @ml/*
-│
-├── .env.example             # Template environment configuration
-├── .gitignore               # Strict exclusion rules for builds, caches, and datasets
-├── README.md                # Project documentation root
-├── jsconfig.json            # Path alias configuration (@/*, @backend/*, @ml/*)
-└── package.json             # Root Next.js and frontend workspace configuration
+├── web-app/           # Next.js 16 full-stack dashboard, API routes & landing UI
+├── android-app/       # Native Android (Kotlin) app with real-time intent interception
+├── extension/         # Chromium Manifest V3 extension with active URL guard
+├── backend/           # Modular services, models, validators, controllers & ML engine
+├── docs/              # Architectural specs, API documentation, ML reports & assets
+├── testing/           # Unified automated test discovery across web, backend, ext & ML
+└── README.md          # Comprehensive root documentation and system runbook
 ```
 
 ---
 
-## Technology Stack
+## 2. Directory Responsibilities
 
-| Architectural Layer | Technology |
+### `web-app/`
+- Full-stack dashboard with Next.js 16 (App Router) and React 19.
+- Interactive threat scanners: URL analyzer, email header parser, QR code scanner, and isolated sandbox iframe simulator.
+- Serverless API routes: Active SSRF-safe DNS/TLS probe (`/api/analyze`), telemetry logging (`/api/history`), incident reporting (`/api/complaints`), and analytics (`/api/analytics`).
+
+### `android-app/`
+- Native Kotlin Android application (`com.phishguard`).
+- System-wide browser intent interception via `android.intent.action.VIEW`.
+- Local offline heuristic and logistic regression inference via `PhishingEngine.kt`.
+- Safe isolated sandbox browser preview (`SandboxActivity.kt`) and threat triage reporting.
+
+### `extension/`
+- Chromium Manifest V3 browser extension.
+- Active background tab interception via `chrome.tabs.onUpdated` and declarative rule filters.
+- Zero-latency heuristic scoring and machine learning inference directly inside `phishingEngine.js`.
+- High-risk redirect interception, warning pages, and sandbox inspection.
+
+### `backend/`
+- Centralized domain architecture housing MongoDB Mongoose models (`UrlScan.js`, `Complaint.js`).
+- Anti-SSRF private IP validation and token-bucket sliding-window rate limiters (`backend/middleware/`).
+- Threat intelligence services (`phishingEngine.js`) and incident controllers (`backend/controllers/`).
+- Full offline ML training, feature extraction, evaluation, and weights synchronization pipelines (`backend/ml/`).
+
+### `docs/`
+- Comprehensive architecture diagrams, telemetry data flow, and SecOps runbooks (`docs/architecture/`).
+- REST API specification and endpoint documentation (`docs/api/`).
+- ML model training benchmarks, confusion matrices, and ROC/PR curves (`docs/ml/`).
+- Developer setups, deployment checklists, and security policies (`docs/development/`, `docs/deployment/`, `docs/security/`).
+
+### `testing/`
+- Consolidated automated test suites for Web, Android, Extension, Backend, ML, and Integration layers (`testing/`).
+
+---
+
+## 3. Technology Stack
+
+| Layer | Technologies |
 | :--- | :--- |
-| **Frontend Platform** | Next.js 16 (Turbopack), React 19, Tailwind CSS v4, Framer Motion |
-| **Backend & API** | Next.js Server Route Handlers, Node.js (Async DNS/TLS sockets), Mongoose 9 |
-| **Database** | MongoDB Atlas / Local MongoDB with connection caching |
-| **Mobile Application** | Native Android (Kotlin), Intent Gatekeeper, Android ART Runtime |
-| **Browser Extension** | Chromium Manifest V3 (Chrome, Brave, Edge), Service Worker |
-| **Machine Learning** | Python 3.12, Scikit-learn, XGBoost, LightGBM, Pandas, PyArrow |
-| **Offline Inference** | Standardized 24-feature linear model (< 10 ms execution in JS & Kotlin) |
+| **Web Dashboard** | Next.js 16.2.10, React 19.2.4, Tailwind CSS v4, Framer Motion, Recharts, Lucide Icons |
+| **Android App** | Kotlin, Android SDK 34, ViewBinding, OkHttp 4.12, Gson, Material Components |
+| **Browser Extension** | Chromium Manifest V3, WebExtensions API, HTML5/CSS3, JavaScript (ES2022) |
+| **Backend & APIs** | Node.js (ESM), Next.js Serverless Route Handlers, Mongoose 9.7.3, DNS/TLS inspection |
+| **Database** | MongoDB Atlas / Local MongoDB with connection pooling and DNS caching |
+| **Machine Learning** | Scikit-Learn, LightGBM, XGBoost, Pandas, Numpy, 24-feature lexical extractor |
 
 ---
 
-## Getting Started
+## 4. Getting Started & Installation
 
-### 1. Environment Setup
+### Prerequisites
 
-Copy `.env.example` to `.env.local`:
+- **Node.js**: `>= 20.0.0` (Recommended: v22.x)
+- **Package Manager**: `npm`
+- **Python**: `>= 3.10` (for ML pipelines; recommended: `uv`)
+- **Android Studio / SDK**: Android SDK 34, JDK 17 (for Android build)
+
+### Environment Configuration
+
+Create a `.env` file in the root or inside `web-app/`:
+
 ```bash
-cp .env.example .env.local
+cp .env.example .env
 ```
-Fill in your MongoDB connection string and secret keys.
 
-### 2. Web Application & Backend
+Configure your environment variables:
+
+```env
+# MongoDB Connection String
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/phishguard?retryWrites=true&w=majority
+
+# Administrative SecOps Key
+ADMIN_SECRET_KEY=your-high-entropy-admin-secret-key-here
+
+# Next.js Public Origin
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+---
+
+## 5. Running the Applications
+
+### Web Application
 
 ```bash
-# Install dependencies
-npm install
-
-# Run development server
+# From repository root
 npm run dev
 
-# Run linting and production build
-npm run lint
-npm run build
+# Or directly from web-app/
+cd web-app
+npm run dev
 ```
 
-The web dashboard is accessible at `http://localhost:3000`.
+Visit [http://localhost:3000](http://localhost:3000) for the landing page or [http://localhost:3000/system](http://localhost:3000/system) for the live threat intelligence console.
 
-### 3. Machine Learning Pipeline
+### Chrome Extension
 
-```bash
-cd ml
+1. Open Google Chrome and navigate to `chrome://extensions/`.
+2. Toggle **Developer mode** on in the top right.
+3. Click **Load unpacked** and select the `extension/` directory.
 
-# Create virtual environment with uv
-uv venv .venv --python python3
-source .venv/bin/activate
-
-# Install requirements
-uv pip install -r requirements.txt pytest pyyaml
-
-# Run ML unit tests
-pytest -q tests
-
-# Run training or model evaluation
-python train.py
-python evaluate.py
-```
-
-### 4. Chromium Extension
-
-1. Open `chrome://extensions/` in Chrome or Brave.
-2. Enable **Developer mode**.
-3. Click **Load unpacked** and select `apps/extension/`.
-
-### 5. Native Android Application
+### Android Application
 
 ```bash
-# Build debug APK
-cd apps/android
+cd android-app
 ./gradlew assembleDebug
+```
 
-# Windows automated script
-scripts\build-apk.bat
+Output APK will be generated at `android-app/app/build/outputs/apk/debug/app-debug.apk`.
+
+---
+
+## 6. Testing Instructions
+
+Run automated test suites across all components:
+
+```bash
+# Run Node.js backend, extension, web and integration test suites
+npm test
+
+# Run ML pipeline unit tests
+uv run --with pytest --with pandas --with numpy --with pyyaml --with scikit-learn pytest -q testing/ml
+
+# Run Android unit tests
+cd android-app && ./gradlew test
 ```
 
 ---
 
-## Documentation Links
+## 7. Security Architecture
 
-- [System Architecture](docs/architecture/ARCHITECTURE.md)
-- [Backend & API Specification](docs/api/BACKEND_SPECIFICATION.md)
-- [Development Setup](docs/development/DEVELOPMENT.md)
-- [Deployment Guide](docs/deployment/DEPLOYMENT.md)
-- [ML Training Report](docs/ml/reports/MODEL_TRAINING_REPORT.md)
-
----
-
-## Team
-
-<div align="center">
-
-| <img src="assets/branding/team_founder_anmol.jpg" width="120" height="120" style="border-radius:50%;" /> | <img src="assets/branding/team_founder_tanay.jpg" width="120" height="120" style="border-radius:50%;" /> | <img src="assets/branding/team_founder_hritik.jpg" width="120" height="120" style="border-radius:50%;" /> |
-| :---: | :---: | :---: |
-| **Anmol Malviya** | **Tanay Agrawal** | **Hritik Jaiswal** |
-| AI / Threat Intelligence Lead | Full-Stack Systems Lead | Security / Mobile Lead |
-
-<br/>
+1. **Strict Zero Hardcoded Secrets**: All database connection strings and administration keys are strictly supplied through environment variables.
+2. **Anti-SSRF Protection Engine**: Active network probes strictly block private IPv4/IPv6 ranges (e.g. `127.0.0.1`, `10.0.0.0/8`, `192.168.0.0/16`, AWS IMDS `169.254.169.254`).
+3. **Sliding-Window Rate Limiting**: In-memory token-bucket rate limiter prevents abuse of complaint ingestion and deep scan APIs.
+4. **Isolated Sandbox Previews**: High-threat URLs are stripped of cookies and executed inside isolated iframe environments with strict sandbox attributes.
 
 ---
 
-© 2026 AV-SAFE Security Ecosystem — MIT Licensed
+## 8. License
 
-</div>
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.

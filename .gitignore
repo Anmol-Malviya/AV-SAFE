@@ -1,6 +1,4 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
+# Dependencies
 /node_modules
 /.pnp
 .pnp.*
@@ -10,47 +8,30 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
+# Testing & Coverage
 /coverage
+.pytest_cache/
+*/.pytest_cache/
 
-# next.js
+# Next.js & Build Outputs
 /.next/
-apps/web/.next/
+web-app/.next/
 /out/
-apps/web/out/
-
-# production
+web-app/out/
 /build
 
-# misc
-.DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
+# Environment Variables
 .env*
 !.env.example
 
-# vercel
+# Vercel & Deployments
 .vercel
 
-# typescript
+# TypeScript & Metadata
 *.tsbuildinfo
 next-env.d.ts
 
 # Android Build & IDE files
-/apps/android/.gradle/
-/apps/android/app/build/
-/apps/android/build/
-/apps/android/local.properties
-/apps/android/.idea/caches/
-/apps/android/.idea/deploymentTargetSelector.xml
-/apps/android/.idea/runConfigurations.xml
 /android-app/.gradle/
 /android-app/app/build/
 /android-app/build/
@@ -59,24 +40,32 @@ next-env.d.ts
 /android-app/.idea/deploymentTargetSelector.xml
 /android-app/.idea/runConfigurations.xml
 
-# ML Datasets (large archives / binaries)
-*.zip
-*.tar.gz
-ml/datasets/PhiUSIIL_Phishing_URL_Dataset.csv
-ml/datasets/processed/
-ml/datasets/splits/
-ml/models/checkpoints/
-
-# System and editor files
-.DS_Store
-*.swp
-*.swo
-.update
-
-
-# Python
+# Python Virtual Environments & Bytecode
 __pycache__/
 *.py[cod]
 *$py.class
 .venv/
+*/.venv/
 venv/
+*/venv/
+
+# Large Datasets and Trained Model Artifacts (never commit to git)
+*.zip
+*.tar.gz
+*.parquet
+*.joblib
+*.pkl
+backend/ml/datasets/*.csv
+backend/ml/datasets/splits/
+backend/ml/datasets/processed/
+backend/ml/datasets/raw/
+backend/ml/models/checkpoints/
+backend/ml/models/trained/
+
+# OS and Editor Clutter
+.DS_Store
+*.swp
+*.swo
+.vscode/
+.idea/
+.update

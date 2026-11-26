@@ -23,13 +23,13 @@ docker run -p 3000:3000 --env-file .env av-safe-web
    ```bash
    python scripts/generate_extension_icons.py
    ```
-2. In Chrome Developer Dashboard, zip the contents of `apps/extension/` and upload as Manifest V3 package.
+2. In Chrome Developer Dashboard, zip the contents of `extension/` and upload as Manifest V3 package.
 
 ## 3. Android APK Release
 1. Build release APK:
    ```bash
-   cd apps/android
+   cd android-app
    ./gradlew assembleRelease
    ```
 2. The generated release artifact is located at:
-   `apps/android/app/build/outputs/apk/release/app-release.apk`
+   `android-app/app/build/outputs/apk/release/app-release.apk`
