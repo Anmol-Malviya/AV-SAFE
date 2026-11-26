@@ -1,11 +1,18 @@
 import json
 import re
 
-with open('src/lib/phishing_model_weights.json', 'r', encoding='utf-8') as f:
+import json
+import re
+
+with open('ml/weights/phishing_model_weights.json', 'r', encoding='utf-8') as f:
     model_json = json.load(f)
 
-# 1. Update Chrome Extension (extansion/phishingEngine.js)
-ext_path = 'extansion/phishingEngine.js'
+# Keep src/lib copy synchronized
+with open('src/lib/phishing_model_weights.json', 'w', encoding='utf-8') as f:
+    json.dump(model_json, f, indent=2)
+
+# 1. Update Chrome Extension (apps/extension/phishingEngine.js)
+ext_path = 'apps/extension/phishingEngine.js'
 with open(ext_path, 'r', encoding='utf-8') as f:
     ext_content = f.read()
 
@@ -13,10 +20,10 @@ json_str = json.dumps(model_json, indent=2)
 new_ext = re.sub(r'const modelWeights = \{[\s\S]*?\};', f'const modelWeights = {json_str};', ext_content, count=1)
 with open(ext_path, 'w', encoding='utf-8') as f:
     f.write(new_ext)
-print('Updated Chrome Extension: extansion/phishingEngine.js')
+print('Updated Chrome Extension: apps/extension/phishingEngine.js')
 
-# 2. Update Android Kotlin (android-app/app/src/main/java/com/phishguard/PhishingEngine.kt)
-kt_path = 'android-app/app/src/main/java/com/phishguard/PhishingEngine.kt'
+# 2. Update Android Kotlin (apps/android/app/src/main/java/com/phishguard/PhishingEngine.kt)
+kt_path = 'apps/android/app/src/main/java/com/phishguard/PhishingEngine.kt'
 with open(kt_path, 'r', encoding='utf-8') as f:
     kt_content = f.read()
 
@@ -39,5 +46,5 @@ kt_content = re.sub(r'val bias = [\d\.\-]+', bias_str, kt_content, count=1)
 
 with open(kt_path, 'w', encoding='utf-8') as f:
     f.write(kt_content)
-print('Updated Android App: android-app/.../PhishingEngine.kt')
+print('Updated Android App: apps/android/.../PhishingEngine.kt')
 

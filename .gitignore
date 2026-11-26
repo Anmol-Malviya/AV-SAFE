@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -41,6 +42,13 @@ yarn-error.log*
 next-env.d.ts
 
 # Android Build & IDE files
+/apps/android/.gradle/
+/apps/android/app/build/
+/apps/android/build/
+/apps/android/local.properties
+/apps/android/.idea/caches/
+/apps/android/.idea/deploymentTargetSelector.xml
+/apps/android/.idea/runConfigurations.xml
 /android-app/.gradle/
 /android-app/app/build/
 /android-app/build/
@@ -48,6 +56,20 @@ next-env.d.ts
 /android-app/.idea/caches/
 /android-app/.idea/deploymentTargetSelector.xml
 /android-app/.idea/runConfigurations.xml
+
+# ML Datasets (large archives / binaries)
+*.zip
+*.tar.gz
+ml/datasets/PhiUSIIL_Phishing_URL_Dataset.csv
+ml/datasets/processed/
+ml/datasets/splits/
+ml/models/checkpoints/
+
+# System and editor files
+.DS_Store
+*.swp
+*.swo
+.update
 
 
 # Python
